@@ -1,0 +1,92 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model business {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  address            String?
+  city               String?
+  state              String?              @default("NJ")
+  zip                String?
+  phone              String?
+  website            String?
+  business_type      String?
+  industry           String?
+  employee_count     Int?
+  year_founded       Int?
+  google_maps_url    String?
+  latitude           Float?
+  longitude          Float?
+  enrichment_status  String               @default("pending") // pending, enriched, failed
+  source             String               @default("google_maps")
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt
+  
+  contacts           contact[]
+  enrichment_logs    enrichment_log[]
+  outreach_messages  outreach_message[]
+
+  @@index([city])
+  @@index([industry])
+  @@index([enrichment_status])
+}
+
+model contact {
+  id                 Int                  @id @default(autoincrement())
+  business_id        Int
+  name               String?
+  title              String?
+  email              String?
+  email_verified     Boolean?             @default(false)
+  phone              String?
+  linkedin_url       String?
+  is_primary         Boolean              @default(false)
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt
+  
+  business           business             @relation(fields: [business_id], references: [id], onDelete: Cascade)
+  outreach_messages  outreach_message[]
+
+  @@index([business_id])
+  @@index([email])
+}
+
+model enrichment_log {
+  id                 Int                  @id @default(autoincrement())
+  business_id        Int
+  service            String               // hunter, abstract
+  status             String               // success, failed
+  request_data       String?              @db.Text
+  response_data      String?              @db.Text
+  error_message      String?              @db.Text
+  created_at         DateTime             @default(now())
+  
+  business           business             @relation(fields: [business_id], references: [id], onDelete: Cascade)
+
+  @@index([business_id])
+  @@index([service])
+  @@index([status])
+}
+
+model outreach_message {
+  id                 Int                  @id @default(autoincrement())
+  business_id        Int
+  contact_id         Int?
+  message_text       String               @db.Text
+  generated_at       DateTime             @default(now())
+  sent_at            DateTime?
+  status             String               @default("generated") // generated, sent, failed
+  
+  business           business             @relation(fields: [business_id], references: [id], onDelete: Cascade)
+  contact            contact?             @relation(fields: [contact_id], references: [id], onDelete: SetNull)
+
+  @@index([business_id])
+  @@index([status])
+}
