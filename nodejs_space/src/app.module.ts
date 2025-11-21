@@ -18,7 +18,7 @@ import { WebsocketModule } from './websocket/websocket.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'dashboard', 'out'),
       serveRoot: '/dashboard',
-      exclude: ['/api*'],
+      exclude: ['/api(.*)'],
     }),
     ConfigModule,
     PrismaModule,
