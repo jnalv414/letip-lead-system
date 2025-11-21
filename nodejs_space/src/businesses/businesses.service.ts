@@ -110,42 +110,25 @@ export class BusinessesService {
         total,
         enriched,
         pending,
-        failed,
-        byCity,
-        byIndustry,
+        totalContacts,
+        messagesSent,
+        messagesPending,
       ] = await Promise.all([
         this.prisma.business.count(),
         this.prisma.business.count({ where: { enrichment_status: 'enriched' } }),
         this.prisma.business.count({ where: { enrichment_status: 'pending' } }),
-        this.prisma.business.count({ where: { enrichment_status: 'failed' } }),
-        this.prisma.business.groupBy({
-          by: ['city'],
-          _count: true,
-          orderBy: { _count: { city: 'desc' } },
-          take: 10,
-        }),
-        this.prisma.business.groupBy({
-          by: ['industry'],
-          _count: true,
-          where: { industry: { not: null } },
-          orderBy: { _count: { industry: 'desc' } },
-          take: 10,
-        }),
+        this.prisma.contact.count(),
+        this.prisma.outreach_message.count({ where: { status: 'sent' } }),
+        this.prisma.outreach_message.count({ where: { status: 'draft' } }),
       ]);
 
       return {
-        total,
-        enriched,
-        pending,
-        failed,
-        byCity: byCity.map(item => ({
-          city: item.city,
-          count: item._count,
-        })),
-        byIndustry: byIndustry.map(item => ({
-          industry: item.industry,
-          count: item._count,
-        })),
+        totalBusinesses: total,
+        enrichedBusinesses: enriched,
+        pendingEnrichment: pending,
+        totalContacts: totalContacts,
+        messagesSent: messagesSent,
+        messagesPending: messagesPending,
       };
     } catch (error) {
       this.logger.error('Error fetching stats:', error);

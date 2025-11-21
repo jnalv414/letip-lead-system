@@ -131,20 +131,22 @@ Let me know how I can help! 🚀
 
       const stats = await this.businessesService.getStats();
 
+      const enrichmentRate = stats.totalBusinesses > 0 
+        ? Math.round((stats.enrichedBusinesses / stats.totalBusinesses) * 100) 
+        : 0;
+
       const statsMessage = `
 📊 *Lead System Statistics*
 
-*Overall:*
-• Total Businesses: ${stats.total}
-• Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
-• Pending: ${stats.pending}
-• Failed: ${stats.failed}
+*Businesses:*
+• Total: ${stats.totalBusinesses}
+• Enriched: ${stats.enrichedBusinesses} (${enrichmentRate}%)
+• Pending: ${stats.pendingEnrichment}
 
-*Top Cities:*
-${stats.byCity.slice(0, 5).map((c, i) => `${i + 1}. ${c.city || 'Unknown'}: ${c.count}`).join('\n')}
-
-*Top Industries:*
-${stats.byIndustry.slice(0, 5).map((i, idx) => `${idx + 1}. ${i.industry || 'Unknown'}: ${i.count}`).join('\n')}
+*Contacts & Outreach:*
+• Total Contacts: ${stats.totalContacts}
+• Messages Sent: ${stats.messagesSent}
+• Messages Pending: ${stats.messagesPending}
       `;
 
       await this.bot.sendMessage(chatId, statsMessage, { parse_mode: 'Markdown' });
