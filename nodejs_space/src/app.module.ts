@@ -9,6 +9,7 @@ import { ScraperModule } from './scraper/scraper.module';
 import { EnrichmentModule } from './enrichment/enrichment.module';
 import { OutreachModule } from './outreach/outreach.module';
 import { TelegramModule } from './telegram/telegram.module';
+import { WebsocketModule } from './websocket/websocket.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TelegramModule } from './telegram/telegram.module';
     EnrichmentModule,
     OutreachModule,
     TelegramModule,
+    WebsocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

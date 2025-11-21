@@ -3,12 +3,16 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { QueryBusinessesDto } from './dto/query-businesses.dto';
+import { EventsGateway } from '../websocket/websocket.gateway';
 
 @Injectable()
 export class BusinessesService {
   private readonly logger = new Logger(BusinessesService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventsGateway: EventsGateway,
+  ) {}
 
   async create(createBusinessDto: CreateBusinessDto) {
     try {
@@ -16,6 +20,14 @@ export class BusinessesService {
         data: createBusinessDto,
       });
       this.logger.log(`Created business: ${business.name} (ID: ${business.id})`);
+      
+      // Emit WebSocket event
+      this.eventsGateway.emitBusinessCreated(business);
+      
+      // Emit updated stats
+      const stats = await this.getStats();
+      this.eventsGateway.emitStatsUpdated(stats);
+      
       return business;
     } catch (error) {
       this.logger.error('Error creating business:', error);
