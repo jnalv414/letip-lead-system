@@ -177,13 +177,44 @@ letip_lead_system/
 │   ├── prisma/            # Database schema
 │   └── dist/              # Compiled code
 │
-└── dashboard/             # Next.js Dashboard
-    ├── app/               # App pages
-    ├── components/        # React components
-    ├── lib/               # Utilities
-    └── out/               # Static build
+├── dashboard/             # Next.js Dashboard
+│   ├── app/               # App pages
+│   ├── components/        # React components
+│   ├── lib/               # Utilities
+│   └── out/               # Static build
+│
+├── docs/                  # Project Documentation
+│   ├── planning/          # Planning frameworks & implementation guides
+│   ├── orchestration/     # Multi-agent coordination
+│   └── dashboard/         # Dashboard build plans
+│
+├── CLAUDE.md              # AI development instructions
+└── README.md              # This file
 
 ```
+
+## 📖 Documentation
+
+Comprehensive project documentation is organized in the `docs/` directory:
+
+- **[docs/planning/](docs/planning/)** - Planning methodologies, core principles, and implementation guides
+  - `GlobalRuleSections.md` - Core architectural principles
+  - `PlanningPrompts.md` - "Vibe planning" templates for feature exploration
+  - `coding-prompt.md` - Implementation guides for coding agents
+
+- **[docs/orchestration/](docs/orchestration/)** - Multi-agent coordination and parallel execution
+  - `ORCHESTRATION_INSTRUCTIONS.md` - How to coordinate agents
+  - `AGENT_PHASE1_SPECIFICATIONS.md` - Detailed agent requirements
+  - `PHASE1_AGENT_BRIEFS.md` - Parallel execution task briefs
+
+- **[docs/dashboard/](docs/dashboard/)** - Dashboard-specific documentation
+  - `DASHBOARD_BUILD_PLAN.md` - Next.js 16 dashboard build plan
+
+- **[CLAUDE.md](CLAUDE.md)** - AI agent development instructions (root level)
+
+For development guidance, start with [docs/README.md](docs/README.md).
+
+---
 
 ## 🔧 Configuration
 
