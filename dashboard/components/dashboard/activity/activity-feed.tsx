@@ -152,7 +152,7 @@ export function ActivityFeed() {
       case 'business':
         return 'bg-teal-light/20 text-teal-lighter border-teal-light/40';
       case 'enrichment':
-        return 'bg-orange/20 text-orange border-orange/40';
+        return 'bg-teal-light/20 text-teal-lighter border-teal-light/40';
       case 'scraping':
         return 'bg-blue-500/20 text-blue-400 border-blue-500/40';
       case 'error':
@@ -174,9 +174,9 @@ export function ActivityFeed() {
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg font-medium">Activity Feed</CardTitle>
-          <div className="flex items-center gap-2 px-3 py-1 bg-teal-light/20 rounded-full border border-orange/30">
+          <div className="flex items-center gap-2 px-3 py-1 bg-charcoal-light rounded-full border border-teal-light/30">
             <motion.div
-              className="w-2 h-2 rounded-full bg-orange"
+              className="w-2 h-2 rounded-full bg-teal-lighter"
               animate={{
                 scale: [1, 1.3, 1],
                 opacity: [1, 0.6, 1],
@@ -202,7 +202,7 @@ export function ActivityFeed() {
                 animate={{ opacity: 1, height: 'auto', x: 0 }}
                 exit={{ opacity: 0, height: 0, x: 20 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="flex items-start gap-3 p-3 rounded-xl bg-charcoal-light/50 border border-orange/10 hover:border-orange/30 hover:bg-charcoal-light transition-all duration-200"
+                className="flex items-start gap-3 p-3 rounded-xl bg-charcoal-light/50 border border-teal-light/10 hover:border-teal-light/30 hover:bg-charcoal-light transition-all duration-200"
               >
                 {/* Icon */}
                 <div
@@ -228,12 +228,12 @@ export function ActivityFeed() {
 
         {/* Footer */}
         <motion.div
-          className="mt-4 pt-4 border-t border-orange/10 text-center"
+          className="mt-4 pt-4 border-t border-teal-light/10 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <button className="text-xs text-gray-400 hover:text-orange transition-colors duration-200">
+          <button className="text-xs text-gray-400 hover:text-teal-lighter transition-colors duration-200">
             View All Activity →
           </button>
         </motion.div>
@@ -254,11 +254,11 @@ export function ActivityFeed() {
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #ff5722;
+    background: #145A5A;
     border-radius: 10px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #e64a19;
+    background: #1A7070;
   }
 `}</style>

@@ -12,6 +12,8 @@
  * <Skeleton animated={false} /> // Disable animation
  */
 
+'use client';
+
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
@@ -103,6 +105,9 @@ const SkeletonTable = ({
 };
 
 const SkeletonChart = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+  // Deterministic heights to avoid hydration mismatch
+  const barHeights = [75, 60, 85, 70, 90, 65, 80];
+
   return (
     <div className={cn('space-y-4', className)} {...props}>
       <div className="flex justify-between items-center">
@@ -118,11 +123,11 @@ const SkeletonChart = ({ className, ...props }: React.HTMLAttributes<HTMLDivElem
 
       {/* Chart bars */}
       <div className="flex items-end gap-2 h-40">
-        {Array.from({ length: 7 }).map((_, i) => (
+        {barHeights.map((height, i) => (
           <Skeleton
             key={i}
             className="flex-1"
-            style={{ height: `${Math.random() * 60 + 40}%` }}
+            style={{ height: `${height}%` }}
           />
         ))}
       </div>

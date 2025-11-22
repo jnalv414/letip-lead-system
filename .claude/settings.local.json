@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(ultrathink)",
+      "Skill(design-guide)",
+      "Bash(npm test:*)",
+      "Skill(roadmap-builder)",
+      "Skill(test-driven-development)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -54,7 +54,7 @@ export function DashboardStats() {
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="bg-teal-light rounded-3xl shadow-xl border border-orange/5 p-6 animate-pulse"
+            className="bg-charcoal rounded-3xl shadow-xl border border-teal-light/5 p-6 animate-pulse"
             role="status"
             aria-label="Loading statistic"
           >
@@ -106,8 +106,8 @@ export function DashboardStats() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
       ),
-      iconBg: 'bg-orange/15',
-      iconColor: 'text-orange',
+      iconBg: 'bg-charcoal-light',
+      iconColor: 'text-teal-lighter',
       description: 'Total number of businesses in the system',
     },
     {
@@ -118,8 +118,8 @@ export function DashboardStats() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      iconBg: 'bg-orange/15',
-      iconColor: 'text-orange',
+      iconBg: 'bg-charcoal-light',
+      iconColor: 'text-teal-lighter',
       description: 'Businesses with complete contact and firmographic data',
     },
     {
@@ -130,7 +130,7 @@ export function DashboardStats() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      iconBg: 'bg-teal-light/40',
+      iconBg: 'bg-charcoal-light',
       iconColor: 'text-teal-lighter',
       description: 'Businesses awaiting enrichment processing',
     },
@@ -142,7 +142,7 @@ export function DashboardStats() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
       ),
-      iconBg: 'bg-teal-light/40',
+      iconBg: 'bg-charcoal-light',
       iconColor: 'text-teal-lighter',
       description: 'Total number of business contacts discovered',
     },
@@ -223,7 +223,7 @@ export function DashboardStats() {
               scale: 1.02,
               transition: { duration: 0.3 }
             }}
-            className="bg-teal-light rounded-3xl shadow-xl border border-orange/5 p-6 hover:border-orange/20 transition-all duration-300 cursor-pointer "
+            className="bg-charcoal rounded-3xl shadow-xl border border-teal-light/10 p-6 hover:border-teal-light/30 transition-all duration-300 cursor-pointer "
             tabIndex={0}
             role="article"
             aria-label={`${stat.label}: ${stat.value.toLocaleString()}`}

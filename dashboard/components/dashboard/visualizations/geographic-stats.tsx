@@ -52,12 +52,12 @@ export function GeographicStats() {
             <p className="text-sm text-gray-400 mt-1">Western Monmouth County</p>
           </div>
 
-          {/* Globe icon with orange glow */}
+          {/* Globe icon with teal glow */}
           <motion.div
-            className="w-12 h-12 rounded-xl bg-orange/20 border border-orange/40 flex items-center justify-center"
-            whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(255, 87, 34, 0.4)' }}
+            className="w-12 h-12 rounded-xl bg-teal-light/20 border border-teal-light/40 flex items-center justify-center"
+            whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(20, 90, 90, 0.4)' }}
           >
-            <svg className="w-6 h-6 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-teal-lighter" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -114,7 +114,7 @@ export function GeographicStats() {
               {locations?.map((location, index) => (
                 <motion.div
                   key={location.city}
-                  className="flex justify-between items-center py-3 border-b border-orange/10 last:border-0 hover:bg-charcoal-light/50 px-3 rounded-lg transition-all duration-200"
+                  className="flex justify-between items-center py-3 border-b border-teal-light/10 last:border-0 hover:bg-charcoal-light/50 px-3 rounded-lg transition-all duration-200"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
@@ -154,7 +154,7 @@ export function GeographicStats() {
                       {location.count.toLocaleString()}
                     </span>
                     <Badge
-                      variant={index === 0 ? 'orange' : index === 1 ? 'teal' : 'charcoal'}
+                      variant={index === 0 ? 'teal' : index === 1 ? 'outlineTeal' : 'charcoal'}
                       size="sm"
                     >
                       {location.percentage}%
@@ -166,7 +166,7 @@ export function GeographicStats() {
 
             {/* Coverage map placeholder */}
             <motion.div
-              className="mt-6 pt-6 border-t border-orange/10"
+              className="mt-6 pt-6 border-t border-teal-light/10"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
@@ -174,7 +174,7 @@ export function GeographicStats() {
               <div className="text-center text-xs text-gray-500 mb-3">
                 Coverage Heat Map
               </div>
-              <div className="relative h-24 bg-gradient-to-r from-teal/20 via-orange/20 to-teal/20 rounded-lg border border-orange/10 overflow-hidden">
+              <div className="relative h-24 bg-gradient-to-r from-teal/20 via-charcoal-light to-teal/20 rounded-lg border border-teal-light/10 overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <svg className="w-16 h-16 text-gray-700 opacity-30" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />

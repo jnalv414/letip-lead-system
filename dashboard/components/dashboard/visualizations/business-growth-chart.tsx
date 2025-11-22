@@ -87,7 +87,7 @@ export function BusinessGrowthChart() {
 
           {/* Period Selector (10% orange accent) */}
           <div
-            className="flex bg-charcoal rounded-full p-1 border border-orange/20"
+            className="flex bg-charcoal rounded-full p-1 border border-teal-light/20"
             role="tablist"
             aria-label="Select time period for business growth data"
           >
@@ -134,8 +134,8 @@ export function BusinessGrowthChart() {
             <span className="w-2 h-2 rounded-full bg-teal-lighter mr-1" />
             Total: {totalBusinesses}
           </Badge>
-          <Badge variant="orange" size="sm">
-            <span className="w-2 h-2 rounded-full bg-orange mr-1" />
+          <Badge variant="outlineTeal" size="sm">
+            <span className="w-2 h-2 rounded-full bg-teal-lighter mr-1" />
             Enriched: {totalEnriched}
           </Badge>
           <Badge variant="success" size="sm">

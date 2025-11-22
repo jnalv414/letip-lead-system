@@ -45,13 +45,13 @@ export function CalendarWidget({
             {currentMonth}
           </h3>
           <motion.button
-            className="w-8 h-8 rounded-lg bg-charcoal-light border border-orange/20 flex items-center justify-center hover:bg-orange/20 hover:border-orange/40 transition-all duration-200"
+            className="w-8 h-8 rounded-lg bg-charcoal-light border border-teal-light/20 flex items-center justify-center hover:bg-teal-light/20 hover:border-teal-light/40 transition-all duration-200"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             aria-label="Next month"
             tabIndex={0}
           >
-            <svg className="w-4 h-4 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <svg className="w-4 h-4 text-teal-lighter" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </motion.button>
@@ -137,7 +137,7 @@ export function CalendarWidget({
 
         {/* Monthly goal tracker (30% teal surface) */}
         <div
-          className="bg-teal rounded-2xl p-4 border border-orange/20"
+          className="bg-teal rounded-2xl p-4 border border-teal-light/20"
           role="region"
           aria-labelledby="goal-heading"
         >
@@ -163,11 +163,11 @@ export function CalendarWidget({
               </p>
             </div>
             <div
-              className="w-12 h-12 rounded-xl bg-orange/20 border border-orange/40 flex items-center justify-center"
+              className="w-12 h-12 rounded-xl bg-teal-light/20 border border-teal-light/40 flex items-center justify-center"
               role="presentation"
               aria-hidden="true"
             >
-              <svg className="w-6 h-6 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-teal-lighter" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

@@ -15,6 +15,7 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
+import { useKeyboardClick } from '@/hooks/use-keyboard-click';
 
 const badgeVariants = cva(
   'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold transition-all duration-200',
@@ -53,18 +54,37 @@ const badgeVariants = cva(
   }
 );
 
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {
+export interface BadgeProps extends VariantProps<typeof badgeVariants> {
+  as?: React.ElementType;
   icon?: React.ReactNode;
+  children?: React.ReactNode;
+  className?: string;
+  onClick?: React.MouseEventHandler;
+  [key: string]: any; // Allow any HTML attributes
 }
 
-function Badge({ className, variant, size, icon, children, ...props }: BadgeProps) {
+function Badge({
+  as: Component = 'div',
+  className,
+  variant,
+  size,
+  icon,
+  children,
+  onClick,
+  ...props
+}: BadgeProps) {
+  const handleKeyDown = useKeyboardClick(onClick);
+
   return (
-    <div className={cn(badgeVariants({ variant, size }), className)} {...props}>
+    <Component
+      className={cn(badgeVariants({ variant, size }), className)}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      {...props}
+    >
       {icon && <span className="inline-flex items-center">{icon}</span>}
       {children}
-    </div>
+    </Component>
   );
 }
 

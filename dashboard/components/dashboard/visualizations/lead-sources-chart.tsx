@@ -74,7 +74,7 @@ export function LeadSourcesChart() {
 
           {/* Source type badges (30% teal + 10% orange) */}
           <div className="flex flex-col gap-2">
-            <Badge variant="teal" size="sm">
+            <Badge variant="outline" size="sm">
               <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                 <path
@@ -85,7 +85,7 @@ export function LeadSourcesChart() {
               </svg>
               Scraping
             </Badge>
-            <Badge variant="orange" size="sm">
+            <Badge variant="outline" size="sm">
               <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -112,13 +112,13 @@ export function LeadSourcesChart() {
 
         {/* Totals breakdown */}
         <div className="flex gap-3 mt-4">
-          <div className="flex-1 bg-teal-light/10 rounded-lg p-2 border border-teal-light/20">
+          <div className="flex-1 bg-charcoal-light/50 rounded-lg p-2 border border-gray-700">
             <p className="text-xs text-gray-400">Scraping</p>
             <p className="text-xl font-semibold text-teal-lighter">{formatNumber(totals.scraping)}</p>
           </div>
-          <div className="flex-1 bg-orange/10 rounded-lg p-2 border border-orange/20">
+          <div className="flex-1 bg-charcoal-light/50 rounded-lg p-2 border border-gray-700">
             <p className="text-xs text-gray-400">Manual</p>
-            <p className="text-xl font-semibold text-orange">{formatNumber(totals.manual)}</p>
+            <p className="text-xl font-semibold text-teal-lighter">{formatNumber(totals.manual)}</p>
           </div>
           <div className="flex-1 bg-charcoal-light rounded-lg p-2 border border-gray-700">
             <p className="text-xs text-gray-400">Import</p>
@@ -141,7 +141,7 @@ export function LeadSourcesChart() {
               data={data || []}
               bars={[
                 { dataKey: 'scraping', name: 'Scraping', color: '#145A5A' },
-                { dataKey: 'manual', name: 'Manual', color: '#FF5722' },
+                { dataKey: 'manual', name: 'Manual', color: '#6B7280' },
                 { dataKey: 'import', name: 'Import', color: '#4A4A4E' },
               ]}
               xAxisKey="day"

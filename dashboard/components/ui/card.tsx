@@ -15,6 +15,7 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { motion, HTMLMotionProps } from 'framer-motion';
+import { useKeyboardClick } from '@/hooks/use-keyboard-click';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'teal' | 'charcoal';
@@ -24,7 +25,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant = 'default', hover = false, animated = false, children, ...props }, ref) => {
+  ({ className, variant = 'default', hover = false, animated = false, children, onClick, ...props }, ref) => {
     const baseClasses = 'rounded-3xl p-6 border shadow-xl transition-all duration-300';
 
     const variantClasses = {
@@ -37,6 +38,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       ? 'hover:border-orange/40 hover:shadow-3d-hover hover:-translate-y-1'
       : '';
 
+    const handleKeyDown = useKeyboardClick(onClick);
+
     // Omit incompatible HTML event props when using motion.div
     const { onDrag, onDragEnd, onDragStart, ...safeProps } = props;
 
@@ -48,6 +51,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
+          onClick={onClick}
+          onKeyDown={handleKeyDown}
           {...(safeProps as any)}
         >
           {children}
@@ -59,6 +64,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(baseClasses, variantClasses[variant], hoverClasses, className)}
+        onClick={onClick}
+        onKeyDown={handleKeyDown}
         {...props}
       >
         {children}

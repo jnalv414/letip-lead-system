@@ -58,17 +58,43 @@ describe('Card Component', () => {
 
   describe('Color Scheme (60-30-10 Rule)', () => {
     it('should have charcoal background (60%)', () => {
-      const { container } = render(
-        <Card data-testid="color-card">
+      render(
+        <Card variant="default" data-testid="color-card">
           <CardContent>Test</CardContent>
         </Card>
       );
 
       const card = screen.getByTestId('color-card');
-      const styles = window.getComputedStyle(card);
 
-      // Check for charcoal background
-      expect(styles.backgroundColor).toBe(ColorScheme.charcoal.primary);
+      // Test Tailwind classes instead of computed styles (JSDOM limitation)
+      // Default variant uses charcoal-light background (card.tsx line 32)
+      expect(card).toHaveClass('bg-charcoal-light', 'border-orange/20');
+    });
+
+    it('should have teal variant styling', () => {
+      render(
+        <Card variant="teal" data-testid="teal-card">
+          <CardContent>Teal Test</CardContent>
+        </Card>
+      );
+
+      const card = screen.getByTestId('teal-card');
+
+      // Test Tailwind classes for teal variant (card.tsx line 33)
+      expect(card).toHaveClass('bg-teal', 'border-orange/20');
+    });
+
+    it('should have charcoal variant styling', () => {
+      render(
+        <Card variant="charcoal" data-testid="charcoal-card">
+          <CardContent>Charcoal Test</CardContent>
+        </Card>
+      );
+
+      const card = screen.getByTestId('charcoal-card');
+
+      // Test Tailwind classes for charcoal variant (card.tsx line 34)
+      expect(card).toHaveClass('bg-charcoal', 'border-orange/10');
     });
 
     it('should have orange accent borders on hover/focus', () => {
@@ -88,8 +114,8 @@ describe('Card Component', () => {
       expect(card).toHaveClass('hover:border-orange-primary');
     });
 
-    it('should validate overall color distribution', () => {
-      const { container } = render(
+    it('should validate overall color distribution with class checks', () => {
+      render(
         <Card>
           <CardHeader>
             <CardTitle className="text-teal-primary">Teal Title</CardTitle>
@@ -101,10 +127,16 @@ describe('Card Component', () => {
         </Card>
       );
 
-      const validation = validateColorDistribution(container);
-      expect(validation.hasCharcoalBackground).toBe(true);
-      expect(validation.hasTealAccent).toBe(true);
-      expect(validation.hasOrangeHighlight).toBe(true);
+      // Test class presence instead of computed color distribution (JSDOM limitation)
+      const title = screen.getByText('Teal Title');
+      const description = screen.getByText('Description');
+      const content = screen.getByText('Description').parentElement?.parentElement;
+      const button = screen.getByRole('button');
+
+      expect(title).toHaveClass('text-teal-primary');
+      expect(description).toHaveClass('text-charcoal-text');
+      expect(content?.querySelector('[class*="bg-charcoal-secondary"]')).toBeInTheDocument();
+      expect(button).toHaveClass('bg-orange-primary');
     });
   });
 
@@ -358,6 +390,66 @@ describe('Card Component', () => {
     });
   });
 
+  // ==================== Keyboard Accessibility Tests (TDD) ====================
+
+  describe('Keyboard Accessibility', () => {
+    it('should trigger onClick when Enter key is pressed', () => {
+      const handleClick = jest.fn();
+
+      render(
+        <Card onClick={handleClick} tabIndex={0}>
+          <CardHeader><CardTitle>Test</CardTitle></CardHeader>
+        </Card>
+      );
+
+      const card = screen.getByText('Test').closest('[tabindex="0"]');
+
+      const enterEvent = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true
+      });
+      card!.dispatchEvent(enterEvent);
+
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should trigger onClick when Space key is pressed', () => {
+      const handleClick = jest.fn();
+
+      render(
+        <Card onClick={handleClick} tabIndex={0}>
+          <CardHeader><CardTitle>Test</CardTitle></CardHeader>
+        </Card>
+      );
+
+      const card = screen.getByText('Test').closest('[tabindex="0"]');
+
+      const spaceEvent = new KeyboardEvent('keydown', {
+        key: ' ',
+        bubbles: true,
+        cancelable: true
+      });
+      card!.dispatchEvent(spaceEvent);
+
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not crash when onClick is undefined', () => {
+      render(
+        <Card tabIndex={0}>
+          <CardHeader><CardTitle>No Handler</CardTitle></CardHeader>
+        </Card>
+      );
+
+      const card = screen.getByText('No Handler').closest('[tabindex="0"]');
+
+      expect(() => {
+        card!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      }).not.toThrow();
+    });
+  });
+
   // ==================== Performance Tests ====================
 
   describe('Performance', () => {
@@ -402,6 +494,362 @@ describe('Card Component', () => {
       }
 
       expect(screen.getByText('Content 10')).toBeInTheDocument();
+    });
+  });
+
+  // ==================== Edge Cases - Enhanced ====================
+
+  describe('Edge Cases - Enhanced', () => {
+    it('should render empty card gracefully', () => {
+      render(<Card data-testid="empty-card" />);
+      expect(screen.getByTestId('empty-card')).toBeInTheDocument();
+      expect(screen.getByTestId('empty-card')).toBeEmptyDOMElement();
+    });
+
+    it('should handle deeply nested components', () => {
+      render(
+        <Card>
+          <CardHeader>
+            <CardTitle>Level 1</CardTitle>
+            <CardDescription>
+              <Card variant="teal">
+                <CardHeader>
+                  <CardTitle>Level 2 (Nested)</CardTitle>
+                </CardHeader>
+              </Card>
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      );
+
+      expect(screen.getByText('Level 1')).toBeInTheDocument();
+      expect(screen.getByText('Level 2 (Nested)')).toBeInTheDocument();
+    });
+
+    it('should handle rapid hover state changes', () => {
+      const { rerender } = render(<Card hover={true}>Test</Card>);
+
+      for (let i = 0; i < 100; i++) {
+        rerender(<Card hover={i % 2 === 0}>Test</Card>);
+      }
+
+      expect(screen.getByText('Test')).toBeInTheDocument();
+    });
+
+    it('should handle animated card with keyboard interactions', () => {
+      const handleClick = jest.fn();
+      render(
+        <Card animated onClick={handleClick} tabIndex={0}>
+          <CardContent>Animated Content</CardContent>
+        </Card>
+      );
+
+      const card = screen.getByText('Animated Content').closest('[tabindex="0"]');
+
+      // Test keyboard interaction on animated card
+      const enterEvent = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true
+      });
+      card!.dispatchEvent(enterEvent);
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should maintain ref with various interactions', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const handleClick = jest.fn();
+
+      render(
+        <Card ref={ref} onClick={handleClick} tabIndex={0} hover animated>
+          <CardContent>Ref Test</CardContent>
+        </Card>
+      );
+
+      // Verify ref is set
+      expect(ref.current).toBeInstanceOf(HTMLDivElement);
+
+      // Interact and verify ref still valid
+      ref.current!.click();
+      const enterEvent = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true
+      });
+      ref.current!.dispatchEvent(enterEvent);
+
+      expect(handleClick).toHaveBeenCalledTimes(2);
+      expect(ref.current).toBeInstanceOf(HTMLDivElement); // Still valid
+    });
+
+    it('should handle all variants with all modifiers simultaneously', () => {
+      const variants = ['default', 'teal', 'charcoal'] as const;
+
+      variants.forEach(variant => {
+        const { unmount } = render(
+          <Card
+            variant={variant}
+            hover
+            animated
+            onClick={jest.fn()}
+            className="custom-class"
+            data-testid={`card-${variant}`}
+          >
+            <CardHeader>
+              <CardTitle>Title</CardTitle>
+              <CardDescription>Description</CardDescription>
+            </CardHeader>
+            <CardContent>Content</CardContent>
+            <CardFooter>Footer</CardFooter>
+          </Card>
+        );
+
+        expect(screen.getByTestId(`card-${variant}`)).toBeInTheDocument();
+        expect(screen.getByText('Title')).toBeInTheDocument();
+
+        unmount();
+      });
+    });
+
+    it('should handle null children in subcomponents', () => {
+      render(
+        <Card data-testid="null-children-card">
+          <CardHeader>
+            <CardTitle>{null}</CardTitle>
+            <CardDescription>{undefined}</CardDescription>
+          </CardHeader>
+          <CardContent>{null}</CardContent>
+          <CardFooter>{undefined}</CardFooter>
+        </Card>
+      );
+
+      // Should render without crashing
+      const card = screen.getByTestId('null-children-card');
+      expect(card).toBeInTheDocument();
+    });
+
+    it('should handle rapid variant toggling', () => {
+      const variants = ['default', 'teal', 'charcoal'] as const;
+      const { rerender } = render(<Card variant="default">Test</Card>);
+
+      for (let i = 0; i < 100; i++) {
+        const variant = variants[i % 3];
+        rerender(<Card variant={variant}>Test</Card>);
+      }
+
+      expect(screen.getByText('Test')).toBeInTheDocument();
+    });
+
+    it('should handle animated card with all event types', async () => {
+      const handleClick = jest.fn();
+      const handleMouseEnter = jest.fn();
+      const handleMouseLeave = jest.fn();
+      const user = userEvent.setup();
+
+      render(
+        <Card
+          animated
+          onClick={handleClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          tabIndex={0}
+        >
+          <CardContent>Interactive Animated</CardContent>
+        </Card>
+      );
+
+      const card = screen.getByText('Interactive Animated').closest('[tabindex="0"]');
+
+      // Test all interactions
+      await user.hover(card!);
+      expect(handleMouseEnter).toHaveBeenCalledTimes(1);
+
+      await user.unhover(card!);
+      expect(handleMouseLeave).toHaveBeenCalledTimes(1);
+
+      await user.click(card!);
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should preserve className when animated', () => {
+      render(
+        <Card animated className="custom-animated-class" data-testid="animated-class-card">
+          <CardContent>Test</CardContent>
+        </Card>
+      );
+
+      const card = screen.getByTestId('animated-class-card');
+      expect(card).toHaveClass('custom-animated-class');
+    });
+
+    it('should handle extremely long content in all subcomponents', () => {
+      const longText = 'Lorem ipsum '.repeat(200);
+
+      render(
+        <Card data-testid="long-content-card">
+          <CardHeader>
+            <CardTitle>{longText}</CardTitle>
+            <CardDescription>{longText}</CardDescription>
+          </CardHeader>
+          <CardContent>{longText}</CardContent>
+          <CardFooter>{longText}</CardFooter>
+        </Card>
+      );
+
+      // Should render without crashing
+      const card = screen.getByTestId('long-content-card');
+      expect(card).toBeInTheDocument();
+      expect(card.textContent).toContain('Lorem ipsum');
+    });
+
+    it('should handle special characters in all subcomponents', () => {
+      const specialChars = '<script>alert("XSS")</script>';
+
+      render(
+        <Card>
+          <CardHeader>
+            <CardTitle>{specialChars}</CardTitle>
+            <CardDescription>{specialChars}</CardDescription>
+          </CardHeader>
+          <CardContent>{specialChars}</CardContent>
+          <CardFooter>{specialChars}</CardFooter>
+        </Card>
+      );
+
+      // Should render as text, not execute
+      const elements = screen.getAllByText(specialChars);
+      expect(elements.length).toBe(4);
+
+      // Verify no script execution
+      elements.forEach(element => {
+        expect(element.querySelector('script')).toBeNull();
+      });
+    });
+
+    it('should handle concurrent keyboard events on interactive card', () => {
+      const handleClick = jest.fn();
+
+      render(
+        <Card onClick={handleClick} tabIndex={0}>
+          <CardContent>Test</CardContent>
+        </Card>
+      );
+
+      const card = screen.getByText('Test').closest('[tabindex="0"]');
+
+      // Rapidly press keys
+      for (let i = 0; i < 20; i++) {
+        const key = i % 2 === 0 ? 'Enter' : ' ';
+        const event = new KeyboardEvent('keydown', {
+          key,
+          bubbles: true,
+          cancelable: true
+        });
+        card!.dispatchEvent(event);
+      }
+
+      expect(handleClick).toHaveBeenCalledTimes(20);
+    });
+
+    it('should handle all aria attributes with animated card', () => {
+      render(
+        <Card
+          animated
+          role="article"
+          aria-label="Test Article"
+          aria-describedby="description"
+          aria-live="polite"
+          data-testid="aria-card"
+        >
+          <CardContent id="description">Content</CardContent>
+        </Card>
+      );
+
+      const card = screen.getByTestId('aria-card');
+      expect(card).toHaveAttribute('role', 'article');
+      expect(card).toHaveAttribute('aria-label', 'Test Article');
+      expect(card).toHaveAttribute('aria-describedby', 'description');
+      expect(card).toHaveAttribute('aria-live', 'polite');
+    });
+
+    it('should handle transition from non-animated to animated', () => {
+      const { rerender } = render(
+        <Card data-testid="transition-card">
+          <CardContent>Test</CardContent>
+        </Card>
+      );
+
+      expect(screen.getByTestId('transition-card')).toBeInTheDocument();
+
+      rerender(
+        <Card animated data-testid="transition-card">
+          <CardContent>Test</CardContent>
+        </Card>
+      );
+
+      expect(screen.getByTestId('transition-card')).toBeInTheDocument();
+    });
+
+    it('should handle multiple refs on nested cards', () => {
+      const parentRef = React.createRef<HTMLDivElement>();
+      const childRef = React.createRef<HTMLDivElement>();
+
+      render(
+        <Card ref={parentRef} data-testid="parent">
+          <CardContent>
+            <Card ref={childRef} data-testid="child">
+              <CardContent>Nested</CardContent>
+            </Card>
+          </CardContent>
+        </Card>
+      );
+
+      expect(parentRef.current).toBeInstanceOf(HTMLDivElement);
+      expect(childRef.current).toBeInstanceOf(HTMLDivElement);
+      expect(parentRef.current).not.toBe(childRef.current);
+    });
+
+    it('should handle all props combinations with hover and animated', () => {
+      const handleClick = jest.fn();
+
+      render(
+        <Card
+          variant="teal"
+          hover
+          animated
+          onClick={handleClick}
+          className="custom-combo"
+          role="region"
+          aria-label="Combo Card"
+          tabIndex={0}
+          data-testid="combo-card"
+        >
+          <CardHeader>
+            <CardTitle>Combo Title</CardTitle>
+            <CardDescription>Combo Description</CardDescription>
+          </CardHeader>
+          <CardContent>Combo Content</CardContent>
+          <CardFooter>Combo Footer</CardFooter>
+        </Card>
+      );
+
+      const card = screen.getByTestId('combo-card');
+
+      // Verify all props applied
+      expect(card).toHaveClass('custom-combo');
+      expect(card).toHaveAttribute('role', 'region');
+      expect(card).toHaveAttribute('aria-label', 'Combo Card');
+      expect(card).toHaveAttribute('tabIndex', '0');
+
+      // Verify content
+      expect(screen.getByText('Combo Title')).toBeInTheDocument();
+      expect(screen.getByText('Combo Description')).toBeInTheDocument();
+      expect(screen.getByText('Combo Content')).toBeInTheDocument();
+      expect(screen.getByText('Combo Footer')).toBeInTheDocument();
+
+      // Verify interaction
+      card.click();
+      expect(handleClick).toHaveBeenCalledTimes(1);
     });
   });
 });

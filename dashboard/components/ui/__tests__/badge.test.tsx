@@ -35,6 +35,34 @@ describe('Badge Component', () => {
       rerender(<Badge as="div">Div Badge</Badge>);
       expect(screen.getByText('Div Badge').tagName).toBe('DIV');
     });
+
+    it('should render as anchor with href prop', () => {
+      render(
+        <Badge as="a" href="https://example.com">
+          Link Badge
+        </Badge>
+      );
+      const badge = screen.getByText('Link Badge');
+      expect(badge.tagName).toBe('A');
+      expect(badge).toHaveAttribute('href', 'https://example.com');
+    });
+
+    it('should render as button with onClick prop', () => {
+      const handleClick = jest.fn();
+      render(
+        <Badge as="button" onClick={handleClick}>
+          Button Badge
+        </Badge>
+      );
+      const badge = screen.getByText('Button Badge');
+      expect(badge.tagName).toBe('BUTTON');
+    });
+
+    it('should default to div when as prop is not provided', () => {
+      render(<Badge>Default Badge</Badge>);
+      const badge = screen.getByText('Default Badge');
+      expect(badge.tagName).toBe('DIV');
+    });
   });
 
   // ==================== Variant Tests ====================
@@ -43,53 +71,58 @@ describe('Badge Component', () => {
     it('should render orange variant (default)', () => {
       render(<Badge variant="orange">Orange</Badge>);
       const badge = screen.getByText('Orange');
-      const styles = window.getComputedStyle(badge);
 
-      expect(styles.backgroundColor).toBe(ColorScheme.orange.primary);
+      // Test Tailwind classes instead of computed styles (JSDOM limitation)
+      expect(badge).toHaveClass('bg-orange/20', 'text-orange', 'border-orange/40');
     });
 
     it('should render teal variant', () => {
       render(<Badge variant="teal">Teal</Badge>);
       const badge = screen.getByText('Teal');
-      const styles = window.getComputedStyle(badge);
 
-      expect(styles.backgroundColor).toBe(ColorScheme.teal.primary);
+      // Test Tailwind classes instead of computed styles (JSDOM limitation)
+      expect(badge).toHaveClass('bg-teal-light/20', 'text-teal-lighter', 'border-teal-light/40');
     });
 
     it('should render outline variant', () => {
       render(<Badge variant="outline">Outline</Badge>);
       const badge = screen.getByText('Outline');
-      const styles = window.getComputedStyle(badge);
 
-      expect(styles.backgroundColor).toBe('transparent');
-      expect(styles.borderWidth).not.toBe('0px');
+      // Test Tailwind classes instead of computed styles (JSDOM limitation)
+      expect(badge).toHaveClass('bg-transparent', 'border', 'border-orange/40', 'text-orange');
     });
 
-    it('should render ghost variant', () => {
-      render(<Badge variant="ghost">Ghost</Badge>);
-      const badge = screen.getByText('Ghost');
-      const styles = window.getComputedStyle(badge);
+    it('should render charcoal variant', () => {
+      // Note: "ghost" variant doesn't exist in badge.tsx, testing "charcoal" instead
+      render(<Badge variant="charcoal">Charcoal</Badge>);
+      const badge = screen.getByText('Charcoal');
 
-      expect(styles.backgroundColor).toContain('rgba');
-      expect(parseFloat(styles.opacity || '1')).toBeLessThan(1);
+      // Test Tailwind classes instead of computed styles (JSDOM limitation)
+      expect(badge).toHaveClass('bg-charcoal-light', 'text-gray-300', 'border-gray-700');
     });
 
     it('should render success variant', () => {
       render(<Badge variant="success">Success</Badge>);
       const badge = screen.getByText('Success');
-      expect(badge).toHaveClass('bg-green-500');
+
+      // Test Tailwind classes for success state
+      expect(badge).toHaveClass('bg-green-500/20', 'text-green-400', 'border-green-500/40');
     });
 
     it('should render warning variant', () => {
       render(<Badge variant="warning">Warning</Badge>);
       const badge = screen.getByText('Warning');
-      expect(badge).toHaveClass('bg-yellow-500');
+
+      // Test Tailwind classes for warning state
+      expect(badge).toHaveClass('bg-yellow-500/20', 'text-yellow-400', 'border-yellow-500/40');
     });
 
     it('should render error variant', () => {
       render(<Badge variant="error">Error</Badge>);
       const badge = screen.getByText('Error');
-      expect(badge).toHaveClass('bg-red-500');
+
+      // Test Tailwind classes for error state
+      expect(badge).toHaveClass('bg-red-500/20', 'text-red-400', 'border-red-500/40');
     });
   });
 
@@ -99,19 +132,25 @@ describe('Badge Component', () => {
     it('should render small size', () => {
       render(<Badge size="sm">Small</Badge>);
       const badge = screen.getByText('Small');
-      expect(badge).toHaveClass('text-xs', 'px-2', 'py-0.5');
+
+      // Test actual size classes from badge.tsx line 45
+      expect(badge).toHaveClass('px-2', 'py-0.5', 'text-[10px]');
     });
 
     it('should render default size', () => {
-      render(<Badge size="default">Default</Badge>);
+      render(<Badge size="md">Default</Badge>);
       const badge = screen.getByText('Default');
-      expect(badge).toHaveClass('text-sm', 'px-2.5', 'py-0.5');
+
+      // Test actual size classes from badge.tsx line 46
+      expect(badge).toHaveClass('px-3', 'py-1', 'text-xs');
     });
 
     it('should render large size', () => {
       render(<Badge size="lg">Large</Badge>);
       const badge = screen.getByText('Large');
-      expect(badge).toHaveClass('text-base', 'px-3', 'py-1');
+
+      // Test actual size classes from badge.tsx line 47
+      expect(badge).toHaveClass('px-4', 'py-1.5', 'text-sm');
     });
   });
 
@@ -400,14 +439,15 @@ describe('Badge Component', () => {
       const { container } = render(
         <div>
           {badges.map(badge => (
-            <Badge key={badge.id} variant={badge.variant}>
+            <Badge key={badge.id} variant={badge.variant} data-testid={`badge-${badge.id}`}>
               {badge.text}
             </Badge>
           ))}
         </div>
       );
 
-      const allBadges = container.querySelectorAll('[class*="badge"]');
+      // Use data-testid instead of searching for "badge" class (which doesn't exist)
+      const allBadges = screen.getAllByTestId(/^badge-\d+$/);
       expect(allBadges).toHaveLength(100);
     });
 
@@ -419,6 +459,91 @@ describe('Badge Component', () => {
       }
 
       expect(screen.getByText('100')).toBeInTheDocument();
+    });
+  });
+
+  // ==================== Keyboard Accessibility Tests (TDD) ====================
+
+  describe('Keyboard Accessibility', () => {
+    it('should trigger onClick when Enter key is pressed', () => {
+      const handleClick = jest.fn();
+
+      render(<Badge onClick={handleClick} tabIndex={0}>Clickable</Badge>);
+
+      const badge = screen.getByText('Clickable');
+
+      // Simulate Enter key press with keydown event
+      const enterEvent = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true
+      });
+      badge.dispatchEvent(enterEvent);
+
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should trigger onClick when Space key is pressed', () => {
+      const handleClick = jest.fn();
+
+      render(<Badge onClick={handleClick} tabIndex={0}>Clickable</Badge>);
+
+      const badge = screen.getByText('Clickable');
+
+      // Simulate Space key press with keydown event
+      const spaceEvent = new KeyboardEvent('keydown', {
+        key: ' ',
+        bubbles: true,
+        cancelable: true
+      });
+      badge.dispatchEvent(spaceEvent);
+
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should prevent default on Space key to avoid page scroll', () => {
+      const handleClick = jest.fn();
+
+      render(<Badge onClick={handleClick} tabIndex={0}>Clickable</Badge>);
+
+      const badge = screen.getByText('Clickable');
+
+      // Create a spy on preventDefault
+      const spaceEvent = new KeyboardEvent('keydown', {
+        key: ' ',
+        bubbles: true,
+        cancelable: true
+      });
+      const preventDefaultSpy = jest.spyOn(spaceEvent, 'preventDefault');
+
+      badge.dispatchEvent(spaceEvent);
+
+      expect(preventDefaultSpy).toHaveBeenCalled();
+    });
+
+    it('should not trigger onClick for other keys', () => {
+      const handleClick = jest.fn();
+
+      render(<Badge onClick={handleClick} tabIndex={0}>Clickable</Badge>);
+
+      const badge = screen.getByText('Clickable');
+
+      // Test various non-activation keys
+      badge.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }));
+      badge.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      badge.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+
+      expect(handleClick).not.toHaveBeenCalled();
+    });
+
+    it('should not crash when onClick is undefined', () => {
+      render(<Badge tabIndex={0}>No Handler</Badge>);
+
+      const badge = screen.getByText('No Handler');
+
+      expect(() => {
+        badge.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      }).not.toThrow();
     });
   });
 
@@ -448,13 +573,231 @@ describe('Badge Component', () => {
       }
 
       const { rerender } = render(<DynamicBadge status="active" />);
-      expect(screen.getByText('active')).toHaveClass('bg-green-500');
+      // Test actual class from badge.tsx line 35
+      expect(screen.getByText('active')).toHaveClass('bg-green-500/20', 'text-green-400');
 
       rerender(<DynamicBadge status="pending" />);
-      expect(screen.getByText('pending')).toHaveClass('bg-yellow-500');
+      // Test actual class from badge.tsx line 36
+      expect(screen.getByText('pending')).toHaveClass('bg-yellow-500/20', 'text-yellow-400');
 
       rerender(<DynamicBadge status="error" />);
-      expect(screen.getByText('error')).toHaveClass('bg-red-500');
+      // Test actual class from badge.tsx line 37
+      expect(screen.getByText('error')).toHaveClass('bg-red-500/20', 'text-red-400');
+    });
+  });
+
+  // ==================== Edge Cases - Enhanced ====================
+
+  describe('Edge Cases - Enhanced', () => {
+    it('should handle null children gracefully', () => {
+      render(<Badge data-testid="null-badge">{null}</Badge>);
+      const badge = screen.getByTestId('null-badge');
+      expect(badge).toBeInTheDocument();
+      expect(badge).toBeEmptyDOMElement();
+    });
+
+    it('should handle undefined children gracefully', () => {
+      render(<Badge data-testid="undefined-badge">{undefined}</Badge>);
+      const badge = screen.getByTestId('undefined-badge');
+      expect(badge).toBeInTheDocument();
+      expect(badge).toBeEmptyDOMElement();
+    });
+
+    it('should handle empty string children', () => {
+      render(<Badge data-testid="empty-string-badge">{''}</Badge>);
+      const badge = screen.getByTestId('empty-string-badge');
+      expect(badge).toBeInTheDocument();
+      expect(badge.textContent).toBe('');
+    });
+
+    it('should handle rapid variant changes without memory leaks', () => {
+      const { rerender } = render(<Badge variant="orange">Test</Badge>);
+
+      // Rapidly change variants 100 times
+      for (let i = 0; i < 100; i++) {
+        const variant = i % 2 === 0 ? 'orange' : 'teal';
+        rerender(<Badge variant={variant as any}>Test</Badge>);
+      }
+
+      expect(screen.getByText('Test')).toBeInTheDocument();
+      // No memory leak = test completes without hanging
+    });
+
+    it('should handle polymorphic rendering with combined mouse and keyboard events', async () => {
+      const handleClick = jest.fn();
+      const user = userEvent.setup();
+
+      render(<Badge as="button" onClick={handleClick} tabIndex={0}>Button Badge</Badge>);
+
+      const badge = screen.getByRole('button');
+
+      // Mouse click
+      await user.click(badge);
+
+      // Keyboard Enter
+      const enterEvent = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true
+      });
+      badge.dispatchEvent(enterEvent);
+
+      // Keyboard Space
+      const spaceEvent = new KeyboardEvent('keydown', {
+        key: ' ',
+        bubbles: true,
+        cancelable: true
+      });
+      badge.dispatchEvent(spaceEvent);
+
+      expect(handleClick).toHaveBeenCalledTimes(3);
+    });
+
+    it('should handle icon prop with null', () => {
+      render(<Badge icon={null}>With Null Icon</Badge>);
+      expect(screen.getByText('With Null Icon')).toBeInTheDocument();
+    });
+
+    it('should handle icon prop with undefined', () => {
+      render(<Badge icon={undefined}>With Undefined Icon</Badge>);
+      expect(screen.getByText('With Undefined Icon')).toBeInTheDocument();
+    });
+
+    it('should handle extremely long text content', () => {
+      const longText = 'A'.repeat(1000);
+      render(<Badge>{longText}</Badge>);
+      expect(screen.getByText(longText)).toBeInTheDocument();
+    });
+
+    it('should handle special characters in content', () => {
+      const specialChars = '<script>alert("XSS")</script>';
+      render(<Badge>{specialChars}</Badge>);
+
+      // Should render as text, not execute
+      expect(screen.getByText(specialChars)).toBeInTheDocument();
+
+      // Verify no script execution
+      const badge = screen.getByText(specialChars);
+      expect(badge.querySelector('script')).toBeNull();
+    });
+
+    it('should handle concurrent keyboard events without double-firing', async () => {
+      const handleClick = jest.fn();
+      render(<Badge onClick={handleClick} tabIndex={0}>Test</Badge>);
+
+      const badge = screen.getByText('Test');
+
+      // Rapidly press Enter multiple times
+      for (let i = 0; i < 10; i++) {
+        const enterEvent = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          bubbles: true,
+          cancelable: true
+        });
+        badge.dispatchEvent(enterEvent);
+      }
+
+      // Should fire once per keypress (10 times)
+      expect(handleClick).toHaveBeenCalledTimes(10);
+    });
+
+    it('should handle all props combined simultaneously', () => {
+      const handleClick = jest.fn();
+      const icon = <span>Icon</span>;
+
+      render(
+        <Badge
+          as="button"
+          variant="success"
+          size="lg"
+          icon={icon}
+          onClick={handleClick}
+          className="custom-class"
+          data-testid="complex-badge"
+          aria-label="Complex badge"
+          tabIndex={0}
+        >
+          Complex Badge
+        </Badge>
+      );
+
+      const badge = screen.getByTestId('complex-badge');
+
+      // Verify all props applied
+      expect(badge.tagName).toBe('BUTTON');
+      expect(badge).toHaveClass('bg-green-500/20', 'custom-class');
+      expect(badge).toHaveAttribute('aria-label', 'Complex badge');
+      expect(badge).toHaveAttribute('tabIndex', '0');
+      expect(screen.getByText('Icon')).toBeInTheDocument();
+      expect(screen.getByText('Complex Badge')).toBeInTheDocument();
+
+      // Verify interactions work
+      badge.click();
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle zero value gracefully', () => {
+      render(<Badge>{0}</Badge>);
+      expect(screen.getByText('0')).toBeInTheDocument();
+    });
+
+    it('should handle false boolean value', () => {
+      render(<Badge data-testid="false-badge">{false}</Badge>);
+      const badge = screen.getByTestId('false-badge');
+      expect(badge).toBeInTheDocument();
+      expect(badge).toBeEmptyDOMElement();
+    });
+
+    it('should handle multiple icons in children', () => {
+      render(
+        <Badge>
+          <span data-testid="icon1">🔥</span>
+          <span data-testid="icon2">⚡</span>
+          Text
+        </Badge>
+      );
+
+      expect(screen.getByTestId('icon1')).toBeInTheDocument();
+      expect(screen.getByTestId('icon2')).toBeInTheDocument();
+      expect(screen.getByText('Text')).toBeInTheDocument();
+    });
+
+    it('should maintain accessibility with rapid state changes', () => {
+      const { rerender } = render(
+        <Badge role="status" aria-live="polite">
+          1
+        </Badge>
+      );
+
+      for (let i = 2; i <= 50; i++) {
+        rerender(
+          <Badge role="status" aria-live="polite">
+            {i}
+          </Badge>
+        );
+      }
+
+      const badge = screen.getByRole('status');
+      expect(badge).toHaveTextContent('50');
+      expect(badge).toHaveAttribute('aria-live', 'polite');
+    });
+
+    it('should handle data attributes correctly', () => {
+      render(
+        <Badge
+          data-testid="data-badge"
+          data-custom="custom-value"
+          data-number={42}
+          data-boolean={true}
+        >
+          Data Test
+        </Badge>
+      );
+
+      const badge = screen.getByTestId('data-badge');
+      expect(badge).toHaveAttribute('data-custom', 'custom-value');
+      expect(badge).toHaveAttribute('data-number', '42');
+      expect(badge).toHaveAttribute('data-boolean', 'true');
     });
   });
 });

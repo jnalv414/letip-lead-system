@@ -89,7 +89,7 @@ export function TopBusinessesList() {
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg font-medium">Top Businesses</CardTitle>
-          <button className="px-4 py-1 rounded-full text-sm font-medium bg-orange text-white hover:bg-orange-dark transition-colors duration-200">
+          <button className="px-4 py-1 rounded-full text-sm font-medium bg-teal-light text-white hover:bg-teal transition-colors duration-200">
             View All
           </button>
         </div>
@@ -102,7 +102,7 @@ export function TopBusinessesList() {
             Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="flex items-center gap-4 bg-charcoal-light p-4 rounded-2xl border border-orange/10 animate-pulse"
+                className="flex items-center gap-4 bg-charcoal-light p-4 rounded-2xl border border-teal-light/10 animate-pulse"
               >
                 <div className="w-12 h-12 rounded-xl bg-teal-light/20" />
                 <div className="flex-1 space-y-2">
@@ -115,22 +115,22 @@ export function TopBusinessesList() {
             businesses?.map((business, index) => (
               <motion.div
                 key={business.id}
-                className="flex items-center justify-between bg-teal-light/5 p-4 rounded-2xl border border-orange/10 hover:border-orange/30 hover:bg-teal-light/10 transition-all duration-200 cursor-pointer group"
+                className="flex items-center justify-between bg-charcoal-light/50 p-4 rounded-2xl border border-teal-light/10 hover:border-teal-light/30 hover:bg-charcoal-light transition-all duration-200 cursor-pointer group"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ x: 4 }}
               >
                 <div className="flex items-center gap-4 flex-1">
-                  {/* Rank badge (10% orange accent) */}
-                  <div className="w-12 h-12 rounded-xl bg-charcoal-light border border-orange/20 flex items-center justify-center font-bold text-xl text-gray-400 group-hover:bg-orange group-hover:text-white transition-all duration-200">
+                  {/* Rank badge (teal accent) */}
+                  <div className="w-12 h-12 rounded-xl bg-charcoal-light border border-teal-light/20 flex items-center justify-center font-bold text-xl text-gray-400 group-hover:bg-charcoal group-hover:text-white transition-all duration-200">
                     {index + 1}
                   </div>
 
                   {/* Business info */}
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium text-sm text-white group-hover:text-orange transition-colors duration-200">
+                      <p className="font-medium text-sm text-white group-hover:text-teal-lighter transition-colors duration-200">
                         {business.name}
                       </p>
                       <StatusBadge status={business.enrichment_status} size="sm" />
@@ -162,7 +162,7 @@ export function TopBusinessesList() {
 
                 {/* Chevron indicator */}
                 <svg
-                  className="w-5 h-5 text-gray-600 group-hover:text-orange transition-colors duration-200"
+                  className="w-5 h-5 text-gray-600 group-hover:text-teal-lighter transition-colors duration-200"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -177,7 +177,7 @@ export function TopBusinessesList() {
         {/* Footer stats */}
         {!isLoading && businesses && (
           <motion.div
-            className="mt-6 pt-4 border-t border-orange/10 flex justify-between items-center"
+            className="mt-6 pt-4 border-t border-teal-light/10 flex justify-between items-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
