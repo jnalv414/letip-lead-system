@@ -1,0 +1,100 @@
+[31m[Nest] 7632  - [39m11/21/2025, 6:58:33 PM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39mPathError [TypeError]: Missing parameter name at index 7: /api(.*); visit https://git.new/pathToRegexpError for info
+    at name (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:225:13)
+    at parse (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:242:62)
+    at pathToRegexp (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:480:54)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/utils/is-route-excluded.util.js:7:62
+    at Array.some (<anonymous>)
+    at isRouteExcluded (/opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/utils/is-route-excluded.util.js:6:18)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/loaders/express.loader.js:94:66
+    at Layer.handleError (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:116:17)
+    at trimPrefix (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:340:13)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:297:9
+    at processParams (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:582:12)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:291:5)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:132:14)
+    at Layer.handleRequest (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:165:5)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:157:13)
+    at Route.dispatch (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:117:3)
+    at handle (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:435:11)
+    at Layer.handleRequest (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:152:17)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:295:15
+    at param (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:600:14)
+    at param (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:610:14)
+    at processParams (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:664:3) {
+  originalPath: [32m'/api(.*)'[39m
+}
+[31m[Nest] 7632  - [39m11/21/2025, 6:58:33 PM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39mPathError [TypeError]: Missing parameter name at index 7: /api(.*); visit https://git.new/pathToRegexpError for info
+    at name (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:225:13)
+    at parse (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:242:62)
+    at pathToRegexp (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:480:54)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/utils/is-route-excluded.util.js:7:62
+    at Array.some (<anonymous>)
+    at isRouteExcluded (/opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/utils/is-route-excluded.util.js:6:18)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/loaders/express.loader.js:94:66
+    at Layer.handleError (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:116:17)
+    at trimPrefix (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:340:13)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:297:9
+    at processParams (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:582:12)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:291:5)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:132:14)
+    at Layer.handleRequest (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:165:5)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:157:13)
+    at Route.dispatch (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:117:3)
+    at handle (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:435:11)
+    at Layer.handleRequest (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:152:17)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:295:15
+    at param (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:600:14)
+    at param (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:610:14)
+    at processParams (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:664:3) {
+  originalPath: [32m'/api(.*)'[39m
+}
+[31m[Nest] 7632  - [39m11/21/2025, 6:58:33 PM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39mPathError [TypeError]: Missing parameter name at index 7: /api(.*); visit https://git.new/pathToRegexpError for info
+    at name (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:225:13)
+    at parse (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:242:62)
+    at pathToRegexp (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:480:54)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/utils/is-route-excluded.util.js:7:62
+    at Array.some (<anonymous>)
+    at isRouteExcluded (/opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/utils/is-route-excluded.util.js:6:18)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/loaders/express.loader.js:94:66
+    at Layer.handleError (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:116:17)
+    at trimPrefix (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:340:13)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:297:9
+    at processParams (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:582:12)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:291:5)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:132:14)
+    at Layer.handleRequest (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:165:5)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:157:13)
+    at Route.dispatch (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:117:3)
+    at handle (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:435:11)
+    at Layer.handleRequest (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:152:17)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:295:15
+    at param (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:600:14)
+    at param (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:610:14)
+    at processParams (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:664:3) {
+  originalPath: [32m'/api(.*)'[39m
+}
+[31m[Nest] 7632  - [39m11/21/2025, 6:58:33 PM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39mPathError [TypeError]: Missing parameter name at index 7: /api(.*); visit https://git.new/pathToRegexpError for info
+    at name (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:225:13)
+    at parse (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:242:62)
+    at pathToRegexp (/opt/hostedapp/node/root/nodejs/node_modules/[4mpath-to-regexp[24m/src/index.ts:480:54)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/utils/is-route-excluded.util.js:7:62
+    at Array.some (<anonymous>)
+    at isRouteExcluded (/opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/utils/is-route-excluded.util.js:6:18)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/serve-static/dist/loaders/express.loader.js:94:66
+    at Layer.handleError (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:116:17)
+    at trimPrefix (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:340:13)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:297:9
+    at processParams (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:582:12)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:291:5)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:132:14)
+    at Layer.handleRequest (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:165:5)
+    at next (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:157:13)
+    at Route.dispatch (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/route.js:117:3)
+    at handle (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:435:11)
+    at Layer.handleRequest (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/lib/layer.js:152:17)
+    at /opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:295:15
+    at param (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:600:14)
+    at param (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:610:14)
+    at processParams (/opt/hostedapp/node/root/nodejs/node_modules/[4mrouter[24m/index.js:664:3) {
+  originalPath: [32m'/api(.*)'[39m
+}

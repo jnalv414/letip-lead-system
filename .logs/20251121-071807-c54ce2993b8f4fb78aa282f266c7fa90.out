@@ -1,0 +1,342 @@
+[2J[3J[H[[90m7:18:08 AM[0m] Starting compilation in watch mode...
+
+[[90m7:18:11 AM[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 2432  - [39m11/21/2025, 7:18:12 AM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[2J[3J[H[[90m8:03:09 AM[0m] File change detected. Starting incremental compilation...
+
+[96msrc/businesses/businesses.service.ts[0m:[93m121[0m:[93m21[0m - [91merror[0m[90m TS2551: [0mProperty 'outreachMessage' does not exist on type 'PrismaService'. Did you mean 'outreach_message'?
+
+[7m121[0m         this.prisma.outreachMessage.count({ where: { status: 'sent' } }),
+[7m   [0m [91m                    ~~~~~~~~~~~~~~~[0m
+
+  [96m../../../../opt/hostedapp/node/root/nodejs/node_modules/.prisma/client/index.d.ts[0m:[93m198[0m:[93m7[0m
+    [7m198[0m   get outreach_message(): Prisma.outreach_messageDelegate<ExtArgs>;
+    [7m   [0m [96m      ~~~~~~~~~~~~~~~~[0m
+    'outreach_message' is declared here.
+
+[96msrc/businesses/businesses.service.ts[0m:[93m122[0m:[93m21[0m - [91merror[0m[90m TS2551: [0mProperty 'outreachMessage' does not exist on type 'PrismaService'. Did you mean 'outreach_message'?
+
+[7m122[0m         this.prisma.outreachMessage.count({ where: { status: 'draft' } }),
+[7m   [0m [91m                    ~~~~~~~~~~~~~~~[0m
+
+  [96m../../../../opt/hostedapp/node/root/nodejs/node_modules/.prisma/client/index.d.ts[0m:[93m198[0m:[93m7[0m
+    [7m198[0m   get outreach_message(): Prisma.outreach_messageDelegate<ExtArgs>;
+    [7m   [0m [96m      ~~~~~~~~~~~~~~~~[0m
+    'outreach_message' is declared here.
+
+[96msrc/telegram/telegram.service.ts[0m:[93m138[0m:[93m29[0m - [91merror[0m[90m TS2339: [0mProperty 'total' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m138[0m • Total Businesses: ${stats.total}
+[7m   [0m [91m                            ~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m21[0m - [91merror[0m[90m TS2339: [0mProperty 'enriched' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                    ~~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m40[0m - [91merror[0m[90m TS2339: [0mProperty 'total' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                                       ~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m70[0m - [91merror[0m[90m TS2339: [0mProperty 'enriched' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                                                                     ~~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m87[0m - [91merror[0m[90m TS2339: [0mProperty 'total' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                                                                                      ~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m140[0m:[93m20[0m - [91merror[0m[90m TS2339: [0mProperty 'pending' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m140[0m • Pending: ${stats.pending}
+[7m   [0m [91m                   ~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m141[0m:[93m19[0m - [91merror[0m[90m TS2339: [0mProperty 'failed' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m141[0m • Failed: ${stats.failed}
+[7m   [0m [91m                  ~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m144[0m:[93m9[0m - [91merror[0m[90m TS2339: [0mProperty 'byCity' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m144[0m ${stats.byCity.slice(0, 5).map((c, i) => `${i + 1}. ${c.city || 'Unknown'}: ${c.count}`).join('\n')}
+[7m   [0m [91m        ~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m144[0m:[93m33[0m - [91merror[0m[90m TS7006: [0mParameter 'c' implicitly has an 'any' type.
+
+[7m144[0m ${stats.byCity.slice(0, 5).map((c, i) => `${i + 1}. ${c.city || 'Unknown'}: ${c.count}`).join('\n')}
+[7m   [0m [91m                                ~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m144[0m:[93m36[0m - [91merror[0m[90m TS7006: [0mParameter 'i' implicitly has an 'any' type.
+
+[7m144[0m ${stats.byCity.slice(0, 5).map((c, i) => `${i + 1}. ${c.city || 'Unknown'}: ${c.count}`).join('\n')}
+[7m   [0m [91m                                   ~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m147[0m:[93m9[0m - [91merror[0m[90m TS2339: [0mProperty 'byIndustry' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m147[0m ${stats.byIndustry.slice(0, 5).map((i, idx) => `${idx + 1}. ${i.industry || 'Unknown'}: ${i.count}`).join('\n')}
+[7m   [0m [91m        ~~~~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m147[0m:[93m37[0m - [91merror[0m[90m TS7006: [0mParameter 'i' implicitly has an 'any' type.
+
+[7m147[0m ${stats.byIndustry.slice(0, 5).map((i, idx) => `${idx + 1}. ${i.industry || 'Unknown'}: ${i.count}`).join('\n')}
+[7m   [0m [91m                                    ~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m147[0m:[93m40[0m - [91merror[0m[90m TS7006: [0mParameter 'idx' implicitly has an 'any' type.
+
+[7m147[0m ${stats.byIndustry.slice(0, 5).map((i, idx) => `${idx + 1}. ${i.industry || 'Unknown'}: ${i.count}`).join('\n')}
+[7m   [0m [91m                                       ~~~[0m
+
+[[90m8:03:10 AM[0m] Found 15 errors. Watching for file changes.
+
+[2J[3J[H[[90m8:03:15 AM[0m] File change detected. Starting incremental compilation...
+
+[96msrc/businesses/businesses.service.ts[0m:[93m121[0m:[93m21[0m - [91merror[0m[90m TS2551: [0mProperty 'outreachMessage' does not exist on type 'PrismaService'. Did you mean 'outreach_message'?
+
+[7m121[0m         this.prisma.outreachMessage.count({ where: { status: 'sent' } }),
+[7m   [0m [91m                    ~~~~~~~~~~~~~~~[0m
+
+  [96m../../../../opt/hostedapp/node/root/nodejs/node_modules/.prisma/client/index.d.ts[0m:[93m198[0m:[93m7[0m
+    [7m198[0m   get outreach_message(): Prisma.outreach_messageDelegate<ExtArgs>;
+    [7m   [0m [96m      ~~~~~~~~~~~~~~~~[0m
+    'outreach_message' is declared here.
+
+[96msrc/businesses/businesses.service.ts[0m:[93m122[0m:[93m21[0m - [91merror[0m[90m TS2551: [0mProperty 'outreachMessage' does not exist on type 'PrismaService'. Did you mean 'outreach_message'?
+
+[7m122[0m         this.prisma.outreachMessage.count({ where: { status: 'draft' } }),
+[7m   [0m [91m                    ~~~~~~~~~~~~~~~[0m
+
+  [96m../../../../opt/hostedapp/node/root/nodejs/node_modules/.prisma/client/index.d.ts[0m:[93m198[0m:[93m7[0m
+    [7m198[0m   get outreach_message(): Prisma.outreach_messageDelegate<ExtArgs>;
+    [7m   [0m [96m      ~~~~~~~~~~~~~~~~[0m
+    'outreach_message' is declared here.
+
+[96msrc/telegram/telegram.service.ts[0m:[93m138[0m:[93m29[0m - [91merror[0m[90m TS2339: [0mProperty 'total' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m138[0m • Total Businesses: ${stats.total}
+[7m   [0m [91m                            ~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m21[0m - [91merror[0m[90m TS2339: [0mProperty 'enriched' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                    ~~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m40[0m - [91merror[0m[90m TS2339: [0mProperty 'total' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                                       ~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m70[0m - [91merror[0m[90m TS2339: [0mProperty 'enriched' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                                                                     ~~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m87[0m - [91merror[0m[90m TS2339: [0mProperty 'total' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                                                                                      ~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m140[0m:[93m20[0m - [91merror[0m[90m TS2339: [0mProperty 'pending' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m140[0m • Pending: ${stats.pending}
+[7m   [0m [91m                   ~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m141[0m:[93m19[0m - [91merror[0m[90m TS2339: [0mProperty 'failed' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m141[0m • Failed: ${stats.failed}
+[7m   [0m [91m                  ~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m144[0m:[93m9[0m - [91merror[0m[90m TS2339: [0mProperty 'byCity' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m144[0m ${stats.byCity.slice(0, 5).map((c, i) => `${i + 1}. ${c.city || 'Unknown'}: ${c.count}`).join('\n')}
+[7m   [0m [91m        ~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m144[0m:[93m33[0m - [91merror[0m[90m TS7006: [0mParameter 'c' implicitly has an 'any' type.
+
+[7m144[0m ${stats.byCity.slice(0, 5).map((c, i) => `${i + 1}. ${c.city || 'Unknown'}: ${c.count}`).join('\n')}
+[7m   [0m [91m                                ~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m144[0m:[93m36[0m - [91merror[0m[90m TS7006: [0mParameter 'i' implicitly has an 'any' type.
+
+[7m144[0m ${stats.byCity.slice(0, 5).map((c, i) => `${i + 1}. ${c.city || 'Unknown'}: ${c.count}`).join('\n')}
+[7m   [0m [91m                                   ~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m147[0m:[93m9[0m - [91merror[0m[90m TS2339: [0mProperty 'byIndustry' does not exist on type '{ totalBusinesses: any; enrichedBusinesses: any; pendingEnrichment: any; totalContacts: any; messagesSent: any; messagesPending: any; }'.
+
+[7m147[0m ${stats.byIndustry.slice(0, 5).map((i, idx) => `${idx + 1}. ${i.industry || 'Unknown'}: ${i.count}`).join('\n')}
+[7m   [0m [91m        ~~~~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m147[0m:[93m37[0m - [91merror[0m[90m TS7006: [0mParameter 'i' implicitly has an 'any' type.
+
+[7m147[0m ${stats.byIndustry.slice(0, 5).map((i, idx) => `${idx + 1}. ${i.industry || 'Unknown'}: ${i.count}`).join('\n')}
+[7m   [0m [91m                                    ~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m147[0m:[93m40[0m - [91merror[0m[90m TS7006: [0mParameter 'idx' implicitly has an 'any' type.
+
+[7m147[0m ${stats.byIndustry.slice(0, 5).map((i, idx) => `${idx + 1}. ${i.industry || 'Unknown'}: ${i.count}`).join('\n')}
+[7m   [0m [91m                                       ~~~[0m
+
+[[90m8:03:15 AM[0m] Found 15 errors. Watching for file changes.
+
+[2J[3J[H[[90m8:03:30 AM[0m] File change detected. Starting incremental compilation...
+
+[96msrc/telegram/telegram.service.ts[0m:[93m138[0m:[93m29[0m - [91merror[0m[90m TS2339: [0mProperty 'total' does not exist on type '{ totalBusinesses: number; enrichedBusinesses: number; pendingEnrichment: number; totalContacts: number; messagesSent: number; messagesPending: number; }'.
+
+[7m138[0m • Total Businesses: ${stats.total}
+[7m   [0m [91m                            ~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m21[0m - [91merror[0m[90m TS2339: [0mProperty 'enriched' does not exist on type '{ totalBusinesses: number; enrichedBusinesses: number; pendingEnrichment: number; totalContacts: number; messagesSent: number; messagesPending: number; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                    ~~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m40[0m - [91merror[0m[90m TS2339: [0mProperty 'total' does not exist on type '{ totalBusinesses: number; enrichedBusinesses: number; pendingEnrichment: number; totalContacts: number; messagesSent: number; messagesPending: number; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                                       ~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m70[0m - [91merror[0m[90m TS2339: [0mProperty 'enriched' does not exist on type '{ totalBusinesses: number; enrichedBusinesses: number; pendingEnrichment: number; totalContacts: number; messagesSent: number; messagesPending: number; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                                                                     ~~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m139[0m:[93m87[0m - [91merror[0m[90m TS2339: [0mProperty 'total' does not exist on type '{ totalBusinesses: number; enrichedBusinesses: number; pendingEnrichment: number; totalContacts: number; messagesSent: number; messagesPending: number; }'.
+
+[7m139[0m • Enriched: ${stats.enriched} (${stats.total > 0 ? Math.round((stats.enriched / stats.total) * 100) : 0}%)
+[7m   [0m [91m                                                                                      ~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m140[0m:[93m20[0m - [91merror[0m[90m TS2339: [0mProperty 'pending' does not exist on type '{ totalBusinesses: number; enrichedBusinesses: number; pendingEnrichment: number; totalContacts: number; messagesSent: number; messagesPending: number; }'.
+
+[7m140[0m • Pending: ${stats.pending}
+[7m   [0m [91m                   ~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m141[0m:[93m19[0m - [91merror[0m[90m TS2339: [0mProperty 'failed' does not exist on type '{ totalBusinesses: number; enrichedBusinesses: number; pendingEnrichment: number; totalContacts: number; messagesSent: number; messagesPending: number; }'.
+
+[7m141[0m • Failed: ${stats.failed}
+[7m   [0m [91m                  ~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m144[0m:[93m9[0m - [91merror[0m[90m TS2339: [0mProperty 'byCity' does not exist on type '{ totalBusinesses: number; enrichedBusinesses: number; pendingEnrichment: number; totalContacts: number; messagesSent: number; messagesPending: number; }'.
+
+[7m144[0m ${stats.byCity.slice(0, 5).map((c, i) => `${i + 1}. ${c.city || 'Unknown'}: ${c.count}`).join('\n')}
+[7m   [0m [91m        ~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m144[0m:[93m33[0m - [91merror[0m[90m TS7006: [0mParameter 'c' implicitly has an 'any' type.
+
+[7m144[0m ${stats.byCity.slice(0, 5).map((c, i) => `${i + 1}. ${c.city || 'Unknown'}: ${c.count}`).join('\n')}
+[7m   [0m [91m                                ~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m144[0m:[93m36[0m - [91merror[0m[90m TS7006: [0mParameter 'i' implicitly has an 'any' type.
+
+[7m144[0m ${stats.byCity.slice(0, 5).map((c, i) => `${i + 1}. ${c.city || 'Unknown'}: ${c.count}`).join('\n')}
+[7m   [0m [91m                                   ~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m147[0m:[93m9[0m - [91merror[0m[90m TS2339: [0mProperty 'byIndustry' does not exist on type '{ totalBusinesses: number; enrichedBusinesses: number; pendingEnrichment: number; totalContacts: number; messagesSent: number; messagesPending: number; }'.
+
+[7m147[0m ${stats.byIndustry.slice(0, 5).map((i, idx) => `${idx + 1}. ${i.industry || 'Unknown'}: ${i.count}`).join('\n')}
+[7m   [0m [91m        ~~~~~~~~~~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m147[0m:[93m37[0m - [91merror[0m[90m TS7006: [0mParameter 'i' implicitly has an 'any' type.
+
+[7m147[0m ${stats.byIndustry.slice(0, 5).map((i, idx) => `${idx + 1}. ${i.industry || 'Unknown'}: ${i.count}`).join('\n')}
+[7m   [0m [91m                                    ~[0m
+
+[96msrc/telegram/telegram.service.ts[0m:[93m147[0m:[93m40[0m - [91merror[0m[90m TS7006: [0mParameter 'idx' implicitly has an 'any' type.
+
+[7m147[0m ${stats.byIndustry.slice(0, 5).map((i, idx) => `${idx + 1}. ${i.industry || 'Unknown'}: ${i.count}`).join('\n')}
+[7m   [0m [91m                                       ~~~[0m
+
+[[90m8:03:31 AM[0m] Found 13 errors. Watching for file changes.
+
+[2J[3J[H[[90m8:03:42 AM[0m] File change detected. Starting incremental compilation...
+
+[[90m8:03:42 AM[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +12ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[ConfigService] [39m[32mAPI secrets loaded successfully[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mScraperModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTelegramModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBusinessesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOutreachModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mEnrichmentModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/}:[39m[38;5;3m +13ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/health, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mBusinessesController {/businesses}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/businesses, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/businesses, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/businesses/stats, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/businesses/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/businesses/:id, DELETE} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mScraperController {/api/scrape}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/scrape, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mEnrichmentController {/api/enrich}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/enrich/:id, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/enrich/batch/process, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOutreachController {/api/outreach}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/outreach/:id, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/outreach/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[PrismaService] [39m[32mConnected to database[39m
+[33m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [33m   WARN[39m [38;5;3m[ConfigService] [39m[33mSecret not found: telegram.bot_token[39m
+[33m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [33m   WARN[39m [38;5;3m[TelegramService] [39m[33mTelegram bot token not configured. Bot will not start.[39m
+[32m[Nest] 3956  - [39m11/21/2025, 8:03:43 AM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +1ms[39m
+
+╔══════════════════════════════════════════════════════════════╗
+║  Le Tip Lead System API                                      ║
+╠══════════════════════════════════════════════════════════════╣
+║  Server running on: http://localhost:3000                    ║
+║  API Documentation: http://localhost:3000/api-docs           ║
+╚══════════════════════════════════════════════════════════════╝
+  
+[2J[3J[H[[90m8:04:36 AM[0m] File change detected. Starting incremental compilation...
+
+[[90m8:04:36 AM[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +12ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[ConfigService] [39m[32mAPI secrets loaded successfully[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mScraperModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTelegramModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBusinessesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOutreachModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mEnrichmentModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/}:[39m[38;5;3m +14ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/health, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mBusinessesController {/api/businesses}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/businesses, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/businesses, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/businesses/stats, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/businesses/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/businesses/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mScraperController {/api/scrape}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/scrape, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mEnrichmentController {/api/enrich}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/enrich/:id, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/enrich/batch/process, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOutreachController {/api/outreach}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/outreach/:id, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/outreach/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[PrismaService] [39m[32mConnected to database[39m
+[33m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [33m   WARN[39m [38;5;3m[ConfigService] [39m[33mSecret not found: telegram.bot_token[39m
+[33m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [33m   WARN[39m [38;5;3m[TelegramService] [39m[33mTelegram bot token not configured. Bot will not start.[39m
+[32m[Nest] 4243  - [39m11/21/2025, 8:04:37 AM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +1ms[39m
+
+╔══════════════════════════════════════════════════════════════╗
+║  Le Tip Lead System API                                      ║
+╠══════════════════════════════════════════════════════════════╣
+║  Server running on: http://localhost:3000                    ║
+║  API Documentation: http://localhost:3000/api-docs           ║
+╚══════════════════════════════════════════════════════════════╝
+  

@@ -1,0 +1,16 @@
+[31m[Nest] 2432  - [39m11/21/2025, 7:18:12 AM [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mUndefinedModuleException [Error]: Nest cannot create the AppModule instance.
+The module at index [6] of the AppModule "imports" array is undefined.
+
+Potential causes:
+- A circular dependency between modules. Use forwardRef() to avoid it. Read more: https://docs.nestjs.com/fundamentals/circular-dependency
+- The module at index [6] is of type "undefined". Check your import statements and the type of the module.
+
+Scope []
+    at DependenciesScanner.scanForModules (/opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/core/scanner.js:64:23)
+    at async DependenciesScanner.scan (/opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/core/scanner.js:28:9)
+    at async /opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/core/nest-factory.js:111:17
+    at async ExceptionsZone.asyncRun (/opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/core/errors/exceptions-zone.js:22:13)
+    at async NestFactoryStatic.initialize (/opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/core/nest-factory.js:110:13)
+    at async NestFactoryStatic.create (/opt/hostedapp/node/root/nodejs/node_modules/[4m@nestjs[24m/core/nest-factory.js:43:9)
+    at async bootstrap [90m(/home/ubuntu/letip_lead_system/nodejs_space/[39msrc/main.ts:8:15[90m)[39m
+Terminated
