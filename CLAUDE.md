@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Automated business lead generation, enrichment, and outreach platform for Le Tip of Western Monmouth County, New Jersey. Built with NestJS backend + Next.js 16 dashboard, PostgreSQL/Prisma, Socket.io WebSockets, Puppeteer scraping, and external API integrations (Hunter.io, AbstractAPI).
+Automated business lead generation, enrichment, and outreach platform for Le Tip of Western Monmouth County, New Jersey. Built with NestJS backend + Next.js 16 dashboard, PostgreSQL/Prisma, Socket.io WebSockets, Apify scraping, and external API integrations (Hunter.io, AbstractAPI).
 
 **Local Development:** http://localhost:3000
 
@@ -885,19 +885,23 @@ open http://localhost:3000/api-docs
 **Symptoms:** `POST /api/scrape` returns `{ found: 0, saved: 0 }`
 
 **Likely causes:**
-1. Google Maps HTML structure changed
-2. Location string not recognized
-3. Puppeteer timeout
+1. Apify actor not responding
+2. Invalid Apify API token
+3. Apify quota exceeded
+4. Location string not recognized by Google Maps actor
 
 **Debug steps:**
 ```typescript
 // Add logging to scraper.service.ts
-this.logger.debug('Navigating to Google Maps', { url: mapsUrl });
-this.logger.debug('Page loaded', { title: await page.title() });
-this.logger.debug('Found business cards', { count: businessCards.length });
+this.logger.debug('Calling Apify Google Maps Actor', { location, radius });
+this.logger.debug('Apify actor run ID', { runId });
+this.logger.debug('Found businesses', { count: results.length });
 ```
 
-**Fix:** Update DOM selectors in `src/scraper/scraper.service.ts:80-140`
+**Fix:**
+1. Check Apify API token in secrets file
+2. Verify Apify actor is correct: `apify/google-maps-scraper`
+3. Review Apify run logs in dashboard
 
 ---
 
@@ -1139,6 +1143,7 @@ When debugging this codebase:
 **Common pitfalls:**
 - Forgetting to emit WebSocket events after mutations
 - Not handling enrichment failures gracefully (no fallback)
-- Puppeteer browser not closed (memory leak)
+- Apify actor runs not monitored for completion
 - Missing `await` on async Prisma calls
 - Cascade deletes removing more data than expected
+- Apify quota exhausted without proper error handling

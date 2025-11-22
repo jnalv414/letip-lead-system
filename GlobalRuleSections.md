@@ -40,7 +40,7 @@ This document extracts the core principles and patterns from CLAUDE.md that form
 - **Framework:** NestJS with TypeScript
 - **Database:** PostgreSQL 14+ with Prisma ORM
 - **WebSockets:** Socket.io for real-time updates
-- **Scraping:** Puppeteer for Google Maps scraping
+- **Scraping:** Apify for Google Maps scraping
 - **External APIs:** Hunter.io, AbstractAPI
 - **Testing:** Jest (unit + e2e)
 
@@ -561,14 +561,18 @@ for (const item of items) {
 - Paginate large result sets
 - Use counts instead of loading all records
 
-**Puppeteer Cleanup:**
+**Apify Actor Management:**
 ```typescript
-try {
-  await page.goto(url);
-  // Scraping logic
-} finally {
-  await browser.close();  // Critical!
-}
+// Use Apify client to run actors
+const run = await apifyClient
+  .actor('apify/google-maps-scraper')
+  .call({
+    searchStringsArray: [location],
+    maxCrawledPlacesPerSearch: maxResults
+  });
+
+// Monitor run completion
+await apifyClient.run(run.id).waitForFinish();
 ```
 
 ### Frontend Performance
