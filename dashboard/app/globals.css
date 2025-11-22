@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* 60/30/10 Color Rule */
+  --color-charcoal: #1A1A1D;        /* 60% - Dominant (near black charcoal) */
+  --color-teal: #0D3B3B;            /* 30% - Secondary (deep dense teal) */
+  --color-teal-light: #145A5A;      /* Lighter teal variant */
+  --color-orange: #FF5722;          /* 10% - Accent (fiery orange) */
+  --color-orange-dark: #E64A19;     /* Darker orange variant */
+}
+
+body {
+  color: white;
+  background-color: var(--color-charcoal);
+  font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Enhanced Focus Indicators for WCAG AA */
+*:focus-visible {
+  outline: 2px solid #FF5722;
+  outline-offset: 2px;
+  border-radius: 4px;
+  transition: outline-offset 0.2s ease;
+}
+
+*:focus-visible:hover {
+  outline-offset: 4px;
+}
+
+/* Skip to content link */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only:focus {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 9999;
+  width: auto;
+  height: auto;
+  padding: 0.75rem 1.5rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  background-color: #FF5722;
+  color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  font-weight: 600;
+}
+
+/* Focus within styles for better group navigation */
+.focus-within:focus-within {
+  outline: 2px solid #FF5722;
+  outline-offset: 2px;
+}
+
+/* Custom keyboard navigation styles */
+.keyboard-navigable:focus {
+  outline: 3px solid #FF5722;
+  outline-offset: 2px;
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  *:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+
+  .sr-only:focus {
+    border: 2px solid white;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Custom Scrollbar Styles (10% Orange accent) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--color-charcoal);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-orange);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-orange-dark);
+}
+
+/* Global scrollbar for all elements */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #2A2A2E;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #FF5722;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #E64A19;
+}
+
+/* Visually hidden but screen reader accessible */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Focus trap container */
+.focus-trap {
+  position: relative;
+}
+
+.focus-trap:focus-within {
+  z-index: 10;
+}

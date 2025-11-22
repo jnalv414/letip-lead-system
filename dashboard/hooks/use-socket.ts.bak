@@ -1,0 +1,360 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { io, Socket } from 'socket.io-client';
+import { toast } from 'sonner';
+
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3000';
+
+// WebSocket event types
+interface WebSocketPayload {
+  timestamp: string;
+  type: string;
+  data: any;
+}
+
+interface BusinessPayload extends WebSocketPayload {
+  data: {
+    id: number;
+    name: string;
+    city?: string;
+    enrichment_status?: string;
+  };
+}
+
+interface ScrapingProgressPayload extends WebSocketPayload {
+  data: {
+    jobId: string;
+    progress: number;
+    found?: number;
+    processed?: number;
+  };
+}
+
+interface ScrapingCompletePayload extends WebSocketPayload {
+  data: {
+    jobId: string;
+    found: number;
+    saved: number;
+    duration?: number;
+  };
+}
+
+interface EnrichmentPayload extends WebSocketPayload {
+  data: {
+    businessId: number;
+    progress?: number;
+    error?: string;
+  };
+}
+
+export function useSocket() {
+  const queryClient = useQueryClient();
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const reconnectAttemptsRef = useRef(0);
+
+  useEffect(() => {
+    // Create socket connection with enhanced configuration
+    const socketInstance = io(WS_URL, {
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 10,
+      timeout: 20000,
+      autoConnect: true,
+    });
+
+    setSocket(socketInstance);
+
+    // Connection lifecycle events
+    socketInstance.on('connect', () => {
+      console.log('[WebSocket] Connected to server', {
+        id: socketInstance.id,
+        transport: socketInstance.io.engine.transport.name,
+      });
+
+      // Reset reconnection attempts on successful connection
+      reconnectAttemptsRef.current = 0;
+
+      // Only show toast on reconnection, not initial connection
+      if (reconnectAttemptsRef.current > 0) {
+        toast.success('Reconnected to live updates');
+      }
+    });
+
+    socketInstance.on('disconnect', (reason) => {
+      console.log('[WebSocket] Disconnected from server', { reason });
+
+      // Show different messages based on disconnect reason
+      if (reason === 'io server disconnect') {
+        toast.error('Server disconnected the connection');
+      } else if (reason === 'ping timeout') {
+        toast.warning('Connection timeout - attempting to reconnect...');
+      } else if (reason === 'transport close' || reason === 'transport error') {
+        toast.warning('Connection lost - attempting to reconnect...');
+      }
+    });
+
+    socketInstance.on('connect_error', (error) => {
+      reconnectAttemptsRef.current++;
+      console.error('[WebSocket] Connection error', {
+        message: error.message,
+        type: error.type,
+        attempt: reconnectAttemptsRef.current,
+      });
+
+      // Only show toast every 3rd attempt to avoid spam
+      if (reconnectAttemptsRef.current % 3 === 0) {
+        toast.error(`Connection failed (attempt ${reconnectAttemptsRef.current})`);
+      }
+    });
+
+    socketInstance.on('reconnect', (attemptNumber) => {
+      console.log('[WebSocket] Reconnected after', attemptNumber, 'attempts');
+      toast.success('Reconnected to live updates');
+    });
+
+    // Business events with cache invalidation
+    socketInstance.on('business:created', (payload: BusinessPayload) => {
+      console.log('[WebSocket] Business created', payload.data);
+
+      // Invalidate multiple related queries
+      queryClient.invalidateQueries({ queryKey: ['businesses'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+      queryClient.invalidateQueries({ queryKey: ['recent-businesses'] });
+
+      // Show toast with business name
+      toast.success(`New business added: ${payload.data.name}`);
+    });
+
+    socketInstance.on('business:updated', (payload: BusinessPayload) => {
+      console.log('[WebSocket] Business updated', payload.data);
+
+      // Invalidate specific business and list
+      queryClient.invalidateQueries({ queryKey: ['businesses', payload.data.id] });
+      queryClient.invalidateQueries({ queryKey: ['businesses'] });
+
+      // Update specific business in cache if it exists
+      queryClient.setQueryData(['businesses', payload.data.id], (oldData: any) => {
+        if (!oldData) return oldData;
+        return { ...oldData, ...payload.data };
+      });
+    });
+
+    socketInstance.on('business:deleted', (payload: WebSocketPayload) => {
+      console.log('[WebSocket] Business deleted', payload.data);
+
+      // Invalidate all business-related queries
+      queryClient.invalidateQueries({ queryKey: ['businesses'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+
+      // Remove from cache if exists
+      const businessId = payload.data.id;
+      queryClient.removeQueries({ queryKey: ['businesses', businessId] });
+    });
+
+    socketInstance.on('business:enriched', (payload: BusinessPayload) => {
+      console.log('[WebSocket] Business enriched', payload.data);
+
+      // Invalidate business and enrichment queries
+      queryClient.invalidateQueries({ queryKey: ['businesses', payload.data.id] });
+      queryClient.invalidateQueries({ queryKey: ['businesses'] });
+      queryClient.invalidateQueries({ queryKey: ['enrichment-stats'] });
+
+      toast.success(`Business enriched: ${payload.data.name}`);
+    });
+
+    // Scraping events with optimistic updates
+    socketInstance.on('scraping:progress', (payload: ScrapingProgressPayload) => {
+      console.log('[WebSocket] Scraping progress', payload.data);
+
+      // Optimistically update scrape job status
+      queryClient.setQueryData(['scrape-status', payload.data.jobId], (oldData: any) => ({
+        ...oldData,
+        progress: payload.data.progress,
+        status: 'active',
+        found: payload.data.found || oldData?.found || 0,
+        processed: payload.data.processed || oldData?.processed || 0,
+        lastUpdate: new Date().toISOString(),
+      }));
+
+      // Update progress in active jobs list
+      queryClient.setQueryData(['active-scrape-jobs'], (oldData: any) => {
+        if (!Array.isArray(oldData)) return oldData;
+        return oldData.map((job: any) =>
+          job.id === payload.data.jobId
+            ? { ...job, progress: payload.data.progress }
+            : job
+        );
+      });
+    });
+
+    socketInstance.on('scraping:complete', (payload: ScrapingCompletePayload) => {
+      console.log('[WebSocket] Scraping complete', payload.data);
+
+      // Invalidate affected queries
+      queryClient.invalidateQueries({ queryKey: ['scrape-status', payload.data.jobId] });
+      queryClient.invalidateQueries({ queryKey: ['businesses'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+      queryClient.invalidateQueries({ queryKey: ['active-scrape-jobs'] });
+
+      // Update job status to complete
+      queryClient.setQueryData(['scrape-status', payload.data.jobId], (oldData: any) => ({
+        ...oldData,
+        status: 'complete',
+        progress: 100,
+        found: payload.data.found,
+        saved: payload.data.saved,
+        completedAt: new Date().toISOString(),
+      }));
+
+      toast.success(
+        `Scraping complete: Found ${payload.data.found} businesses, saved ${payload.data.saved}`
+      );
+    });
+
+    socketInstance.on('scraping:failed', (payload: WebSocketPayload) => {
+      console.log('[WebSocket] Scraping failed', payload.data);
+
+      const { jobId, error } = payload.data as { jobId: string; error: string };
+
+      // Update job status to failed
+      queryClient.setQueryData(['scrape-status', jobId], (oldData: any) => ({
+        ...oldData,
+        status: 'failed',
+        error,
+        failedAt: new Date().toISOString(),
+      }));
+
+      queryClient.invalidateQueries({ queryKey: ['scrape-status', jobId] });
+      queryClient.invalidateQueries({ queryKey: ['active-scrape-jobs'] });
+
+      toast.error(`Scraping failed: ${error}`);
+    });
+
+    // Enrichment events
+    socketInstance.on('enrichment:progress', (payload: EnrichmentPayload) => {
+      console.log('[WebSocket] Enrichment progress', payload.data);
+
+      // Update enrichment progress for specific business
+      queryClient.setQueryData(
+        ['enrichment-status', payload.data.businessId],
+        (oldData: any) => ({
+          ...oldData,
+          progress: payload.data.progress,
+          status: 'processing',
+          lastUpdate: new Date().toISOString(),
+        })
+      );
+    });
+
+    socketInstance.on('enrichment:complete', (payload: EnrichmentPayload) => {
+      console.log('[WebSocket] Enrichment complete', payload.data);
+
+      // Invalidate business and enrichment queries
+      queryClient.invalidateQueries({ queryKey: ['businesses', payload.data.businessId] });
+      queryClient.invalidateQueries({ queryKey: ['businesses'] });
+      queryClient.invalidateQueries({ queryKey: ['enrichment-status', payload.data.businessId] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+
+      toast.success('Business enriched successfully');
+    });
+
+    socketInstance.on('enrichment:failed', (payload: EnrichmentPayload) => {
+      console.log('[WebSocket] Enrichment failed', payload.data);
+
+      // Update enrichment status to failed
+      queryClient.setQueryData(
+        ['enrichment-status', payload.data.businessId],
+        (oldData: any) => ({
+          ...oldData,
+          status: 'failed',
+          error: payload.data.error,
+          failedAt: new Date().toISOString(),
+        })
+      );
+
+      queryClient.invalidateQueries({ queryKey: ['businesses', payload.data.businessId] });
+      queryClient.invalidateQueries({ queryKey: ['enrichment-status', payload.data.businessId] });
+
+      toast.error(`Enrichment failed: ${payload.data.error}`);
+    });
+
+    // Stats events
+    socketInstance.on('stats:updated', (payload: WebSocketPayload) => {
+      console.log('[WebSocket] Stats updated', payload);
+
+      // Invalidate all stats-related queries
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['enrichment-stats'] });
+    });
+
+    // Custom ping/pong for connection health check
+    const pingInterval = setInterval(() => {
+      if (socket.connected) {
+        socketInstance.emit('ping', { timestamp: Date.now() });
+      }
+    }, 30000); // Ping every 30 seconds
+
+    socketInstance.on('pong', (data) => {
+      console.log('[WebSocket] Pong received', {
+        latency: Date.now() - data.timestamp,
+      });
+    });
+
+    // Cleanup function
+    return () => {
+      console.log('[WebSocket] Cleaning up socket connection');
+
+      // Clear ping interval
+      clearInterval(pingInterval);
+
+      // Remove all listeners
+      socketInstance.off('connect');
+      socketInstance.off('disconnect');
+      socketInstance.off('connect_error');
+      socketInstance.off('reconnect');
+      socketInstance.off('business:created');
+      socketInstance.off('business:updated');
+      socketInstance.off('business:deleted');
+      socketInstance.off('business:enriched');
+      socketInstance.off('scraping:progress');
+      socketInstance.off('scraping:complete');
+      socketInstance.off('scraping:failed');
+      socketInstance.off('enrichment:progress');
+      socketInstance.off('enrichment:complete');
+      socketInstance.off('enrichment:failed');
+      socketInstance.off('stats:updated');
+      socketInstance.off('pong');
+
+      // Disconnect socket
+      socketInstance.disconnect();
+      socketRef.current = null;
+    };
+  }, [queryClient]);
+
+  return socketRef.current;
+}
+
+// Hook to get socket instance from context
+export function useSocketInstance() {
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    const socket = io(WS_URL, {
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+    });
+
+    socketRef.current = socket;
+
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, []);
+
+  return socketRef.current;
+}
