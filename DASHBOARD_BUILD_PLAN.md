@@ -1,4 +1,6 @@
-# Le Tip Lead System - Next.js 15 Dashboard Build Plan
+# Le Tip Lead System - Next.js 16 Dashboard Build Plan
+
+**Updated for Next.js 16** - Includes Turbopack (stable), React 19.2, and Cache Components
 
 ## Project Overview
 

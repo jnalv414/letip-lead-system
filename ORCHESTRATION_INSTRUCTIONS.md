@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-You have a fully functional NestJS backend (API + WebSocket) and need to build a modern Next.js 15 dashboard with dark mode, real-time updates, and stunning animations.
+You have a fully functional NestJS backend (API + WebSocket) and need to build a modern Next.js 16 dashboard with dark mode, real-time updates, and stunning animations.
 
 **Phase 1 involves spawning 5 specialist agents IN PARALLEL to handle different concerns:**
 
@@ -93,7 +93,7 @@ ESTIMATED TIME: 1.5 hours
 
 #### Agent 2: fullstack-developer
 ```
-TASK: Initialize Next.js 15 project and install dependencies
+TASK: Initialize Next.js 16 project and install dependencies
 
 DELIVERABLES:
 1. dashboard/package.json - All dependencies
@@ -113,7 +113,7 @@ DEPENDS ON: Agent 1 (tsconfig.json) - but can be overwritten
 ENABLES: Agent 3, 4 (need package.json and build setup)
 
 MCP SERVERS TO USE:
-- context7: Latest Next.js 15 patterns, Tailwind setup
+- context7: Latest Next.js 16 patterns, Tailwind setup
 - chrome-devtools: Test that next dev starts
 
 ESTIMATED TIME: 2 hours
@@ -217,7 +217,7 @@ npm run build
 # 4. Start development server
 npm run dev
 
-# Expected output: "▲ Next.js 15.0.0"
+# Expected output: "▲ Next.js 16.0.0"
 #                   "- Local: http://localhost:3000"
 
 # 5. Test in browser

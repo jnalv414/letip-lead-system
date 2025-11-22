@@ -62,7 +62,7 @@ Target Directory: `dashboard/`
 
 ## BRIEF 2: fullstack-developer
 
-**Task**: Initialize Next.js 15 project, install dependencies, setup build system
+**Task**: Initialize Next.js 16 project, install dependencies, setup build system
 
 **Start**: Immediately after reading specs
 **Duration**: 2 hours
@@ -140,7 +140,7 @@ npm run build 2>&1 | head -50
 ```
 
 **MCP Usage**:
-- context7: Get latest Next.js 15 setup, Tailwind configuration, ShadCN integration
+- context7: Get latest Next.js 16 setup, Tailwind configuration, ShadCN integration
 - chrome-devtools: Test that next dev starts on localhost:3000 (after other files ready)
 
 ---

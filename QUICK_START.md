@@ -2,7 +2,7 @@
 
 ## TL;DR - Get Started in 30 Seconds
 
-You're building a Next.js 15 dashboard for an already-completed NestJS backend.
+You're building a Next.js 16 dashboard for an already-completed NestJS backend.
 
 ### What You Have
 - ✅ NestJS API fully built at `http://localhost:3000/api`
@@ -11,7 +11,7 @@ You're building a Next.js 15 dashboard for an already-completed NestJS backend.
 - ❌ Dashboard (empty `dashboard/` folder)
 
 ### What You're Building
-- Modern dark-mode Next.js 15 dashboard
+- Modern dark-mode Next.js 16 dashboard
 - Real-time updates via WebSocket
 - 4 MVP features: Dashboard Stats, Business Management, Scraper, Enrichment
 - Smooth Framer Motion animations
@@ -150,7 +150,7 @@ Enables: Everyone else (provides types)
 ### Agent 2: fullstack-developer
 ```
 Role: Build engineer
-What they do: Initialize Next.js 15, install all dependencies
+What they do: Initialize Next.js 16, install all dependencies
 Delivers: package.json, next.config.ts, tailwind.config.ts, build setup
 Time: 2 hours
 Enables: Agents 3 & 4 (need package.json)
@@ -187,7 +187,7 @@ Enables: Confidence to proceed to Phase 2
 
 ## After Phase 1: What You'll Have
 
-✅ Complete Next.js 15 project structure
+✅ Complete Next.js 16 project structure
 ✅ All dependencies installed
 ✅ TypeScript strict mode, zero errors
 ✅ Dark theme fully configured
@@ -239,7 +239,7 @@ $ npm run build
 ✅ Compiled successfully
 
 $ npm run dev
-▲ Next.js 15.0.0
+▲ Next.js 16.0.0
 - Local:    http://localhost:3000
 
 # Visit in browser → Dark theme dashboard, login works ✅

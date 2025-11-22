@@ -6,11 +6,11 @@ An automated business lead generation, enrichment, and outreach platform built w
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-## 🚀 Live Demo
+## 🚀 Deployment
 
-- **Production Dashboard:** https://letipofwesternmonmouthcounty.abacusai.app/dashboard/
-- **API Documentation:** https://letipofwesternmonmouthcounty.abacusai.app/api-docs
-- **Preview:** https://161b903770.preview.abacusai.app/dashboard/
+- **Dashboard:** /dashboard/
+- **API Documentation:** /api-docs
+- **Backend API:** http://localhost:3000 (development)
 
 ## ✨ Features
 
@@ -60,7 +60,7 @@ An automated business lead generation, enrichment, and outreach platform built w
 - **Queue:** BullMQ for background jobs
 
 ### Frontend
-- **Framework:** Next.js 15 (React)
+- **Framework:** Next.js 16 (React 19.2) - Turbopack stable, Cache Components
 - **Styling:** Tailwind CSS
 - **UI Components:** Custom component library
 - **Build:** Static export for production
@@ -202,12 +202,12 @@ Configure Hunter.io API settings:
 
 ## 🚀 Deployment
 
-The application is deployed on Abacus.AI platform:
+The application can be deployed to any Node.js hosting platform:
 
-1. Push your changes to GitHub
-2. Click the "Deploy" button in the UI
-3. Wait for deployment to complete
-4. Access your production URL
+1. Build the frontend: `cd dashboard && npm run build`
+2. Build the backend: `cd nodejs_space && yarn build`
+3. Set environment variables for production
+4. Start the production server: `yarn start:prod`
 
 ### Production Checklist
 - ✅ Environment variables configured
@@ -257,7 +257,7 @@ This project is licensed under the MIT License.
 - Powered by [Next.js](https://nextjs.org/)
 - Database by [PostgreSQL](https://www.postgresql.org/)
 - ORM by [Prisma](https://www.prisma.io/)
-- Hosted on [Abacus.AI](https://abacus.ai/)
+- Planned, implemented, and validated by Claude Code
 
 ## 📞 Support
 

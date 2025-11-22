@@ -63,7 +63,7 @@ Initialize Next.js 15 project, install dependencies, configure build system
 
 ### Deliverables
 
-1. **Next.js 15 Project Initialization** (`dashboard/`)
+1. **Next.js 16 Project Initialization** (`dashboard/`)
    - Initialize with `create-next-app` or manual setup
    - TypeScript enabled
    - Tailwind CSS configured
@@ -73,7 +73,7 @@ Initialize Next.js 15 project, install dependencies, configure build system
 2. **Package.json** (`dashboard/package.json`)
    ```
    Dependencies:
-   - next@15.0.0
+   - next@16.0.0
    - react@19.0.0
    - react-dom@19.0.0
    - typescript@latest
@@ -138,7 +138,7 @@ Initialize Next.js 15 project, install dependencies, configure build system
 
 5. **Next.js Configuration** (`dashboard/next.config.ts`)
    - Image optimization enabled
-   - SWC minification
+   - Turbopack configuration
    - API redirects to backend (optional)
    - Environment variable handling
 
@@ -173,7 +173,7 @@ Initialize Next.js 15 project, install dependencies, configure build system
 - All dependencies pinned to specific versions for consistency
 
 ### MCP Requirements
-- **context7**: Get latest Next.js 15 setup, ShadCN installation guide, Tailwind configuration
+- **context7**: Get latest Next.js 16 setup, ShadCN installation guide, Tailwind configuration
 - **chrome-devtools**: Test that project builds without errors and loads at localhost:3000
 
 ---

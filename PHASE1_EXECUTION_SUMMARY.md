@@ -39,7 +39,7 @@ All specifications, documentation, and coordination materials for Phase 1 are no
 ### Agent 2: fullstack-developer
 - **Duration**: 2 hours
 - **Deliverables**: 12 files + dependencies installed
-- **Output Quality**: Complete Next.js 15 project setup
+- **Output Quality**: Complete Next.js 16 project setup
 - **Start**: Immediately (parallel with Agent 1)
 
 ### Agent 3: ux-designer
@@ -216,7 +216,7 @@ npm run dev          # Dev server startup
 - **Authentication**: Middleware-based password protection
 
 ### Technology Stack
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router, Turbopack stable)
 - **Language**: TypeScript 5.7 (strict mode)
 - **Database**: PostgreSQL (via NestJS backend)
 - **API**: REST + WebSocket

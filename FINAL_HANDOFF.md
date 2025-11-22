@@ -293,7 +293,7 @@ Build the 4 MVP features:
 ## Key Technologies
 
 ### Frontend Stack
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router, Turbopack stable)
 - **Language**: TypeScript 5.7 (strict mode)
 - **Styling**: Tailwind CSS 3.4 (dark-first)
 - **Components**: ShadCN/UI + Magic-UI
