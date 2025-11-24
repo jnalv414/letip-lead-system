@@ -11,6 +11,7 @@ import { BusinessManagementModule } from './features/business-management';
 import { MapScrapingModule } from './features/map-scraping';
 import { EnrichmentModule } from './enrichment/enrichment.module';
 import { OutreachCampaignsModule } from './features/outreach-campaigns';
+import { JobQueueModule } from './features/job-queue';
 import { WebsocketModule } from './websocket/websocket.module';
 
 // Determine the correct path for FrontEnd files
@@ -45,7 +46,8 @@ function getDashboardPath(): string {
     }),
     ConfigModule,
     PrismaModule,
-    CachingModule, // Global Redis caching
+    CachingModule, // Global Redis caching (DB 0)
+    JobQueueModule, // BullMQ job queues (DB 1)
     BusinessManagementModule,
     MapScrapingModule,
     EnrichmentModule,

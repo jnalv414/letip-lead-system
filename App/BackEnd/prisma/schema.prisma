@@ -83,10 +83,34 @@ model outreach_message {
   generated_at       DateTime             @default(now())
   sent_at            DateTime?
   status             String               @default("generated") // generated, sent, failed
-  
+
   business           business             @relation(fields: [business_id], references: [id], onDelete: Cascade)
   contact            contact?             @relation(fields: [contact_id], references: [id], onDelete: SetNull)
 
   @@index([business_id])
   @@index([status])
+}
+
+model job_history {
+  id                 String               @id @default(uuid())
+  jobId              String               @unique
+  queueName          String
+  jobType            String
+  status             String               // pending, active, completed, failed, delayed, paused
+  data               Json
+  result             Json?
+  error              Json?
+  progress           Int                  @default(0)
+  attemptsMade       Int                  @default(0)
+  maxAttempts        Int                  @default(3)
+  userId             String?
+  createdAt          DateTime             @default(now())
+  startedAt          DateTime?
+  completedAt        DateTime?
+  failedAt           DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@index([queueName, status])
+  @@index([createdAt])
 }
