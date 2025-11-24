@@ -80,7 +80,7 @@ An automated business lead generation, enrichment, and outreach platform built w
 
 ### Environment Variables
 
-Create a `.env` file in the `nodejs_space` directory:
+Create a `.env` file in the `App/BackEnd` directory:
 
 ```env
 # Database
@@ -107,32 +107,32 @@ NOTION_API_KEY="your_notion_api_key"
 
 2. **Install backend dependencies:**
    ```bash
-   cd nodejs_space
+   cd App/BackEnd
    yarn install
    ```
 
 3. **Install dashboard dependencies:**
    ```bash
-   cd ../dashboard
+   cd ../FrontEnd
    npm install
    ```
 
 4. **Set up the database:**
    ```bash
-   cd ../nodejs_space
+   cd ../BackEnd
    npx prisma migrate dev
    npx prisma generate
    ```
 
 5. **Build the dashboard:**
    ```bash
-   cd ../dashboard
+   cd ../FrontEnd
    npm run build
    ```
 
 6. **Start the backend:**
    ```bash
-   cd ../nodejs_space
+   cd ../BackEnd
    yarn start:dev
    ```
 
@@ -165,23 +165,24 @@ Full API documentation available at `/api-docs` when running.
 
 ```
 letip_lead_system/
-├── nodejs_space/          # NestJS Backend
-│   ├── src/
-│   │   ├── businesses/    # Business module
-│   │   ├── scraper/       # Scraping module
-│   │   ├── enrichment/    # Enrichment module
-│   │   ├── outreach/      # Outreach module
-│   │   ├── telegram/      # Telegram notifications
-│   │   ├── websocket/     # WebSocket gateway
-│   │   └── prisma/        # Database service
-│   ├── prisma/            # Database schema
-│   └── dist/              # Compiled code
-│
-├── dashboard/             # Next.js Dashboard
-│   ├── app/               # App pages
-│   ├── components/        # React components
-│   ├── lib/               # Utilities
-│   └── out/               # Static build
+├── App/
+│   ├── BackEnd/           # NestJS Backend
+│   │   ├── src/
+│   │   │   ├── businesses/    # Business module
+│   │   │   ├── scraper/       # Scraping module
+│   │   │   ├── enrichment/    # Enrichment module
+│   │   │   ├── outreach/      # Outreach module
+│   │   │   ├── telegram/      # Telegram notifications
+│   │   │   ├── websocket/     # WebSocket gateway
+│   │   │   └── prisma/        # Database service
+│   │   ├── prisma/            # Database schema
+│   │   └── dist/              # Compiled code
+│   │
+│   └── FrontEnd/          # Next.js Dashboard
+│       ├── app/           # App pages
+│       ├── components/    # React components
+│       ├── lib/           # Utilities
+│       └── out/           # Static build
 │
 ├── docs/                  # Project Documentation
 │   ├── planning/          # Planning frameworks & implementation guides
@@ -235,15 +236,15 @@ Configure Hunter.io API settings:
 
 The application can be deployed to any Node.js hosting platform:
 
-1. Build the frontend: `cd dashboard && npm run build`
-2. Build the backend: `cd nodejs_space && yarn build`
+1. Build the frontend: `cd App/FrontEnd && npm run build`
+2. Build the backend: `cd ../BackEnd && yarn build`
 3. Set environment variables for production
 4. Start the production server: `yarn start:prod`
 
 ### Production Checklist
 - ✅ Environment variables configured
 - ✅ Database migrations run
-- ✅ Dashboard built and exported
+- ✅ Dashboard built and exported (in App/FrontEnd/)
 - ✅ API documentation accessible
 - ✅ WebSocket connection working
 - ✅ Telegram bot configured

@@ -43,7 +43,7 @@ async function sleep(ms) {
 async function startBackend() {
   log('Starting NestJS backend...', 'blue');
   backendProcess = spawn('npm', ['run', 'start:dev'], {
-    cwd: '../nodejs_space',
+    cwd: '../BackEnd',
     shell: true,
   });
 
