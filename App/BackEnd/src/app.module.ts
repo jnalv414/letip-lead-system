@@ -7,10 +7,11 @@ import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CachingModule } from './caching/caching.module';
-import { BusinessManagementModule } from './features/business-management';
+// import { BusinessManagementModule } from './features/business-management'; // Agent 2 module - not on this branch
 import { MapScrapingModule } from './features/map-scraping';
-import { EnrichmentModule } from './enrichment/enrichment.module';
+import { LeadEnrichmentModule } from './features/lead-enrichment';
 import { OutreachCampaignsModule } from './features/outreach-campaigns';
+import { JobQueueModule } from './features/job-queue';
 import { WebsocketModule } from './websocket/websocket.module';
 
 // Determine the correct path for FrontEnd files
@@ -45,10 +46,11 @@ function getDashboardPath(): string {
     }),
     ConfigModule,
     PrismaModule,
-    CachingModule, // Global Redis caching
-    BusinessManagementModule,
+    CachingModule, // Global Redis caching (DB 0)
+    JobQueueModule, // BullMQ job queues (DB 1)
+    // BusinessManagementModule, // Agent 2 module - not on this branch
     MapScrapingModule,
-    EnrichmentModule,
+    LeadEnrichmentModule,
     OutreachCampaignsModule,
     WebsocketModule,
   ],
