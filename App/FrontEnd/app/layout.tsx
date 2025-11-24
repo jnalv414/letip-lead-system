@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
-import { QueryProvider } from '@/providers/query-provider';
-import { SocketProvider } from '@/providers/socket-provider';
+import { AppProviders } from '@/core/providers/app-providers';
 import { Toaster } from 'sonner';
 import './globals.css';
 
@@ -19,27 +18,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans`}>
-        <QueryProvider>
-          <SocketProvider>
-            {children}
-            <Toaster
-              position="top-right"
-              richColors
-              closeButton
-              duration={4000}
-              toastOptions={{
-                className: 'sonner-toast',
-                style: {
-                  background: '#145A5A',
-                  border: '1px solid rgba(255, 87, 34, 0.3)',
-                  color: '#ffffff',
-                },
-              }}
-            />
-          </SocketProvider>
-        </QueryProvider>
+    <html lang="en" className="dark">
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-slate-950 text-slate-100`}>
+        <AppProviders>
+          {children}
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+            duration={4000}
+            toastOptions={{
+              className: 'sonner-toast',
+              style: {
+                background: '#1e293b',
+                border: '1px solid rgba(51, 65, 85, 0.5)',
+                color: '#f1f5f9',
+              },
+            }}
+          />
+        </AppProviders>
       </body>
     </html>
   );

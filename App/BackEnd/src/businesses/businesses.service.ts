@@ -4,6 +4,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { QueryBusinessesDto } from './dto/query-businesses.dto';
 import { EventsGateway } from '../websocket/websocket.gateway';
+import { RedisService } from '../caching/redis.service';
+import {
+  getStatsCacheKey,
+  getBusinessCacheKey,
+  getBusinessListCacheKey,
+  CachePatterns,
+  CacheTTL,
+} from '../caching/cache-keys.helper';
 
 @Injectable()
 export class BusinessesService {
@@ -12,6 +20,7 @@ export class BusinessesService {
   constructor(
     private prisma: PrismaService,
     private eventsGateway: EventsGateway,
+    private redisService: RedisService,
   ) {}
 
   async create(createBusinessDto: CreateBusinessDto) {
@@ -20,14 +29,17 @@ export class BusinessesService {
         data: createBusinessDto,
       });
       this.logger.log(`Created business: ${business.name} (ID: ${business.id})`);
-      
+
+      // Invalidate caches
+      await this.invalidateCaches();
+
       // Emit WebSocket event
       this.eventsGateway.emitBusinessCreated(business);
-      
+
       // Emit updated stats
       const stats = await this.getStats();
       this.eventsGateway.emitStatsUpdated(stats);
-      
+
       return business;
     } catch (error) {
       this.logger.error('Error creating business:', error);
@@ -40,6 +52,14 @@ export class BusinessesService {
     const page = query.page || 1;
     const limit = query.limit || 20;
     const skip = (page - 1) * limit;
+
+    // Try cache first
+    const cacheKey = getBusinessListCacheKey(query);
+    const cached = await this.redisService.get(cacheKey);
+    if (cached) {
+      this.logger.debug(`Business list cache hit: ${cacheKey}`);
+      return cached;
+    }
 
     const where: any = {};
     if (city) where.city = city;
@@ -60,7 +80,7 @@ export class BusinessesService {
         this.prisma.business.count({ where }),
       ]);
 
-      return {
+      const result = {
         data: businesses,
         meta: {
           total,
@@ -69,6 +89,12 @@ export class BusinessesService {
           totalPages: Math.ceil(total / limit),
         },
       };
+
+      // Cache for 5 minutes
+      await this.redisService.set(cacheKey, result, CacheTTL.BUSINESS_LIST);
+      this.logger.debug(`Business list cached: ${cacheKey}`);
+
+      return result;
     } catch (error) {
       this.logger.error('Error fetching businesses:', error);
       throw error;
@@ -76,6 +102,14 @@ export class BusinessesService {
   }
 
   async findOne(id: number) {
+    // Try cache first
+    const cacheKey = getBusinessCacheKey(id);
+    const cached = await this.redisService.get(cacheKey);
+    if (cached) {
+      this.logger.debug(`Business cache hit: ${cacheKey}`);
+      return cached;
+    }
+
     try {
       const business = await this.prisma.business.findUnique({
         where: { id },
@@ -96,6 +130,10 @@ export class BusinessesService {
         throw new NotFoundException(`Business with ID ${id} not found`);
       }
 
+      // Cache for 10 minutes
+      await this.redisService.set(cacheKey, business, CacheTTL.BUSINESS);
+      this.logger.debug(`Business cached: ${cacheKey}`);
+
       return business;
     } catch (error) {
       this.logger.error(`Error fetching business ${id}:`, error);
@@ -109,6 +147,10 @@ export class BusinessesService {
         where: { id },
       });
       this.logger.log(`Deleted business: ${business.name} (ID: ${id})`);
+
+      // Invalidate caches
+      await this.invalidateCaches(id);
+
       return { message: 'Business deleted successfully' };
     } catch (error) {
       this.logger.error(`Error deleting business ${id}:`, error);
@@ -117,6 +159,14 @@ export class BusinessesService {
   }
 
   async getStats() {
+    // Try cache first
+    const cacheKey = getStatsCacheKey();
+    const cached = await this.redisService.get(cacheKey);
+    if (cached) {
+      this.logger.debug(`Stats cache hit: ${cacheKey}`);
+      return cached;
+    }
+
     try {
       const [
         total,
@@ -134,7 +184,7 @@ export class BusinessesService {
         this.prisma.outreach_message.count({ where: { status: 'draft' } }),
       ]);
 
-      return {
+      const stats = {
         totalBusinesses: total,
         enrichedBusinesses: enriched,
         pendingEnrichment: pending,
@@ -142,9 +192,54 @@ export class BusinessesService {
         messagesSent: messagesSent,
         messagesPending: messagesPending,
       };
+
+      // Cache for 30 seconds
+      await this.redisService.set(cacheKey, stats, CacheTTL.STATS);
+      this.logger.debug(`Stats cached: ${cacheKey}`);
+
+      return stats;
     } catch (error) {
       this.logger.error('Error fetching stats:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Invalidate all business-related caches.
+   *
+   * Called when:
+   * - Business created
+   * - Business updated
+   * - Business deleted
+   * - Business enriched
+   *
+   * @param businessId - Optional specific business ID to invalidate
+   *
+   * @side-effects Clears Redis cache keys
+   */
+  private async invalidateCaches(businessId?: number): Promise<void> {
+    try {
+      const promises: Promise<any>[] = [
+        // Always invalidate stats
+        this.redisService.del(getStatsCacheKey()),
+
+        // Always invalidate all business list caches
+        this.redisService.invalidatePattern(CachePatterns.BUSINESS_LISTS),
+      ];
+
+      // If specific business ID provided, invalidate that cache
+      if (businessId) {
+        promises.push(this.redisService.del(getBusinessCacheKey(businessId)));
+      }
+
+      await Promise.all(promises);
+
+      this.logger.debug(
+        `Cache invalidated${businessId ? ` for business ${businessId}` : ''}`,
+      );
+    } catch (error) {
+      this.logger.warn('Error invalidating caches', error.message);
+      // Don't throw - cache invalidation failures shouldn't break the app
     }
   }
 }
