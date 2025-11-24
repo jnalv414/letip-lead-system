@@ -25,6 +25,6 @@ import { PrismaModule } from '../../prisma/prisma.module';
     ApifyScraper,
     ScrapeResultRepository,
   ],
-  exports: [ScraperService],
+  exports: [ScraperService, ApifyScraper],
 })
 export class MapScrapingModule {}

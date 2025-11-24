@@ -83,9 +83,8 @@ import { OutreachCampaignsModule } from '../outreach-campaigns/outreach-campaign
     WebsocketModule,
 
     // Feature modules for workers
-    MapScrapingModule,       // For ApifyService
+    MapScrapingModule,       // For ApifyScraper
     OutreachCampaignsModule, // For OutreachService
-    // Note: LeadEnrichmentModule will be added when Agent 3 completes
   ],
   controllers: [JobQueueController],
   providers: [
