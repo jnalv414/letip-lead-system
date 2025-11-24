@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
@@ -8,20 +7,20 @@ import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CachingModule } from './caching/caching.module';
-import { BusinessesModule } from './businesses/businesses.module';
+import { BusinessManagementModule } from './features/business-management';
 import { MapScrapingModule } from './features/map-scraping';
 import { EnrichmentModule } from './enrichment/enrichment.module';
-import { OutreachModule } from './outreach/outreach.module';
+import { OutreachCampaignsModule } from './features/outreach-campaigns';
 import { WebsocketModule } from './websocket/websocket.module';
 
 // Determine the correct path for FrontEnd files
 function getDashboardPath(): string {
   // Try multiple possible paths for development and production
   const possiblePaths = [
-    join(__dirname, '..', '..', 'FrontEnd', 'out'),           // Development: dist/../FrontEnd/out
-    join(__dirname, '..', '..', '..', 'FrontEnd', 'out'),     // Production: app/dist/../../FrontEnd/out
-    join(process.cwd(), 'App', 'FrontEnd', 'out'),            // From project root
-    join(__dirname, '..', 'FrontEnd', 'out'),                 // One level up
+    join(__dirname, '..', '..', 'FrontEnd', 'out'), // Development: dist/../FrontEnd/out
+    join(__dirname, '..', '..', '..', 'FrontEnd', 'out'), // Production: app/dist/../../FrontEnd/out
+    join(process.cwd(), 'App', 'FrontEnd', 'out'), // From project root
+    join(__dirname, '..', 'FrontEnd', 'out'), // One level up
   ];
 
   for (const path of possiblePaths) {
@@ -47,10 +46,10 @@ function getDashboardPath(): string {
     ConfigModule,
     PrismaModule,
     CachingModule, // Global Redis caching
-    BusinessesModule,
+    BusinessManagementModule,
     MapScrapingModule,
     EnrichmentModule,
-    OutreachModule,
+    OutreachCampaignsModule,
     WebsocketModule,
   ],
   controllers: [AppController],
