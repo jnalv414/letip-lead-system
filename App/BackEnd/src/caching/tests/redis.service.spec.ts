@@ -41,6 +41,9 @@ describe('RedisService', () => {
 
     // Manually initialize to avoid real Redis connection
     await service.onModuleInit();
+
+    // Set isConnected flag since mock won't trigger 'connect' event
+    (service as any).isConnected = true;
   });
 
   afterEach(async () => {
