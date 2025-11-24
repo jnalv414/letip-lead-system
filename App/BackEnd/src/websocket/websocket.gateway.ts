@@ -87,4 +87,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('business:created', payload);
     this.logger.log('Emitted business:created event from EventEmitter');
   }
+
+  @OnEvent('business:enriched')
+  handleBusinessEnrichedEvent(payload: any) {
+    this.server.emit('business:enriched', payload);
+    this.logger.log('Emitted business:enriched event from EventEmitter');
+  }
 }
