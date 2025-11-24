@@ -8,7 +8,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CachingModule } from './caching/caching.module';
-import { BusinessesModule } from './businesses/businesses.module';
+import { BusinessManagementModule } from './features/business-management';
 import { MapScrapingModule } from './features/map-scraping';
 import { EnrichmentModule } from './enrichment/enrichment.module';
 import { OutreachModule } from './outreach/outreach.module';
@@ -47,7 +47,7 @@ function getDashboardPath(): string {
     ConfigModule,
     PrismaModule,
     CachingModule, // Global Redis caching
-    BusinessesModule,
+    BusinessManagementModule,
     MapScrapingModule,
     EnrichmentModule,
     OutreachModule,
