@@ -7,7 +7,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CachingModule } from './caching/caching.module';
-import { BusinessManagementModule } from './features/business-management';
+// import { BusinessManagementModule } from './features/business-management'; // Agent 2 module - not on this branch
 import { MapScrapingModule } from './features/map-scraping';
 import { EnrichmentModule } from './enrichment/enrichment.module';
 import { OutreachCampaignsModule } from './features/outreach-campaigns';
@@ -48,7 +48,7 @@ function getDashboardPath(): string {
     PrismaModule,
     CachingModule, // Global Redis caching (DB 0)
     JobQueueModule, // BullMQ job queues (DB 1)
-    BusinessManagementModule,
+    // BusinessManagementModule, // Agent 2 module - not on this branch
     MapScrapingModule,
     EnrichmentModule,
     OutreachCampaignsModule,

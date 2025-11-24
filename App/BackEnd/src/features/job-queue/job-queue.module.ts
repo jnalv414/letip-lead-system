@@ -17,10 +17,17 @@ import { JobHistoryRepository } from './data/repositories/job-history.repository
 
 // Workers
 import { WorkerManagerService } from './workers/worker-manager.service';
+import { ScrapingWorker } from './workers/scraping.worker';
+import { EnrichmentWorker } from './workers/enrichment.worker';
+import { OutreachWorker } from './workers/outreach.worker';
 
 // External Dependencies
 import { PrismaModule } from '../../prisma/prisma.module';
 import { WebsocketModule } from '../../websocket/websocket.module';
+
+// Feature modules for worker dependencies
+import { MapScrapingModule } from '../map-scraping/map-scraping.module';
+import { OutreachCampaignsModule } from '../outreach-campaigns/outreach-campaigns.module';
 
 /**
  * Job Queue Module
@@ -74,6 +81,11 @@ import { WebsocketModule } from '../../websocket/websocket.module';
     // External dependencies
     PrismaModule,
     WebsocketModule,
+
+    // Feature modules for workers
+    MapScrapingModule,       // For ApifyService
+    OutreachCampaignsModule, // For OutreachService
+    // Note: LeadEnrichmentModule will be added when Agent 3 completes
   ],
   controllers: [JobQueueController],
   providers: [
@@ -87,6 +99,11 @@ import { WebsocketModule } from '../../websocket/websocket.module';
 
     // Worker management
     WorkerManagerService,
+
+    // Job processors (workers)
+    ScrapingWorker,
+    EnrichmentWorker,
+    OutreachWorker,
   ],
   exports: [
     // Export services for use in other modules
@@ -95,6 +112,11 @@ import { WebsocketModule } from '../../websocket/websocket.module';
     JobStatusTrackerService,
     JobHistoryRepository,
     WorkerManagerService,
+
+    // Export workers if needed by other modules
+    ScrapingWorker,
+    EnrichmentWorker,
+    OutreachWorker,
   ],
 })
 export class JobQueueModule {}

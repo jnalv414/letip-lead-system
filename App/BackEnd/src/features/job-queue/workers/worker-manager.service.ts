@@ -1,5 +1,8 @@
 import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { BaseWorker } from './base-worker';
+import { ScrapingWorker } from './scraping.worker';
+import { EnrichmentWorker } from './enrichment.worker';
+import { OutreachWorker } from './outreach.worker';
 
 /**
  * Worker Manager Service
@@ -25,11 +28,23 @@ export class WorkerManagerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(WorkerManagerService.name);
   private readonly workers: Map<string, BaseWorker> = new Map();
 
+  constructor(
+    private readonly scrapingWorker: ScrapingWorker,
+    private readonly enrichmentWorker: EnrichmentWorker,
+    private readonly outreachWorker: OutreachWorker,
+  ) {}
+
   /**
-   * Module initialization - log worker status.
+   * Module initialization - register all workers and log status.
    */
   async onModuleInit(): Promise<void> {
+    // Register all workers
+    this.registerWorker('scraping-jobs', this.scrapingWorker);
+    this.registerWorker('enrichment-jobs', this.enrichmentWorker);
+    this.registerWorker('outreach-jobs', this.outreachWorker);
+
     this.logger.log(`Worker Manager initialized with ${this.workers.size} workers`);
+    this.logger.log('Registered workers: ' + Array.from(this.workers.keys()).join(', '));
   }
 
   /**
