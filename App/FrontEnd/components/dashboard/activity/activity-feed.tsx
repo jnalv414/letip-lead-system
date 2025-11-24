@@ -10,7 +10,7 @@
 import * as React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useSocketEvents } from '@/providers/socket-provider';
+import { useSocketEvents } from '@/core/providers/websocket-provider';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ActivityEvent {

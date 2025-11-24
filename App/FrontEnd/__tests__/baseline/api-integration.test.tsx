@@ -97,15 +97,15 @@ describe('Frontend API Integration Baseline', () => {
       const stats = await response.json();
 
       // Verify stats structure
-      expect(stats).toHaveProperty('total');
-      expect(stats).toHaveProperty('pending');
-      expect(stats).toHaveProperty('enriched');
-      expect(stats).toHaveProperty('failed');
-      expect(stats).toHaveProperty('by_city');
+      expect(stats).toHaveProperty('totalBusinesses');
+      expect(stats).toHaveProperty('pendingEnrichment');
+      expect(stats).toHaveProperty('enrichedBusinesses');
+      expect(stats).toHaveProperty('totalContacts');
+      expect(stats).toHaveProperty('messagesSent');
 
       // Verify types
-      expect(typeof stats.total).toBe('number');
-      expect(typeof stats.by_city).toBe('object');
+      expect(typeof stats.totalBusinesses).toBe('number');
+      expect(typeof stats.totalContacts).toBe('number');
     });
 
     it('should fetch single business by ID', async () => {

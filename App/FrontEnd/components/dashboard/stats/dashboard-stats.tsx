@@ -1,15 +1,17 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useSocketListener } from '@/providers/socket-provider';
+import { useSocketListener } from '@/core/providers/websocket-provider';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface Stats {
   totalBusinesses: number;
   enrichedBusinesses: number;
-  pendingBusinesses: number;
+  pendingEnrichment: number;
   totalContacts: number;
+  messagesSent?: number;
+  messagesPending?: number;
 }
 
 // API client function
@@ -124,7 +126,7 @@ export function DashboardStats() {
     },
     {
       label: 'Pending Enrichment',
-      value: stats?.pendingBusinesses || 0,
+      value: stats?.pendingEnrichment || 0,
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

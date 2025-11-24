@@ -1,6 +1,6 @@
 'use client';
 
-import { useSocketStatus } from '@/providers/socket-provider';
+import { useSocketStatus } from '@/core/providers/websocket-provider';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 

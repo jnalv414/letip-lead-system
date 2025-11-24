@@ -92,14 +92,12 @@ export interface PaginatedResponse<T> {
 }
 
 export interface Stats {
-  total: number;
-  enriched: number;
-  pending: number;
-  failed: number;
+  totalBusinesses: number;
+  enrichedBusinesses: number;
+  pendingEnrichment: number;
   totalContacts: number;
   messagesSent: number;
-  byCity: Array<{ city: string; count: number }>;
-  byIndustry: Array<{ industry: string; count: number }>;
+  messagesPending: number;
 }
 
 // ============================================================================

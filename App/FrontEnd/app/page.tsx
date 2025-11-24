@@ -10,7 +10,7 @@
 
 'use client';
 
-import { useSocketStatus } from '@/providers/socket-provider';
+import { useSocketStatus } from '@/core/providers/websocket-provider';
 import {
   ConnectionStatus,
   DashboardStats,

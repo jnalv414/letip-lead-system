@@ -122,20 +122,20 @@ export default function CompleteExample() {
         {stats && (
           <div className="grid grid-cols-4 gap-4">
             <div className="p-4 bg-blue-100 rounded">
-              <div className="text-3xl font-bold">{stats.total}</div>
+              <div className="text-3xl font-bold">{stats.totalBusinesses}</div>
               <div className="text-sm">Total Businesses</div>
             </div>
             <div className="p-4 bg-green-100 rounded">
-              <div className="text-3xl font-bold">{stats.enriched}</div>
+              <div className="text-3xl font-bold">{stats.enrichedBusinesses}</div>
               <div className="text-sm">Enriched</div>
             </div>
             <div className="p-4 bg-yellow-100 rounded">
-              <div className="text-3xl font-bold">{stats.pending}</div>
+              <div className="text-3xl font-bold">{stats.pendingEnrichment}</div>
               <div className="text-sm">Pending</div>
             </div>
-            <div className="p-4 bg-red-100 rounded">
-              <div className="text-3xl font-bold">{stats.failed}</div>
-              <div className="text-sm">Failed</div>
+            <div className="p-4 bg-purple-100 rounded">
+              <div className="text-3xl font-bold">{stats.totalContacts}</div>
+              <div className="text-sm">Contacts</div>
             </div>
           </div>
         )}

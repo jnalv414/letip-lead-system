@@ -2,11 +2,11 @@
  * useStats Query Hook
  *
  * Fetches dashboard statistics with automatic 30-second polling.
- * Shows total businesses, enrichment status breakdown, contacts, and groupings.
+ * Shows total businesses, enrichment status breakdown, and contacts.
  *
  * @usage
  * const { data: stats, isLoading } = useStats();
- * console.log(stats.total, stats.enriched, stats.byCity);
+ * console.log(stats.totalBusinesses, stats.enrichedBusinesses, stats.pendingEnrichment);
  */
 
 'use client';
