@@ -343,20 +343,20 @@ PrismaClientInitializationError: Can't reach database server at
 
 2. **Option B: Use Local Database**
    ```bash
-   # Update nodejs_space/.env
+   # Update App/BackEnd/.env
    DATABASE_URL="postgresql://postgres:password@localhost:5432/letip_leads"
 
    # Start local PostgreSQL
    brew services start postgresql@14
 
    # Run migrations
-   cd nodejs_space
+   cd App/BackEnd
    npx prisma migrate deploy
    ```
 
 3. **Option C: Use SQLite for Development**
    ```bash
-   # Update nodejs_space/.env
+   # Update App/BackEnd/.env
    DATABASE_URL="file:./dev.db"
 
    # Update prisma/schema.prisma

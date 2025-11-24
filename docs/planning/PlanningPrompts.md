@@ -8,7 +8,7 @@ These are example prompts for the "vibe planning" stage for the Le Tip Lead Syst
 
 ### Prompt 1: Exploration
 ```
-Please explore the nodejs_space/src directory structure and deeply understand how:
+Please explore the App/BackEnd/src directory structure and deeply understand how:
 1. The WebsocketGateway emits real-time events
 2. The enrichment module integrates with Hunter.io and AbstractAPI
 3. The scraper module uses Puppeteer for Google Maps scraping
@@ -99,9 +99,9 @@ File format:
 [Why we chose Next.js 16, Zustand, Socket.io, ShadCN]
 
 ## Relevant Files to Read
-- nodejs_space/src/websocket/websocket.gateway.ts
-- nodejs_space/src/businesses/businesses.service.ts
-- nodejs_space/src/enrichment/enrichment.service.ts
+- App/BackEnd/src/websocket/websocket.gateway.ts
+- App/BackEnd/src/businesses/businesses.service.ts
+- App/BackEnd/src/enrichment/enrichment.service.ts
 - DASHBOARD_BUILD_PLAN.md
 - CLAUDE.md (Core Principles section)
 
@@ -308,9 +308,9 @@ As a user, I want to see live statistics about my business leads so I can monito
 - Framer Motion for card entrance animations
 
 ### Files to Create
-1. app/dashboard/page.tsx
-2. components/dashboard/StatsGrid.tsx
-3. components/dashboard/StatsCard.tsx
+1. app/App/FrontEnd/page.tsx
+2. components/App/FrontEnd/StatsGrid.tsx
+3. components/App/FrontEnd/StatsCard.tsx
 4. stores/statsStore.ts
 5. lib/hooks/useStats.ts
 
@@ -349,12 +349,12 @@ Consider:
 - WebSocket events add new businesses in real-time
 - Need to show contact count without loading all contacts
 
-Review nodejs_space/src/businesses/businesses.controller.ts for API capabilities.
+Review App/BackEnd/src/businesses/businesses.controller.ts for API capabilities.
 ```
 
 ### Prompt 2: Detail Page Design
 ```
-For the business detail page (/dashboard/businesses/[id]):
+For the business detail page (/App/FrontEnd/businesses/[id]):
 
 What's the best approach for:
 1. Tabs (Overview, Contacts, Enrichment Logs, Outreach)

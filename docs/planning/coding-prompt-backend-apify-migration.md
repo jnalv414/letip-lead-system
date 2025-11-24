@@ -3,7 +3,7 @@
 ## Feature Description and Problem Solving
 
 ### Problem
-The current Google Maps scraper (`nodejs_space/src/scraper/scraper.service.ts`) uses Puppeteer for web scraping, which has several significant limitations:
+The current Google Maps scraper (`App/BackEnd/src/scraper/scraper.service.ts`) uses Puppeteer for web scraping, which has several significant limitations:
 
 1. **Infrastructure Overhead**: Requires managing headless Chrome browser instances, memory management, and browser lifecycle
 2. **Fragility**: DOM selectors break when Google Maps updates their UI (e.g., `div.fontHeadlineSmall`, `div.fontBodyMedium`)
@@ -98,7 +98,7 @@ EventsGateway.emitStatsUpdated()
 
 ### Core Implementation Files
 
-1. **`nodejs_space/src/scraper/scraper.service.ts:1-177`**
+1. **`App/BackEnd/src/scraper/scraper.service.ts:1-177`**
    - Current Puppeteer implementation
    - **Key patterns to preserve**:
      - `scrapeGoogleMaps()` method signature
@@ -109,34 +109,34 @@ EventsGateway.emitStatsUpdated()
      - WebSocket progress emissions
      - Stats update after scraping
 
-2. **`nodejs_space/src/scraper/scraper.controller.ts:1-20`**
+2. **`App/BackEnd/src/scraper/scraper.controller.ts:1-20`**
    - HTTP endpoint definition
    - **No changes needed** - controller remains identical
    - Verify Swagger annotations still accurate
 
-3. **`nodejs_space/src/scraper/scraper.module.ts:1-14`**
+3. **`App/BackEnd/src/scraper/scraper.module.ts:1-14`**
    - Module dependency injection
    - **No changes needed** - module structure unchanged
 
-4. **`nodejs_space/src/scraper/dto/scrape-request.dto.ts:1-45`**
+4. **`App/BackEnd/src/scraper/dto/scrape-request.dto.ts:1-45`**
    - Request validation schema
    - **No changes needed** - DTO remains identical
    - Fields: `location`, `radius`, `business_type`, `max_results`
 
-5. **`nodejs_space/src/businesses/businesses.service.ts:17-36`**
+5. **`App/BackEnd/src/businesses/businesses.service.ts:17-36`**
    - `create()` method for saving businesses
    - WebSocket event emission pattern (`emitBusinessCreated`, `emitStatsUpdated`)
    - **Pattern to replicate**: Always emit events after mutations
 
-6. **`nodejs_space/src/websocket/websocket.gateway.ts:49-52`**
+6. **`App/BackEnd/src/websocket/websocket.gateway.ts:49-52`**
    - `emitScrapingProgress()` method
    - Use this to emit real-time scraping updates
 
-7. **`nodejs_space/src/config/config.service.ts:1-97`**
+7. **`App/BackEnd/src/config/config.service.ts:1-97`**
    - Secrets loading pattern from `~/.config/letip_api_secrets.json`
    - **Pattern to replicate**: Add `getApifyApiToken()` method similar to `getHunterApiKey()` (line 74)
 
-8. **`nodejs_space/prisma/schema.prisma:11-39`**
+8. **`App/BackEnd/prisma/schema.prisma:11-39`**
    - Business model definition
    - Required fields: `name`
    - Optional fields: `address`, `city`, `phone`, `website`, `google_maps_url`, `latitude`, `longitude`, `business_type`
@@ -149,7 +149,7 @@ EventsGateway.emitStatsUpdated()
      - Section 8: Error Handling Standards (try/catch, NestJS exceptions, logging)
      - Section 10: Apify Actor Management (lines 564-576)
 
-10. **`nodejs_space/package.json:22-41`**
+10. **`App/BackEnd/package.json:22-41`**
     - Current dependencies (Puppeteer on line 38)
     - **Changes needed**:
       - Add `apify-client` to dependencies
@@ -275,7 +275,7 @@ const { items } = await client.dataset(defaultDatasetId).listItems();
    ```
 
 4. **Add `getApifyApiToken()` method to ConfigService**
-   - File: `nodejs_space/src/config/config.service.ts`
+   - File: `App/BackEnd/src/config/config.service.ts`
    - Add method following pattern of `getHunterApiKey()` (line 74-76)
    - Return type: `string | null`
 
@@ -287,7 +287,7 @@ const { items } = await client.dataset(defaultDatasetId).listItems();
 ### Core Implementation
 
 1. **Rewrite `scrapeGoogleMaps()` method in ScraperService**
-   - File: `nodejs_space/src/scraper/scraper.service.ts`
+   - File: `App/BackEnd/src/scraper/scraper.service.ts`
    - Replace lines 17-171 (current Puppeteer implementation)
    - New implementation steps:
      a. Initialize ApifyClient with token from ConfigService
@@ -420,7 +420,7 @@ const { items } = await client.dataset(defaultDatasetId).listItems();
 
 ### Unit Tests
 
-**File**: `nodejs_space/src/scraper/scraper.service.spec.ts`
+**File**: `App/BackEnd/src/scraper/scraper.service.spec.ts`
 
 **Test Cases**:
 
@@ -512,7 +512,7 @@ describe('ScraperService', () => {
 
 ### Integration Tests
 
-**File**: `nodejs_space/test/scraper/scraper.integration.spec.ts`
+**File**: `App/BackEnd/test/scraper/scraper.integration.spec.ts`
 
 **Test Cases**:
 
@@ -534,7 +534,7 @@ describe('ScraperService', () => {
 
 ### End-to-End Tests
 
-**File**: `nodejs_space/test/scraper/scraper.e2e-spec.ts`
+**File**: `App/BackEnd/test/scraper/scraper.e2e-spec.ts`
 
 **Test Cases**:
 
@@ -826,7 +826,7 @@ cat package.json | grep puppeteer
 
 **Check imports**:
 ```bash
-grep -r "puppeteer" nodejs_space/src
+grep -r "puppeteer" App/BackEnd/src
 ```
 
 **Expected**: No matches (exit code 1)
@@ -844,7 +844,7 @@ cat package.json | grep apify-client
 
 **Check ConfigService has getApifyApiToken**:
 ```bash
-grep -n "getApifyApiToken" nodejs_space/src/config/config.service.ts
+grep -n "getApifyApiToken" App/BackEnd/src/config/config.service.ts
 ```
 
 **Expected**: Method definition found

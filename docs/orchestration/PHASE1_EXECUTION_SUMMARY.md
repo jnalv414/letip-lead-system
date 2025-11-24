@@ -117,7 +117,7 @@ PHASE 1 OUTPUTS:
 - Verify file completeness
 - Check for missing dependencies
 
-### Step 2: Merge into dashboard/ (15 min)
+### Step 2: Merge into App/FrontEnd/ (15 min)
 - Copy all files to correct locations
 - Verify folder structure
 - Check file permissions

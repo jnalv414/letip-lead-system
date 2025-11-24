@@ -36,12 +36,12 @@ Copy this entire project structure to your agent prompts:
 ```
 Project Root: /Volumes/HOME-EX/Users/justinnalven/.claude/projects/letip-lead-systen/letip-lead-system
 
-Backend Location: ./nodejs_space/
+Backend Location: ./App/BackEnd/
 - API: http://localhost:3000
 - Swagger Docs: http://localhost:3000/api-docs
 - WebSocket: ws://localhost:3000
 
-Dashboard Target: ./dashboard/ (currently empty)
+Dashboard Target: ./App/FrontEnd/
 
 Key Docs to Read:
 1. DASHBOARD_BUILD_PLAN.md
@@ -75,11 +75,11 @@ Key Docs to Read:
 TASK: Create TypeScript type system and data architecture
 
 DELIVERABLES:
-1. dashboard/types/models.ts - All Business, Contact, Log types
-2. dashboard/types/api.ts - API request/response types
-3. dashboard/types/events.ts - WebSocket event types
-4. dashboard/ARCHITECTURE.md - Data flow documentation
-5. dashboard/tsconfig.json - TypeScript configuration
+1. App/FrontEnd/types/models.ts - All Business, Contact, Log types
+2. App/FrontEnd/types/api.ts - API request/response types
+3. App/FrontEnd/types/events.ts - WebSocket event types
+4. App/FrontEnd/ARCHITECTURE.md - Data flow documentation
+5. App/FrontEnd/tsconfig.json - TypeScript configuration
 
 DEPENDS ON: Nothing (can start immediately)
 ENABLES: Agent 4 (frontend-developer needs types)
@@ -96,16 +96,16 @@ ESTIMATED TIME: 1.5 hours
 TASK: Initialize Next.js 16 project and install dependencies
 
 DELIVERABLES:
-1. dashboard/package.json - All dependencies
-2. dashboard/next.config.ts - Build configuration
-3. dashboard/tailwind.config.ts - Tailwind setup
-4. dashboard/postcss.config.js - CSS processing
-5. dashboard/.eslintrc.json - Linting rules
-6. dashboard/.prettierrc - Code formatting
-7. dashboard/.env.example - Environment template
-8. dashboard/app/layout.tsx - Root layout
-9. dashboard/app/page.tsx - Redirect to dashboard
-10. dashboard/.gitignore - Git ignore rules
+1. App/FrontEnd/package.json - All dependencies
+2. App/FrontEnd/next.config.ts - Build configuration
+3. App/FrontEnd/tailwind.config.ts - Tailwind setup
+4. App/FrontEnd/postcss.config.js - CSS processing
+5. App/FrontEnd/.eslintrc.json - Linting rules
+6. App/FrontEnd/.prettierrc - Code formatting
+7. App/FrontEnd/.env.example - Environment template
+8. App/FrontEnd/app/layout.tsx - Root layout
+9. App/FrontEnd/app/page.tsx - Redirect to dashboard
+10. App/FrontEnd/.gitignore - Git ignore rules
 11. Run: npm install
 12. Verify: npm run build succeeds
 
@@ -124,13 +124,13 @@ ESTIMATED TIME: 2 hours
 TASK: Create design system, dark theme, animations
 
 DELIVERABLES:
-1. dashboard/styles/globals.css - Global styles
-2. dashboard/styles/animations.ts - Framer Motion variants
-3. dashboard/DESIGN_TOKENS.md - Design documentation
-4. dashboard/components/ui/README.md - Component guide
-5. dashboard/THEME.md - Theme philosophy
-6. Extend: dashboard/tailwind.config.ts - Dark colors
-7. Add: dashboard/app/layout.tsx - Font imports
+1. App/FrontEnd/styles/globals.css - Global styles
+2. App/FrontEnd/styles/animations.ts - Framer Motion variants
+3. App/FrontEnd/DESIGN_TOKENS.md - Design documentation
+4. App/FrontEnd/components/ui/README.md - Component guide
+5. App/FrontEnd/THEME.md - Theme philosophy
+6. Extend: App/FrontEnd/tailwind.config.ts - Dark colors
+7. Add: App/FrontEnd/app/layout.tsx - Font imports
 
 DEPENDS ON: Agent 2 (package.json for tailwind)
 ENABLES: Components phase (Phase 2+)
@@ -147,19 +147,19 @@ ESTIMATED TIME: 2 hours
 TASK: Create API integration, WebSocket setup, hooks, middleware
 
 DELIVERABLES:
-1. dashboard/lib/axios.ts - HTTP client
-2. dashboard/lib/socket.ts - WebSocket client
-3. dashboard/middleware.ts - Authentication
-4. dashboard/app/(auth)/login/page.tsx - Login page
-5. dashboard/lib/api/businesses.ts - API functions
-6. dashboard/lib/api/scraper.ts - Scraper API
-7. dashboard/lib/api/enrichment.ts - Enrichment API
-8. dashboard/lib/api/outreach.ts - Outreach API
-9. dashboard/lib/hooks/useBusinesses.ts - Business hook
-10. dashboard/lib/hooks/useStats.ts - Stats hook
-11. dashboard/lib/hooks/useWebSocket.ts - WebSocket hook
-12. dashboard/lib/hooks/useScraper.ts - Scraper hook
-13. dashboard/lib/hooks/useEnrichment.ts - Enrichment hook
+1. App/FrontEnd/lib/axios.ts - HTTP client
+2. App/FrontEnd/lib/socket.ts - WebSocket client
+3. App/FrontEnd/middleware.ts - Authentication
+4. App/FrontEnd/app/(auth)/login/page.tsx - Login page
+5. App/FrontEnd/lib/api/businesses.ts - API functions
+6. App/FrontEnd/lib/api/scraper.ts - Scraper API
+7. App/FrontEnd/lib/api/enrichment.ts - Enrichment API
+8. App/FrontEnd/lib/api/outreach.ts - Outreach API
+9. App/FrontEnd/lib/hooks/useBusinesses.ts - Business hook
+10. App/FrontEnd/lib/hooks/useStats.ts - Stats hook
+11. App/FrontEnd/lib/hooks/useWebSocket.ts - WebSocket hook
+12. App/FrontEnd/lib/hooks/useScraper.ts - Scraper hook
+13. App/FrontEnd/lib/hooks/useEnrichment.ts - Enrichment hook
 
 DEPENDS ON: Agent 1 (types), Agent 2 (package.json)
 ENABLES: Phase 2 (Zustand stores, components)
@@ -176,12 +176,12 @@ ESTIMATED TIME: 2.5 hours
 TASK: Validate all work, establish quality standards
 
 DELIVERABLES:
-1. dashboard/TYPESCRIPT_REPORT.md - Type system review
-2. dashboard/SECURITY.md - Security assessment
-3. dashboard/PERFORMANCE.md - Performance strategy
-4. dashboard/ERROR_HANDLING.md - Error handling guide
-5. dashboard/TESTING.md - Testing strategy
-6. dashboard/CODE_QUALITY.md - Code quality checklist
+1. App/FrontEnd/TYPESCRIPT_REPORT.md - Type system review
+2. App/FrontEnd/SECURITY.md - Security assessment
+3. App/FrontEnd/PERFORMANCE.md - Performance strategy
+4. App/FrontEnd/ERROR_HANDLING.md - Error handling guide
+5. App/FrontEnd/TESTING.md - Testing strategy
+6. App/FrontEnd/CODE_QUALITY.md - Code quality checklist
 
 DEPENDS ON: All other agents (reviews their work)
 ENABLES: Phase 2 (quality baseline established)
@@ -201,7 +201,7 @@ or in parallel to review as they work
 After all agents complete, follow this process:
 
 ```bash
-cd /Volumes/HOME-EX/Users/justinnalven/.claude/projects/letip-lead-systen/letip-lead-system/dashboard
+cd /Volumes/HOME-EX/Users/justinnalven/.claude/projects/letip-lead-systen/letip-lead-system/App/FrontEnd
 
 # 1. Verify all files are in place
 ls -la
@@ -265,12 +265,12 @@ After integration, verify these pass:
 ## Expected File Structure After Phase 1
 
 ```
-dashboard/
+App/FrontEnd/
 ├── app/
 │   ├── (auth)/
 │   │   └── login/
 │   │       └── page.tsx          [AGENT 4]
-│   ├── dashboard/
+│   ├── App/FrontEnd/
 │   │   ├── layout.tsx             (empty, will be created Phase 2)
 │   │   └── page.tsx               (empty, will be created Phase 2)
 │   ├── layout.tsx                 [AGENT 2 + 3]
@@ -351,7 +351,7 @@ Once Phase 1 integration succeeds, you'll be ready for Phase 2:
 - Check npm version: `npm --version`
 
 ### Agent 4: API client tests fail
-- Verify backend is running: `cd ../nodejs_space && yarn start:dev`
+- Verify backend is running: `cd ../../BackEnd && yarn start:dev`
 - Check API responds: `curl http://localhost:3000/api/businesses/stats`
 - Verify Socket.io port is open: `lsof -i :3000`
 
@@ -453,7 +453,7 @@ All files → Reviewed for quality, security, performance
 3. **Choose execution method** - Parallel (fast) or sequential (safe)
 4. **Spawn agents** - Provide them the context and briefs
 5. **Monitor progress** - Keep agents on track
-6. **Integrate outputs** - Merge into dashboard/ directory
+6. **Integrate outputs** - Merge into App/FrontEnd/ directory
 7. **Run validation** - Verify all success criteria
 8. **Proceed to Phase 2** - Build core components
 

@@ -5,13 +5,13 @@
 All 5 agents work independently on separate concerns, then outputs are merged. Each agent should:
 1. Read AGENT_PHASE1_SPECIFICATIONS.md for detailed requirements
 2. Read DASHBOARD_BUILD_PLAN.md for project context
-3. Review backend API in nodejs_space/src for integration points
+3. Review backend API in App/BackEnd/src for integration points
 4. Deliver complete, production-ready files (no placeholders)
 5. Use specified MCP servers (context7, chrome-devtools)
 6. Follow TypeScript 5.7 strict mode requirements
 
 Project Root: `/Volumes/HOME-EX/Users/justinnalven/.claude/projects/letip-lead-systen/letip-lead-system`
-Target Directory: `dashboard/`
+Target Directory: `App/FrontEnd/`
 
 ---
 
@@ -25,30 +25,30 @@ Target Directory: `dashboard/`
 
 ### Files to Create
 
-1. **dashboard/types/models.ts** (150 lines)
+1. **App/FrontEnd/types/models.ts** (150 lines)
    - Export ALL TypeScript interfaces for Business, Contact, EnrichmentLog, OutreachMessage
    - Base types and API variations
    - Strict typing, no `any`
 
-2. **dashboard/types/api.ts** (100 lines)
+2. **App/FrontEnd/types/api.ts** (100 lines)
    - API request types (Query params, request bodies)
    - API response types
    - Pagination metadata
    - Error types
 
-3. **dashboard/types/events.ts** (80 lines)
+3. **App/FrontEnd/types/events.ts** (80 lines)
    - WebSocket event type definitions
    - Socket.io event emitters and listeners
    - Event payload types
 
-4. **dashboard/ARCHITECTURE.md** (200 lines)
+4. **App/FrontEnd/ARCHITECTURE.md** (200 lines)
    - Data flow diagrams (ASCII art)
    - Zustand store architecture
    - Component-to-store relationships
    - WebSocket event flow
    - API call patterns
 
-5. **dashboard/tsconfig.json** (50 lines)
+5. **App/FrontEnd/tsconfig.json** (50 lines)
    - Complete TypeScript config
    - Strict mode enabled
    - Path aliases (@/components, @/lib, @/types, @/stores)
@@ -70,57 +70,57 @@ Target Directory: `dashboard/`
 
 ### Files to Create
 
-1. **dashboard/package.json** (80 lines)
+1. **App/FrontEnd/package.json** (80 lines)
    - All dependencies specified in AGENT_PHASE1_SPECIFICATIONS.md
    - Exact version constraints
    - Scripts: dev, build, start, lint, format
 
-2. **dashboard/next.config.ts** (40 lines)
+2. **App/FrontEnd/next.config.ts** (40 lines)
    - Configuration for images, environment variables
    - API rewrites to backend (optional)
    - Build optimization
 
-3. **dashboard/tailwind.config.ts** (100 lines)
+3. **App/FrontEnd/tailwind.config.ts** (100 lines)
    - Dark mode: class strategy
    - ShadCN/UI preset
    - Custom colors and spacing
    - Animation extensions
 
-4. **dashboard/postcss.config.js** (20 lines)
+4. **App/FrontEnd/postcss.config.js** (20 lines)
    - Tailwind CSS plugin
    - Autoprefixer
 
-5. **dashboard/tsconfig.json** (50 lines)
+5. **App/FrontEnd/tsconfig.json** (50 lines)
    - Strict mode, path aliases, React 19
 
-6. **dashboard/.eslintrc.json** (30 lines)
+6. **App/FrontEnd/.eslintrc.json** (30 lines)
    - Next.js recommended rules
    - TypeScript support
 
-7. **dashboard/.prettierrc** (15 lines)
+7. **App/FrontEnd/.prettierrc** (15 lines)
    - Consistent formatting
    - 2 spaces, semicolons, etc.
 
-8. **dashboard/.env.example** (6 lines)
+8. **App/FrontEnd/.env.example** (6 lines)
    ```
    NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
    NEXT_PUBLIC_SOCKET_URL=http://localhost:3000
    DASHBOARD_PASSWORD=letip2025
    ```
 
-9. **dashboard/.env.local** (git-ignored, local only)
+9. **App/FrontEnd/.env.local** (git-ignored, local only)
    - Same as .env.example
 
-10. **dashboard/app/layout.tsx** (100 lines)
+10. **App/FrontEnd/app/layout.tsx** (100 lines)
     - Root layout with dark theme
     - Font imports (Space Grotesk, Inter)
     - Providers wrapper
     - Meta tags
 
-11. **dashboard/app/page.tsx** (20 lines)
+11. **App/FrontEnd/app/page.tsx** (20 lines)
     - Redirect to /dashboard
 
-12. **dashboard/.gitignore** (15 lines)
+12. **App/FrontEnd/.gitignore** (15 lines)
     - Standard Next.js ignores
     - Environment files
     - Build artifacts
@@ -155,14 +155,14 @@ npm run build 2>&1 | head -50
 
 ### Files to Create
 
-1. **dashboard/styles/globals.css** (150 lines)
+1. **App/FrontEnd/styles/globals.css** (150 lines)
    - Tailwind directives (@tailwind, @layer)
    - Custom animations
    - Dark scrollbar styling
    - Focus states
    - Smooth transitions
 
-2. **dashboard/styles/animations.ts** (120 lines)
+2. **App/FrontEnd/styles/animations.ts** (120 lines)
    ```typescript
    Export Framer Motion variants:
    - fadeIn, fadeOut
@@ -180,7 +180,7 @@ npm run build 2>&1 | head -50
    - transition with duration/easing
    ```
 
-3. **dashboard/DESIGN_TOKENS.md** (200 lines)
+3. **App/FrontEnd/DESIGN_TOKENS.md** (200 lines)
    - Typography scale with px/rem values
    - Spacing scale (4px baseline)
    - 8px grid explanation
@@ -189,25 +189,25 @@ npm run build 2>&1 | head -50
    - Color palette (hex, hsl, Tailwind)
    - Animation timing values
 
-4. **dashboard/components/ui/README.md** (150 lines)
+4. **App/FrontEnd/components/ui/README.md** (150 lines)
    - List all ShadCN components to install
    - Component installation commands
    - Custom component patterns
    - Composition examples
    - Prop naming conventions
 
-5. **dashboard/tailwind.config.ts** (extend from fullstack-developer)
+5. **App/FrontEnd/tailwind.config.ts** (extend from fullstack-developer)
    - Dark theme colors
    - Custom spacing
    - Animation definitions
    - Plugin configuration
 
-6. **dashboard/app/layout.tsx** (includes font imports)
+6. **App/FrontEnd/app/layout.tsx** (includes font imports)
    - Space Grotesk: @import
    - Inter: @import
    - Global styles application
 
-7. **dashboard/THEME.md** (100 lines)
+7. **App/FrontEnd/THEME.md** (100 lines)
    - Dark theme philosophy
    - Color semantics
    - 3D depth approach
@@ -230,32 +230,32 @@ npm run build 2>&1 | head -50
 
 ### Files to Create
 
-1. **dashboard/lib/axios.ts** (50 lines)
+1. **App/FrontEnd/lib/axios.ts** (50 lines)
    - Axios instance with baseURL
    - Request/response interceptors
    - Error handling
    - Timeout configuration
 
-2. **dashboard/lib/socket.ts** (80 lines)
+2. **App/FrontEnd/lib/socket.ts** (80 lines)
    - Socket.io client initialization
    - Connection/disconnection handlers
    - Auto-reconnect configuration
    - Event emitter/listener types
 
-3. **dashboard/middleware.ts** (60 lines)
+3. **App/FrontEnd/middleware.ts** (60 lines)
    - Password protection middleware
    - Cookie validation
    - Redirect logic
    - Public routes whitelist (/login)
 
-4. **dashboard/app/(auth)/login/page.tsx** (100 lines)
+4. **App/FrontEnd/app/(auth)/login/page.tsx** (100 lines)
    - Password form
    - Form submission handler
    - Cookie setting
    - Redirect to dashboard
    - Error handling
 
-5. **dashboard/lib/api/businesses.ts** (100 lines)
+5. **App/FrontEnd/lib/api/businesses.ts** (100 lines)
    ```typescript
    Export functions:
    - getBusinesses(page, limit, filters)
@@ -266,50 +266,50 @@ npm run build 2>&1 | head -50
    All with proper TypeScript types and error handling
    ```
 
-6. **dashboard/lib/api/scraper.ts** (60 lines)
+6. **App/FrontEnd/lib/api/scraper.ts** (60 lines)
    ```typescript
    Export functions:
    - startScrape(location, radius, maxResults)
    - getScrapeStatus(jobId)
    ```
 
-7. **dashboard/lib/api/enrichment.ts** (60 lines)
+7. **App/FrontEnd/lib/api/enrichment.ts** (60 lines)
    ```typescript
    Export functions:
    - enrichBusiness(id)
    - enrichBatch(limit)
    ```
 
-8. **dashboard/lib/api/outreach.ts** (60 lines)
+8. **App/FrontEnd/lib/api/outreach.ts** (60 lines)
    ```typescript
    Export functions:
    - generateOutreach(id)
    - getOutreach(id)
    ```
 
-9. **dashboard/lib/hooks/useBusinesses.ts** (80 lines)
+9. **App/FrontEnd/lib/hooks/useBusinesses.ts** (80 lines)
    - Fetch businesses with pagination
    - Integrate with Zustand store
    - Handle loading/error states
    - Listen to WebSocket updates
 
-10. **dashboard/lib/hooks/useStats.ts** (80 lines)
+10. **App/FrontEnd/lib/hooks/useStats.ts** (80 lines)
     - Fetch stats
     - Listen to real-time updates via WebSocket
     - Update Zustand store on events
 
-11. **dashboard/lib/hooks/useWebSocket.ts** (100 lines)
+11. **App/FrontEnd/lib/hooks/useWebSocket.ts** (100 lines)
     - Manage socket connection
     - Provide emit/on helpers
     - Handle disconnection/reconnection
     - Return socket instance
 
-12. **dashboard/lib/hooks/useScraper.ts** (80 lines)
+12. **App/FrontEnd/lib/hooks/useScraper.ts** (80 lines)
     - Manage scraper state
     - Listen to scraping progress events
     - Handle completion/errors
 
-13. **dashboard/lib/hooks/useEnrichment.ts** (80 lines)
+13. **App/FrontEnd/lib/hooks/useEnrichment.ts** (80 lines)
     - Manage enrichment state
     - Listen to enrichment progress
     - Track batch operations
@@ -330,14 +330,14 @@ npm run build 2>&1 | head -50
 
 ### Files to Create
 
-1. **dashboard/TYPESCRIPT_REPORT.md** (100 lines)
+1. **App/FrontEnd/TYPESCRIPT_REPORT.md** (100 lines)
    - Verify strict mode in tsconfig.json
    - Check no `any` types
    - Validate component prop types
    - Document type coverage
    - List all type files and exports
 
-2. **dashboard/SECURITY.md** (150 lines)
+2. **App/FrontEnd/SECURITY.md** (150 lines)
    - Password protection via middleware (not client-side)
    - Verify NEXT_PUBLIC_* env vars only
    - API baseURL configuration
@@ -345,7 +345,7 @@ npm run build 2>&1 | head -50
    - CORS considerations
    - No secrets in code
 
-3. **dashboard/PERFORMANCE.md** (150 lines)
+3. **App/FrontEnd/PERFORMANCE.md** (150 lines)
    - Code splitting strategy
    - Image optimization
    - Font loading strategy
@@ -354,21 +354,21 @@ npm run build 2>&1 | head -50
    - WebSocket event debouncing
    - Caching strategy
 
-4. **dashboard/ERROR_HANDLING.md** (120 lines)
+4. **App/FrontEnd/ERROR_HANDLING.md** (120 lines)
    - API error types and handling
    - Network error recovery
    - WebSocket disconnection handling
    - User-friendly error messages
    - Error logging approach
 
-5. **dashboard/TESTING.md** (150 lines)
+5. **App/FrontEnd/TESTING.md** (150 lines)
    - Phase 1: Manual testing with chrome-devtools
    - Phase 2: Unit tests (Jest)
    - Phase 3: Integration tests
    - Phase 4: E2E tests
    - Key test areas for each component/hook
 
-6. **dashboard/CODE_QUALITY.md** (100 lines)
+6. **App/FrontEnd/CODE_QUALITY.md** (100 lines)
    - ESLint configuration review
    - Prettier formatting applied
    - TypeScript compilation check

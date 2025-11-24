@@ -8,7 +8,7 @@ This directory contains all project documentation organized by purpose.
 docs/
 ├── planning/           # Planning methodologies and implementation guides
 ├── orchestration/      # Multi-agent coordination and execution
-└── dashboard/          # Dashboard-specific documentation
+└── App/FrontEnd/          # Dashboard-specific documentation
 ```
 
 ## Planning Documentation (`planning/`)
@@ -44,7 +44,7 @@ Multi-agent coordination, phase planning, and execution instructions:
 
 ---
 
-## Dashboard Documentation (`dashboard/`)
+## Dashboard Documentation (`App/FrontEnd/`)
 
 Next.js 16 dashboard build plans and specifications:
 
@@ -63,7 +63,7 @@ Next.js 16 dashboard build plans and specifications:
 → Read `orchestration/ORCHESTRATION_INSTRUCTIONS.md`
 
 **Building the dashboard?**
-→ Follow `dashboard/DASHBOARD_BUILD_PLAN.md`
+→ Follow `App/FrontEnd/DASHBOARD_BUILD_PLAN.md`
 
 **Understanding core principles?**
 → Review `planning/GlobalRuleSections.md`

@@ -121,22 +121,22 @@ Sentry Performance Dashboard shows:
 
 ### Files to Modify
 
-1. **nodejs_space/src/main.ts** - Initialize Sentry for backend
-2. **nodejs_space/src/app.module.ts** - Configure Sentry module
-3. **dashboard/app/layout.tsx** - Initialize Sentry for frontend
-4. **dashboard/next.config.js** - Configure source maps upload
+1. **App/BackEnd/src/main.ts** - Initialize Sentry for backend
+2. **App/BackEnd/src/app.module.ts** - Configure Sentry module
+3. **App/FrontEnd/app/layout.tsx** - Initialize Sentry for frontend
+4. **App/FrontEnd/next.config.js** - Configure source maps upload
 
 ### Files to Create
 
-1. **nodejs_space/sentry.config.ts** - Sentry backend configuration
-2. **dashboard/sentry.client.config.ts** - Sentry client configuration
-3. **dashboard/sentry.server.config.ts** - Sentry server configuration
-4. **dashboard/sentry.edge.config.ts** - Sentry edge configuration
+1. **App/BackEnd/sentry.config.ts** - Sentry backend configuration
+2. **App/FrontEnd/sentry.client.config.ts** - Sentry client configuration
+3. **App/FrontEnd/sentry.server.config.ts** - Sentry server configuration
+4. **App/FrontEnd/sentry.edge.config.ts** - Sentry edge configuration
 5. **.sentryclirc** - Sentry CLI config for source map upload
 
 ### Environment Variables
 
-**Add to `nodejs_space/.env`:**
+**Add to `App/BackEnd/.env`:**
 ```env
 SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
 SENTRY_ENVIRONMENT=development
@@ -144,7 +144,7 @@ SENTRY_RELEASE=letip-backend@1.0.0
 SENTRY_TRACES_SAMPLE_RATE=0.1  # 10% of transactions
 ```
 
-**Add to `dashboard/.env.local`:**
+**Add to `App/FrontEnd/.env.local`:**
 ```env
 NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
 SENTRY_ENVIRONMENT=development
@@ -212,7 +212,7 @@ yarn add @sentry/node @sentry/profiling-node
 
 **Step 2.2: Create Sentry configuration**
 
-**File:** `nodejs_space/src/sentry.config.ts`
+**File:** `App/BackEnd/src/sentry.config.ts`
 ```typescript
 import * as Sentry from '@sentry/node';
 import { ProfilingIntegration } from '@sentry/profiling-node';
@@ -258,7 +258,7 @@ export { Sentry };
 
 **Step 2.3: Initialize Sentry in main.ts**
 
-**File:** `nodejs_space/src/main.ts`
+**File:** `App/BackEnd/src/main.ts`
 ```typescript
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -291,7 +291,7 @@ bootstrap().catch((error) => {
 
 **Step 2.4: Add Sentry interceptor for NestJS**
 
-**File:** `nodejs_space/src/common/interceptors/sentry.interceptor.ts`
+**File:** `App/BackEnd/src/common/interceptors/sentry.interceptor.ts`
 ```typescript
 import {
   Injectable,
@@ -360,7 +360,7 @@ export class SentryInterceptor implements NestInterceptor {
 
 **Step 2.5: Register interceptor globally**
 
-**File:** `nodejs_space/src/app.module.ts`
+**File:** `App/BackEnd/src/app.module.ts`
 ```typescript
 import { Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -381,7 +381,7 @@ export class AppModule {}
 
 **Step 2.6: Add manual error capture in services**
 
-**File:** `nodejs_space/src/enrichment/enrichment.service.ts` (example)
+**File:** `App/BackEnd/src/enrichment/enrichment.service.ts` (example)
 ```typescript
 import { Sentry } from '../sentry.config';
 
@@ -414,7 +414,7 @@ async enrichBusiness(businessId: number) {
 
 **Step 2.7: Add environment variables**
 
-**File:** `nodejs_space/.env`
+**File:** `App/BackEnd/.env`
 ```env
 # ... existing vars ...
 
@@ -444,7 +444,7 @@ npm install @sentry/nextjs
 
 **Step 3.2: Create Sentry configurations**
 
-**File:** `dashboard/sentry.client.config.ts`
+**File:** `App/FrontEnd/sentry.client.config.ts`
 ```typescript
 import * as Sentry from '@sentry/nextjs';
 
@@ -485,7 +485,7 @@ Sentry.init({
 });
 ```
 
-**File:** `dashboard/sentry.server.config.ts`
+**File:** `App/FrontEnd/sentry.server.config.ts`
 ```typescript
 import * as Sentry from '@sentry/nextjs';
 
@@ -502,7 +502,7 @@ Sentry.init({
 });
 ```
 
-**File:** `dashboard/sentry.edge.config.ts`
+**File:** `App/FrontEnd/sentry.edge.config.ts`
 ```typescript
 import * as Sentry from '@sentry/nextjs';
 
@@ -516,7 +516,7 @@ Sentry.init({
 
 **Step 3.3: Configure Next.js for Sentry**
 
-**File:** `dashboard/next.config.js`
+**File:** `App/FrontEnd/next.config.js`
 ```javascript
 const { withSentryConfig } = require('@sentry/nextjs');
 
@@ -549,7 +549,7 @@ module.exports = withSentryConfig(
 
 **Step 3.4: Add manual error capture in components**
 
-**File:** `dashboard/hooks/mutations/use-business-mutations.ts` (example)
+**File:** `App/FrontEnd/hooks/mutations/use-business-mutations.ts` (example)
 ```typescript
 import * as Sentry from '@sentry/nextjs';
 
@@ -577,7 +577,7 @@ export function useDeleteBusiness() {
 
 **Step 3.5: Add user context on authentication**
 
-**File:** `dashboard/app/layout.tsx` (example)
+**File:** `App/FrontEnd/app/layout.tsx` (example)
 ```typescript
 import * as Sentry from '@sentry/nextjs';
 
@@ -605,7 +605,7 @@ export default function RootLayout({ children }) {
 
 **Step 3.6: Add environment variables**
 
-**File:** `dashboard/.env.local`
+**File:** `App/FrontEnd/.env.local`
 ```env
 # ... existing vars ...
 
@@ -655,10 +655,10 @@ SENTRY_AUTH_TOKEN=your-auth-token
 2. Add rules:
    ```
    # Backend errors
-   path:nodejs_space/* @backend-team
+   path:App/BackEnd/* @backend-team
 
    # Frontend errors
-   path:dashboard/* @frontend-team
+   path:App/FrontEnd/* @frontend-team
 
    # Enrichment errors
    service:enrichment @data-team
@@ -720,7 +720,7 @@ token=your-auth-token
 
 **Step 5.4: Update Docker builds to include source maps**
 
-**File:** `nodejs_space/Dockerfile` (update build stage)
+**File:** `App/BackEnd/Dockerfile` (update build stage)
 ```dockerfile
 # Stage 2: Build
 FROM node:20-alpine AS builder
@@ -825,7 +825,7 @@ grep @sentry package.json
 ### 2. Test Backend Error Capture
 ```bash
 # Add test endpoint
-# File: nodejs_space/src/app.controller.ts
+# File: App/BackEnd/src/app.controller.ts
 @Get('test-error')
 testError() {
   throw new Error('Test error from backend');
@@ -840,7 +840,7 @@ curl http://localhost:3000/test-error
 
 ### 3. Test Frontend Error Capture
 ```typescript
-// dashboard/app/page.tsx
+// App/FrontEnd/app/page.tsx
 <Button onClick={() => {
   throw new Error('Test error from frontend');
 }}>

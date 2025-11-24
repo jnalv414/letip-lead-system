@@ -11,7 +11,6 @@ import { BusinessesModule } from './businesses/businesses.module';
 import { ScraperModule } from './scraper/scraper.module';
 import { EnrichmentModule } from './enrichment/enrichment.module';
 import { OutreachModule } from './outreach/outreach.module';
-import { TelegramModule } from './telegram/telegram.module';
 import { WebsocketModule } from './websocket/websocket.module';
 
 // Determine the correct path for FrontEnd files
@@ -50,7 +49,6 @@ function getDashboardPath(): string {
     ScraperModule,
     EnrichmentModule,
     OutreachModule,
-    TelegramModule,
     WebsocketModule,
   ],
   controllers: [AppController],

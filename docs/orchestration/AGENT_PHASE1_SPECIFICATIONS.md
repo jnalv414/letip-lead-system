@@ -15,30 +15,30 @@ Design data flow architecture, state management strategy, and TypeScript type sy
 
 ### Deliverables
 
-1. **TypeScript Type Definitions** (`dashboard/types/models.ts`)
+1. **TypeScript Type Definitions** (`App/FrontEnd/types/models.ts`)
    - Export all Business, Contact, EnrichmentLog, OutreachMessage types
    - API request/response interfaces
    - Component prop types
    - Event types for WebSocket
 
-2. **Type Definitions** (`dashboard/types/api.ts`)
+2. **Type Definitions** (`App/FrontEnd/types/api.ts`)
    - API endpoint response types
    - Pagination metadata
    - Error response types
    - Query parameter types
 
-3. **Zustand Store Architecture** (`dashboard/stores/README.md`)
+3. **Zustand Store Architecture** (`App/FrontEnd/stores/README.md`)
    - Describe 4 stores: businessStore, statsStore, scraperStore, enrichmentStore
    - Define state shape for each
    - List selector functions
    - Describe inter-store dependencies
 
-4. **Data Flow Diagram** (ASCII art in `dashboard/ARCHITECTURE.md`)
+4. **Data Flow Diagram** (ASCII art in `App/FrontEnd/ARCHITECTURE.md`)
    - Component → Hook → Store → API → WebSocket → Store → UI
    - Show Zustand stores as central state layer
    - Show Socket.io event flow
 
-5. **TypeScript Configuration** (`dashboard/tsconfig.json`)
+5. **TypeScript Configuration** (`App/FrontEnd/tsconfig.json`)
    - Strict mode enabled
    - Path aliases configured (@/components, @/lib, etc.)
    - React JSX runtime: react-jsx
@@ -63,14 +63,14 @@ Initialize Next.js 15 project, install dependencies, configure build system
 
 ### Deliverables
 
-1. **Next.js 16 Project Initialization** (`dashboard/`)
+1. **Next.js 16 Project Initialization** (`App/FrontEnd/`)
    - Initialize with `create-next-app` or manual setup
    - TypeScript enabled
    - Tailwind CSS configured
    - App Router structure
    - Proper .gitignore
 
-2. **Package.json** (`dashboard/package.json`)
+2. **Package.json** (`App/FrontEnd/package.json`)
    ```
    Dependencies:
    - next@16.0.0
@@ -100,13 +100,13 @@ Initialize Next.js 15 project, install dependencies, configure build system
    ```
 
 3. **Environment Configuration**
-   - `dashboard/.env.example`:
+   - `App/FrontEnd/.env.example`:
      ```
      NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
      NEXT_PUBLIC_SOCKET_URL=http://localhost:3000
      DASHBOARD_PASSWORD=letip2025
      ```
-   - `dashboard/.env.local` (development only, git-ignored)
+   - `App/FrontEnd/.env.local` (development only, git-ignored)
 
 4. **Folder Structure**
    ```
@@ -116,7 +116,7 @@ Initialize Next.js 15 project, install dependencies, configure build system
    ├── (auth)/
    │   └── login/
    │       └── page.tsx
-   └── dashboard/
+   └── App/FrontEnd/
        ├── layout.tsx
        ├── page.tsx
        ├── businesses/
@@ -124,7 +124,7 @@ Initialize Next.js 15 project, install dependencies, configure build system
        └── enrichment/
    components/
    ├── ui/
-   ├── dashboard/
+   ├── App/FrontEnd/
    └── common/
    lib/
    ├── api/
@@ -136,23 +136,23 @@ Initialize Next.js 15 project, install dependencies, configure build system
    public/
    ```
 
-5. **Next.js Configuration** (`dashboard/next.config.ts`)
+5. **Next.js Configuration** (`App/FrontEnd/next.config.ts`)
    - Image optimization enabled
    - Turbopack configuration
    - API redirects to backend (optional)
    - Environment variable handling
 
-6. **Tailwind Configuration** (`dashboard/tailwind.config.ts`)
+6. **Tailwind Configuration** (`App/FrontEnd/tailwind.config.ts`)
    - Dark mode: class strategy
    - Extend theme with custom colors and spacing
    - Configure shadcn/ui preset
    - Custom animation definitions
 
-7. **TypeScript Configuration** (`dashboard/tsconfig.json`)
+7. **TypeScript Configuration** (`App/FrontEnd/tsconfig.json`)
    - Strict mode enabled
    - Path aliases: @/components, @/lib, @/types, @/stores, @/styles
 
-8. **Post CSS Configuration** (`dashboard/postcss.config.js`)
+8. **Post CSS Configuration** (`App/FrontEnd/postcss.config.js`)
    - Tailwind CSS
    - Autoprefixer
 
@@ -160,7 +160,7 @@ Initialize Next.js 15 project, install dependencies, configure build system
    - `.eslintrc.json` with Next.js recommended config
    - `.prettierrc` with consistent formatting
 
-10. **Root Layout with Providers** (`dashboard/app/layout.tsx`)
+10. **Root Layout with Providers** (`App/FrontEnd/app/layout.tsx`)
     - Global Tailwind styles
     - Providers component (Zustand, Socket.io context)
     - HTML structure
@@ -185,7 +185,7 @@ Design system, component library architecture, animations, dark theme
 
 ### Deliverables
 
-1. **Tailwind Dark Theme Configuration** (extend in `dashboard/tailwind.config.ts`)
+1. **Tailwind Dark Theme Configuration** (extend in `App/FrontEnd/tailwind.config.ts`)
    ```javascript
    colors: {
      // Semantic colors
@@ -205,13 +205,13 @@ Design system, component library architecture, animations, dark theme
    }
    ```
 
-2. **Component Library Structure** (`dashboard/components/ui/README.md`)
+2. **Component Library Structure** (`App/FrontEnd/components/ui/README.md`)
    - List all ShadCN components to be installed
    - Document custom component patterns
    - Define component prop naming conventions
    - Show composition examples
 
-3. **Framer Motion Animation Library** (`dashboard/styles/animations.ts`)
+3. **Framer Motion Animation Library** (`App/FrontEnd/styles/animations.ts`)
    ```typescript
    Export animation variants for:
    - fadeIn, fadeOut
@@ -223,14 +223,14 @@ Design system, component library architecture, animations, dark theme
    - shimmer (for loading)
    ```
 
-4. **Custom CSS** (`dashboard/styles/globals.css`)
+4. **Custom CSS** (`App/FrontEnd/styles/globals.css`)
    - Tailwind directives (@tailwind)
    - Custom animations
    - Scrollbar styling (dark)
    - Focus states for accessibility
    - Smooth transitions
 
-5. **Design Tokens Documentation** (`dashboard/DESIGN_TOKENS.md`)
+5. **Design Tokens Documentation** (`App/FrontEnd/DESIGN_TOKENS.md`)
    - Typography scale (sizes: 12px, 14px, 16px, 18px, 24px, 32px)
    - Spacing scale (4px, 8px, 16px, 24px, 32px, 48px)
    - 8px baseline grid explanation
@@ -239,13 +239,13 @@ Design system, component library architecture, animations, dark theme
    - Color palette with hex/hsl values
    - Animation timing (fast: 150ms, normal: 300ms, slow: 500ms)
 
-6. **Component Spacing Guide** (`dashboard/components/ui/README.md`)
+6. **Component Spacing Guide** (`App/FrontEnd/components/ui/README.md`)
    - Margin/padding conventions
    - Gap sizes for flexbox/grid
    - Container padding (px-4, px-6, px-8)
    - Section spacing (gap-8, gap-12)
 
-7. **Font Configuration** (import in `dashboard/app/layout.tsx`)
+7. **Font Configuration** (import in `App/FrontEnd/app/layout.tsx`)
    - Space Grotesk from Google Fonts (700 weight for headings)
    - Inter from Google Fonts (400, 500 weights for body)
 
@@ -273,7 +273,7 @@ API integration, WebSocket setup, custom hooks, HTTP client configuration
 
 ### Deliverables
 
-1. **Axios Instance Configuration** (`dashboard/lib/axios.ts`)
+1. **Axios Instance Configuration** (`App/FrontEnd/lib/axios.ts`)
    ```typescript
    Create axios instance with:
    - baseURL from env (NEXT_PUBLIC_API_BASE_URL)
@@ -283,7 +283,7 @@ API integration, WebSocket setup, custom hooks, HTTP client configuration
    - Timeout configuration
    ```
 
-2. **API Service Layer** (`dashboard/lib/api/`)
+2. **API Service Layer** (`App/FrontEnd/lib/api/`)
    ```
    Create files:
    - businesses.ts (getBusinesses, getBusinessById, getStats, deleteBusinesses)
@@ -298,7 +298,7 @@ API integration, WebSocket setup, custom hooks, HTTP client configuration
    - Transform API responses to typed data
    ```
 
-3. **Socket.io Client Setup** (`dashboard/lib/socket.ts`)
+3. **Socket.io Client Setup** (`App/FrontEnd/lib/socket.ts`)
    ```typescript
    Create socket instance with:
    - NEXT_PUBLIC_SOCKET_URL from env
@@ -308,7 +308,7 @@ API integration, WebSocket setup, custom hooks, HTTP client configuration
    - Proper cleanup on unmount
    ```
 
-4. **Custom Hooks** (`dashboard/lib/hooks/`)
+4. **Custom Hooks** (`App/FrontEnd/lib/hooks/`)
    ```
    Create hooks:
    - useBusinesses() - fetch businesses with pagination/filtering
@@ -325,16 +325,16 @@ API integration, WebSocket setup, custom hooks, HTTP client configuration
    ```
 
 5. **React Context for WebSocket** (optional, if socket needs global access)
-   - `dashboard/components/common/SocketProvider.tsx`
+   - `App/FrontEnd/components/common/SocketProvider.tsx`
    - Provides socket instance to all components
    - Handles connection state
 
-6. **Error Handling Utilities** (`dashboard/lib/utils.ts`)
+6. **Error Handling Utilities** (`App/FrontEnd/lib/utils.ts`)
    - Error type guards
    - User-friendly error messages
    - Retry logic helpers
 
-7. **Password Middleware** (`dashboard/middleware.ts`)
+7. **Password Middleware** (`App/FrontEnd/middleware.ts`)
    ```typescript
    - Check for password cookie
    - Redirect to /login if missing
@@ -343,7 +343,7 @@ API integration, WebSocket setup, custom hooks, HTTP client configuration
    - 30-day expiry
    ```
 
-8. **Login Page** (`dashboard/app/(auth)/login/page.tsx`)
+8. **Login Page** (`App/FrontEnd/app/(auth)/login/page.tsx`)
    - Simple password form
    - Error handling
    - Redirect to dashboard on success
@@ -369,13 +369,13 @@ Review architecture, security, performance, establish testing strategy
 
 ### Deliverables
 
-1. **TypeScript Strictness Verification** (`dashboard/TYPESCRIPT_REPORT.md`)
+1. **TypeScript Strictness Verification** (`App/FrontEnd/TYPESCRIPT_REPORT.md`)
    - Verify strict mode enabled in tsconfig.json
    - Check no `any` types in type definitions
    - Validate component prop types
    - Document type coverage percentage
 
-2. **Security Assessment** (`dashboard/SECURITY.md`)
+2. **Security Assessment** (`App/FrontEnd/SECURITY.md`)
    - Password protection via middleware (not client-side)
    - Environment variables not exposed to client (except NEXT_PUBLIC_*)
    - API calls use baseURL, not hardcoded URLs
@@ -383,7 +383,7 @@ Review architecture, security, performance, establish testing strategy
    - CORS considerations for API calls
    - No secrets in code or comments
 
-3. **Performance Optimization Strategy** (`dashboard/PERFORMANCE.md`)
+3. **Performance Optimization Strategy** (`App/FrontEnd/PERFORMANCE.md`)
    ```markdown
    - Code splitting (automatic with Next.js App Router)
    - Image optimization
@@ -395,14 +395,14 @@ Review architecture, security, performance, establish testing strategy
    - API request caching strategy
    ```
 
-4. **Error Handling Best Practices** (`dashboard/ERROR_HANDLING.md`)
+4. **Error Handling Best Practices** (`App/FrontEnd/ERROR_HANDLING.md`)
    - API error types and handling
    - Network error recovery
    - WebSocket disconnection handling
    - User-friendly error messages
    - Error logging/reporting
 
-5. **Testing Strategy** (`dashboard/TESTING.md`)
+5. **Testing Strategy** (`App/FrontEnd/TESTING.md`)
    ```markdown
    Phases:
    1. Manual testing with chrome-devtools MCP
@@ -419,7 +419,7 @@ Review architecture, security, performance, establish testing strategy
    - Password protection
    ```
 
-6. **Code Quality Checklist** (`dashboard/CODE_QUALITY.md`)
+6. **Code Quality Checklist** (`App/FrontEnd/CODE_QUALITY.md`)
    - ESLint configuration without warnings
    - Prettier formatting applied
    - TypeScript compilation without errors
@@ -428,7 +428,7 @@ Review architecture, security, performance, establish testing strategy
    - Modular component design
    - Reusable utility functions
 
-7. **Performance Metrics Baseline** (`dashboard/METRICS.md`)
+7. **Performance Metrics Baseline** (`App/FrontEnd/METRICS.md`)
    - Establish baseline for:
      - Time to Interactive (TTI)
      - First Contentful Paint (FCP)
@@ -436,7 +436,7 @@ Review architecture, security, performance, establish testing strategy
      - Core Web Vitals thresholds
      - Bundle size targets
 
-8. **Accessibility Review** (`dashboard/ACCESSIBILITY.md`)
+8. **Accessibility Review** (`App/FrontEnd/ACCESSIBILITY.md`)
    - WCAG 2.1 AA compliance checklist
    - Keyboard navigation support
    - Screen reader testing

@@ -133,24 +133,24 @@ async getStats(): Promise<Stats> {
 
 ### Core Backend Files
 
-1. **`nodejs_space/src/businesses/businesses.service.ts:119-149`**
+1. **`App/BackEnd/src/businesses/businesses.service.ts:119-149`**
    - Current `getStats()` implementation
    - 6 parallel database counts
    - **Pattern to cache**: This exact method
 
-2. **`nodejs_space/src/businesses/businesses.service.ts:38-76`**
+2. **`App/BackEnd/src/businesses/businesses.service.ts:38-76`**
    - `findAll()` method with pagination and filtering
    - **Pattern to cache**: Query results by filter combination
 
-3. **`nodejs_space/src/businesses/businesses.service.ts:17-36`**
+3. **`App/BackEnd/src/businesses/businesses.service.ts:17-36`**
    - `create()` method that emits WebSocket events
    - **Pattern to replicate**: Cache invalidation after mutations
 
-4. **`nodejs_space/src/websocket/websocket.gateway.ts:34-57`**
+4. **`App/BackEnd/src/websocket/websocket.gateway.ts:34-57`**
    - WebSocket event emission methods
    - **Integration point**: Trigger cache invalidation on events
 
-5. **`nodejs_space/package.json:22-41`**
+5. **`App/BackEnd/package.json:22-41`**
    - Current dependencies
    - **Add**: `ioredis` package
 
@@ -264,18 +264,18 @@ volumes:
 
 3. **Add Environment Variables**
    ```bash
-   # nodejs_space/.env
+   # App/BackEnd/.env
    REDIS_URL=redis://localhost:6379
    REDIS_PASSWORD=  # Empty for local dev
    ```
 
 4. **Create Redis Module**
-   - File: `nodejs_space/src/redis/redis.module.ts`
+   - File: `App/BackEnd/src/redis/redis.module.ts`
    - Configure RedisModule with environment variables
    - Export RedisService for injection
 
 5. **Create Redis Service**
-   - File: `nodejs_space/src/redis/redis.service.ts`
+   - File: `App/BackEnd/src/redis/redis.service.ts`
    - Wrapper around ioredis client
    - Helper methods: `get`, `set`, `setex`, `del`, `invalidatePattern`
 
@@ -285,7 +285,7 @@ volumes:
 
 6. **Implement Cache Helper Methods in RedisService**
    ```typescript
-   // nodejs_space/src/redis/redis.service.ts
+   // App/BackEnd/src/redis/redis.service.ts
    async get<T>(key: string): Promise<T | null> {
      const data = await this.client.get(key);
      return data ? JSON.parse(data) : null;
@@ -309,7 +309,7 @@ volumes:
    ```
 
 7. **Add Caching to Stats Endpoint**
-   - File: `nodejs_space/src/businesses/businesses.service.ts`
+   - File: `App/BackEnd/src/businesses/businesses.service.ts`
    - Modify `getStats()` method:
      ```typescript
      async getStats(): Promise<Stats> {
@@ -403,7 +403,7 @@ volumes:
       ```
 
 11. **Add Cache Invalidation on Enrichment**
-    - File: `nodejs_space/src/enrichment/enrichment.service.ts`
+    - File: `App/BackEnd/src/enrichment/enrichment.service.ts`
     - After enrichment completes:
       ```typescript
       // Invalidate stats and business cache
@@ -426,7 +426,7 @@ volumes:
       ```
 
 13. **Add Health Check**
-    - File: `nodejs_space/src/health/health.controller.ts`
+    - File: `App/BackEnd/src/health/health.controller.ts`
     - Add Redis health check:
       ```typescript
       @Get('health')
@@ -453,8 +453,8 @@ volumes:
 
 **Phase 2: Module Creation (3 tasks)**
 
-6. [ ] Create RedisModule: `nodejs_space/src/redis/redis.module.ts`
-7. [ ] Create RedisService: `nodejs_space/src/redis/redis.service.ts` with helper methods
+6. [ ] Create RedisModule: `App/BackEnd/src/redis/redis.module.ts`
+7. [ ] Create RedisService: `App/BackEnd/src/redis/redis.service.ts` with helper methods
 8. [ ] Import RedisModule in AppModule
 
 **Phase 3: Stats Caching (3 tasks)**
@@ -497,7 +497,7 @@ volumes:
 
 ### Unit Tests
 
-**File**: `nodejs_space/src/redis/redis.service.spec.ts`
+**File**: `App/BackEnd/src/redis/redis.service.spec.ts`
 
 **Test Cases**:
 
@@ -563,7 +563,7 @@ volumes:
 
 ### Integration Tests
 
-**File**: `nodejs_space/test/redis/redis.integration.spec.ts`
+**File**: `App/BackEnd/test/redis/redis.integration.spec.ts`
 
 **Test Cases**:
 
@@ -965,8 +965,8 @@ curl http://localhost:3000/health
 
 **After 5 minutes of usage, check logs**:
 ```bash
-grep "cache hit" nodejs_space/logs/app.log | wc -l
-grep "cache miss" nodejs_space/logs/app.log | wc -l
+grep "cache hit" App/BackEnd/logs/app.log | wc -l
+grep "cache miss" App/BackEnd/logs/app.log | wc -l
 ```
 
 **Expected**: Hit rate >80% (e.g., 800 hits, 200 misses)

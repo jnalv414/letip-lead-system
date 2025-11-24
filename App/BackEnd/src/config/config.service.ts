@@ -32,7 +32,7 @@ export class ConfigService {
       const secretsPath = path.join(
         process.env.HOME || '/home/ubuntu',
         '.config',
-        'abacusai_auth_secrets.json',
+        'letip_api_secrets.json',
       );
 
       if (fs.existsSync(secretsPath)) {
@@ -77,14 +77,6 @@ export class ConfigService {
 
   getAbstractApiKey(): string | null {
     return this.getSecret('abstractapi', 'api_key');
-  }
-
-  getTelegramBotToken(): string | null {
-    return this.getSecret('telegram', 'bot_token');
-  }
-
-  getAbacusAIApiKey(): string | undefined {
-    return this.nestConfigService.get<string>('ABACUSAI_API_KEY');
   }
 
   getDatabaseUrl(): string | undefined {

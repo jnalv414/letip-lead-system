@@ -1,8 +1,6 @@
 
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ConfigService } from '../config/config.service';
-import axios from 'axios';
 
 @Injectable()
 export class OutreachService {
@@ -10,7 +8,6 @@ export class OutreachService {
 
   constructor(
     private prisma: PrismaService,
-    private configService: ConfigService,
   ) {}
 
   async generateOutreachMessage(businessId: number, regenerate: boolean = false) {
@@ -88,75 +85,16 @@ export class OutreachService {
   }
 
   private async generatePersonalizedMessage(business: any): Promise<string> {
-    const apiKey = this.configService.getAbacusAIApiKey();
-    if (!apiKey) {
-      throw new Error('Abacus AI API key not configured');
-    }
-
     const contactName = business.contacts[0]?.name || 'Business Owner';
     const businessName = business.name;
-    const industry = business.industry || 'business';
     const city = business.city || 'your area';
 
-    const prompt = `Write a professional, friendly, and personalized outreach message for a local business owner. 
-
-Context:
-- Business Name: ${businessName}
-- Industry: ${industry}
-- Location: ${city}, New Jersey
-- Contact Name: ${contactName}
-
-Purpose:
-Invite them to join Le Tip of Western Monmouth, a business networking group in Monmouth County, New Jersey. Le Tip helps local business owners generate quality referrals, build professional relationships, and grow their businesses through weekly networking meetings.
-
-Requirements:
-- Keep it concise (150-200 words)
-- Personalize based on their business and industry
-- Mention specific benefits: quality referrals, professional relationships, business growth
-- Include a clear call-to-action
-- Professional yet warm and approachable tone
-- Do NOT include subject line, just the message body
-- Address them by name if available
-
-Generate the message:`;
-
-    try {
-      const response = await axios.post(
-        'https://apps.abacus.ai/v1/chat/completions',
-        {
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a professional networking outreach specialist writing personalized invitations for Le Tip business networking group.',
-            },
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-          stream: false,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-          },
-          timeout: 30000,
-        },
-      );
-
-      const messageText = response.data.choices[0].message.content.trim();
-      this.logger.log(`AI message generated successfully for ${businessName}`);
-      return messageText;
-    } catch (error) {
-      this.logger.error('Error generating AI message:', error.message);
-      
-      // Fallback template if AI fails
-      return this.getFallbackTemplate(businessName, contactName, city);
-    }
+    // Generate message using template
+    this.logger.log(`Generating template message for ${businessName}`);
+    return this.getMessageTemplate(businessName, contactName, city);
   }
 
-  private getFallbackTemplate(businessName: string, contactName: string, city: string): string {
+  private getMessageTemplate(businessName: string, contactName: string, city: string): string {
     return `Dear ${contactName},
 
 I hope this message finds you well. I'm reaching out to introduce you to Le Tip of Western Monmouth, a premier business networking group serving ${city} and the surrounding Monmouth County area.

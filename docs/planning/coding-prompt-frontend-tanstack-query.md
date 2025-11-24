@@ -291,41 +291,41 @@ socket.on('stats:updated', () => {
 
 ### Files to Create
 
-1. **dashboard/lib/api-client.ts**
+1. **App/FrontEnd/lib/api-client.ts**
    - Axios instance with base URL and interceptors
    - Typed API functions for all endpoints
    - Error handling and retries
 
-2. **dashboard/lib/query-client.ts**
+2. **App/FrontEnd/lib/query-client.ts**
    - TanStack Query client configuration
    - Default staleTime, cacheTime, retry logic
    - Error handlers
 
-3. **dashboard/providers/query-provider.tsx**
+3. **App/FrontEnd/providers/query-provider.tsx**
    - QueryClientProvider wrapper
    - React Query DevTools (development only)
 
-4. **dashboard/hooks/queries/use-businesses.ts**
+4. **App/FrontEnd/hooks/queries/use-businesses.ts**
    - `useBusinesses(filters)` - List with pagination
    - `useBusiness(id)` - Single business
    - `useStats()` - Dashboard stats
 
-5. **dashboard/hooks/mutations/use-business-mutations.ts**
+5. **App/FrontEnd/hooks/mutations/use-business-mutations.ts**
    - `useCreateBusiness()` - Create business
    - `useDeleteBusiness()` - Delete with optimistic update
    - `useUpdateBusiness()` - Update business
 
-6. **dashboard/hooks/mutations/use-enrichment-mutations.ts**
+6. **App/FrontEnd/hooks/mutations/use-enrichment-mutations.ts**
    - `useEnrichBusiness(id)` - Single enrichment
    - `useBatchEnrichment()` - Batch enrichment
 
-7. **dashboard/hooks/queries/use-scraper.ts**
+7. **App/FrontEnd/hooks/queries/use-scraper.ts**
    - `useScrapeStatus(jobId)` - Poll scrape job status
    - `useScrapingHistory()` - Past scraping jobs
 
 ### Environment Variables
 
-**Add to `dashboard/.env.local`:**
+**Add to `App/FrontEnd/.env.local`:**
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_PUBLIC_WS_URL=http://localhost:3000
@@ -370,7 +370,7 @@ npm install axios@^1.7.9
 
 **Step 1.2: Create API client**
 
-**File:** `dashboard/lib/api-client.ts`
+**File:** `App/FrontEnd/lib/api-client.ts`
 ```typescript
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
@@ -601,7 +601,7 @@ export const api = {
 
 **Step 1.3: Create Query Client configuration**
 
-**File:** `dashboard/lib/query-client.ts`
+**File:** `App/FrontEnd/lib/query-client.ts`
 ```typescript
 import { QueryClient, DefaultOptions } from '@tanstack/react-query';
 
@@ -640,7 +640,7 @@ export const queryClient = createQueryClient();
 
 **Step 1.4: Create Query Provider**
 
-**File:** `dashboard/providers/query-provider.tsx`
+**File:** `App/FrontEnd/providers/query-provider.tsx`
 ```typescript
 'use client';
 
@@ -663,7 +663,7 @@ export function QueryProvider({ children }: { children: ReactNode }) {
 
 **Step 1.5: Wrap app with Query Provider**
 
-**File:** `dashboard/app/layout.tsx`
+**File:** `App/FrontEnd/app/layout.tsx`
 ```typescript
 import { QueryProvider } from '@/providers/query-provider';
 import './globals.css';
@@ -691,7 +691,7 @@ export default function RootLayout({
 
 **Step 2.1: Business Queries**
 
-**File:** `dashboard/hooks/queries/use-businesses.ts`
+**File:** `App/FrontEnd/hooks/queries/use-businesses.ts`
 ```typescript
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { api, PaginatedResponse, Business } from '@/lib/api-client';
@@ -742,7 +742,7 @@ export function useStats(
 
 **Step 2.2: Scraper Queries**
 
-**File:** `dashboard/hooks/queries/use-scraper.ts`
+**File:** `App/FrontEnd/hooks/queries/use-scraper.ts`
 ```typescript
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { api, JobStatus } from '@/lib/api-client';
@@ -795,7 +795,7 @@ export function useFailedJobs(
 
 **Step 2.3: Enrichment Queries**
 
-**File:** `dashboard/hooks/queries/use-enrichment.ts`
+**File:** `App/FrontEnd/hooks/queries/use-enrichment.ts`
 ```typescript
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
@@ -825,7 +825,7 @@ export function useBatchEnrichmentStatus(
 
 **Step 3.1: Business Mutations**
 
-**File:** `dashboard/hooks/mutations/use-business-mutations.ts`
+**File:** `App/FrontEnd/hooks/mutations/use-business-mutations.ts`
 ```typescript
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, Business } from '@/lib/api-client';
@@ -918,7 +918,7 @@ export function useDeleteBusiness() {
 
 **Step 3.2: Scraper Mutations**
 
-**File:** `dashboard/hooks/mutations/use-scraper-mutations.ts`
+**File:** `App/FrontEnd/hooks/mutations/use-scraper-mutations.ts`
 ```typescript
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ScrapeRequest } from '@/lib/api-client';
@@ -975,7 +975,7 @@ export function useRetryJob() {
 
 **Step 3.3: Enrichment Mutations**
 
-**File:** `dashboard/hooks/mutations/use-enrichment-mutations.ts`
+**File:** `App/FrontEnd/hooks/mutations/use-enrichment-mutations.ts`
 ```typescript
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
@@ -1024,7 +1024,7 @@ export function useBatchEnrichment() {
 
 **Step 4.1: Create WebSocket Hook with Query Invalidation**
 
-**File:** `dashboard/hooks/use-socket.ts`
+**File:** `App/FrontEnd/hooks/use-socket.ts`
 ```typescript
 'use client';
 
@@ -1147,7 +1147,7 @@ export function useSocket() {
 
 **Step 4.2: Create Socket Provider**
 
-**File:** `dashboard/providers/socket-provider.tsx`
+**File:** `App/FrontEnd/providers/socket-provider.tsx`
 ```typescript
 'use client';
 
@@ -1178,7 +1178,7 @@ export function useSocketContext() {
 
 **Step 4.3: Wrap app with Socket Provider**
 
-**File:** `dashboard/app/layout.tsx`
+**File:** `App/FrontEnd/app/layout.tsx`
 ```typescript
 import { QueryProvider } from '@/providers/query-provider';
 import { SocketProvider } from '@/providers/socket-provider';
@@ -1211,7 +1211,7 @@ export default function RootLayout({
 
 **Step 5.1: Stats Dashboard Example**
 
-**File:** `dashboard/app/dashboard/page.tsx`
+**File:** `App/FrontEnd/app/App/FrontEnd/page.tsx`
 ```typescript
 'use client';
 
@@ -1254,7 +1254,7 @@ export default function DashboardPage() {
 
 **Step 5.2: Business List Example**
 
-**File:** `dashboard/app/businesses/page.tsx`
+**File:** `App/FrontEnd/app/businesses/page.tsx`
 ```typescript
 'use client';
 
@@ -1344,7 +1344,7 @@ export default function BusinessesPage() {
 
 **Step 5.3: Scraper Example with Job Polling**
 
-**File:** `dashboard/app/scraper/page.tsx`
+**File:** `App/FrontEnd/app/scraper/page.tsx`
 ```typescript
 'use client';
 

@@ -234,71 +234,71 @@ yarn add ioredis
 
 ### Files to Modify
 
-1. **nodejs_space/src/scraper/scraper.service.ts** (1-177)
+1. **App/BackEnd/src/scraper/scraper.service.ts** (1-177)
    - **Current:** Runs scraping synchronously
    - **Change:** Move scraping logic to `ScraperProcessor`
    - **Reason:** Decouple controller from long-running operation
 
-2. **nodejs_space/src/scraper/scraper.controller.ts**
+2. **App/BackEnd/src/scraper/scraper.controller.ts**
    - **Current:** Calls `scraperService.scrapeGoogleMaps()` and waits
    - **Change:** Add job to queue, return job ID immediately
    - **Reason:** Instant API response
 
-3. **nodejs_space/src/enrichment/enrichment.service.ts** (79-134)
+3. **App/BackEnd/src/enrichment/enrichment.service.ts** (79-134)
    - **Current:** Sequential batch processing with manual delays
    - **Change:** Move enrichment logic to `EnrichmentProcessor`
    - **Reason:** Parallel processing with rate limiting
 
-4. **nodejs_space/src/enrichment/enrichment.controller.ts**
+4. **App/BackEnd/src/enrichment/enrichment.controller.ts**
    - **Current:** Calls `enrichmentService.enrichBatch()` and waits
    - **Change:** Queue individual jobs, return batch ID
    - **Reason:** Async processing with progress tracking
 
-5. **nodejs_space/src/websocket/websocket.gateway.ts** (1-65)
+5. **App/BackEnd/src/websocket/websocket.gateway.ts** (1-65)
    - **Current:** Emits business and stats events
    - **Change:** Add job progress events (`scraping:progress`, `enrichment:progress`)
    - **Reason:** Real-time progress updates for jobs
 
 ### Files to Create
 
-1. **nodejs_space/src/queue/queue.module.ts**
+1. **App/BackEnd/src/queue/queue.module.ts**
    - Global BullMQ module with queue registration
    - Imports: `BullModule.forRoot()` with Redis config
    - Exports: Queue instances for injection
 
-2. **nodejs_space/src/queue/redis.config.ts**
+2. **App/BackEnd/src/queue/redis.config.ts**
    - Redis connection configuration
    - Environment variables for Redis host/port/password
    - Shared config for BullMQ and caching
 
-3. **nodejs_space/src/scraper/scraper.processor.ts**
+3. **App/BackEnd/src/scraper/scraper.processor.ts**
    - Worker that processes scraping jobs
    - Pulls jobs from "scraping" queue
    - Updates progress, emits WebSocket events
 
-4. **nodejs_space/src/enrichment/enrichment.processor.ts**
+4. **App/BackEnd/src/enrichment/enrichment.processor.ts**
    - Worker that processes enrichment jobs
    - Pulls jobs from "enrichment" queue
    - Handles rate limiting and retries
 
-5. **nodejs_space/src/queue/dto/job-status.dto.ts**
+5. **App/BackEnd/src/queue/dto/job-status.dto.ts**
    - Response DTOs for job status endpoints
    - Types: `JobStatusDto`, `JobProgressDto`, `BatchStatusDto`
 
-6. **nodejs_space/src/queue/jobs.controller.ts**
+6. **App/BackEnd/src/queue/jobs.controller.ts**
    - API endpoints for job management
    - `GET /api/jobs/:id` - Get job status
    - `GET /api/jobs/:id/logs` - Get job logs
    - `DELETE /api/jobs/:id` - Cancel job
    - `GET /api/jobs/failed` - List failed jobs
 
-7. **nodejs_space/src/queue/jobs.service.ts**
+7. **App/BackEnd/src/queue/jobs.service.ts**
    - Service for job management operations
    - Query job status, cancel jobs, retry failed jobs
 
 ### Environment Variables
 
-**Add to `nodejs_space/.env`:**
+**Add to `App/BackEnd/.env`:**
 ```env
 # Redis Configuration (for BullMQ + Caching)
 REDIS_HOST=localhost
@@ -346,7 +346,7 @@ yarn add -D @types/ioredis
 
 **Step 1.2: Create Redis configuration**
 
-**File:** `nodejs_space/src/queue/redis.config.ts`
+**File:** `App/BackEnd/src/queue/redis.config.ts`
 ```typescript
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
@@ -373,7 +373,7 @@ export const getRedisConfig = (configService: ConfigService) => ({
 
 **Step 1.3: Create Queue Module**
 
-**File:** `nodejs_space/src/queue/queue.module.ts`
+**File:** `App/BackEnd/src/queue/queue.module.ts`
 ```typescript
 import { Module, Global } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
@@ -422,7 +422,7 @@ export class QueueModule {}
 
 **Step 1.4: Register Queue Module in AppModule**
 
-**File:** `nodejs_space/src/app.module.ts`
+**File:** `App/BackEnd/src/app.module.ts`
 ```typescript
 @Module({
   imports: [
@@ -446,7 +446,7 @@ export class AppModule {}
 
 **Step 1.5: Add environment variables**
 
-**File:** `nodejs_space/.env`
+**File:** `App/BackEnd/.env`
 ```env
 # ... existing vars ...
 
@@ -494,7 +494,7 @@ redis-cli ping
 
 **Step 2.1: Create Scraper Processor**
 
-**File:** `nodejs_space/src/scraper/scraper.processor.ts`
+**File:** `App/BackEnd/src/scraper/scraper.processor.ts`
 ```typescript
 import { Processor, WorkerHost, OnWorkerEvent } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
@@ -745,7 +745,7 @@ export class ScraperProcessor extends WorkerHost {
 
 **Step 2.2: Update Scraper Module**
 
-**File:** `nodejs_space/src/scraper/scraper.module.ts`
+**File:** `App/BackEnd/src/scraper/scraper.module.ts`
 ```typescript
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
@@ -772,7 +772,7 @@ export class ScraperModule {}
 
 **Step 2.3: Update Scraper Controller (async job dispatch)**
 
-**File:** `nodejs_space/src/scraper/scraper.controller.ts`
+**File:** `App/BackEnd/src/scraper/scraper.controller.ts`
 ```typescript
 import { Controller, Post, Get, Param, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
@@ -865,7 +865,7 @@ export class ScraperController {
 
 **Step 2.4: Update Scraper Service (keep for direct calls if needed)**
 
-**File:** `nodejs_space/src/scraper/scraper.service.ts`
+**File:** `App/BackEnd/src/scraper/scraper.service.ts`
 ```typescript
 // Keep existing scrapeGoogleMaps() method for direct calls (if needed)
 // But now primarily use ScraperProcessor for async jobs
@@ -906,7 +906,7 @@ export class ScraperService {
 
 **Step 3.1: Create Enrichment Processor**
 
-**File:** `nodejs_space/src/enrichment/enrichment.processor.ts`
+**File:** `App/BackEnd/src/enrichment/enrichment.processor.ts`
 ```typescript
 import { Processor, WorkerHost, OnWorkerEvent } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
@@ -1009,7 +1009,7 @@ export class EnrichmentProcessor extends WorkerHost {
 
 **Step 3.2: Update Enrichment Module**
 
-**File:** `nodejs_space/src/enrichment/enrichment.module.ts`
+**File:** `App/BackEnd/src/enrichment/enrichment.module.ts`
 ```typescript
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
@@ -1036,7 +1036,7 @@ export class EnrichmentModule {}
 
 **Step 3.3: Update Enrichment Controller (batch job dispatch)**
 
-**File:** `nodejs_space/src/enrichment/enrichment.controller.ts`
+**File:** `App/BackEnd/src/enrichment/enrichment.controller.ts`
 ```typescript
 import { Controller, Post, Get, Param, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
@@ -1200,7 +1200,7 @@ export class EnrichmentController {
 
 **Step 4.1: Create Job Status DTOs**
 
-**File:** `nodejs_space/src/queue/dto/job-status.dto.ts`
+**File:** `App/BackEnd/src/queue/dto/job-status.dto.ts`
 ```typescript
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -1244,7 +1244,7 @@ export class JobListDto {
 
 **Step 4.2: Create Jobs Service**
 
-**File:** `nodejs_space/src/queue/jobs.service.ts`
+**File:** `App/BackEnd/src/queue/jobs.service.ts`
 ```typescript
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -1365,7 +1365,7 @@ export class JobsService {
 
 **Step 4.3: Create Jobs Controller**
 
-**File:** `nodejs_space/src/queue/jobs.controller.ts`
+**File:** `App/BackEnd/src/queue/jobs.controller.ts`
 ```typescript
 import { Controller, Get, Delete, Post, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
@@ -1419,7 +1419,7 @@ export class JobsController {
 
 **Step 4.4: Create Jobs Module**
 
-**File:** `nodejs_space/src/queue/jobs.module.ts`
+**File:** `App/BackEnd/src/queue/jobs.module.ts`
 ```typescript
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
@@ -1440,7 +1440,7 @@ export class JobsModule {}
 
 **Step 4.5: Register Jobs Module in AppModule**
 
-**File:** `nodejs_space/src/app.module.ts`
+**File:** `App/BackEnd/src/app.module.ts`
 ```typescript
 @Module({
   imports: [
@@ -1459,7 +1459,7 @@ export class AppModule {}
 
 **Step 5.1: Unit Tests for Scraper Processor**
 
-**File:** `nodejs_space/test/scraper/scraper.processor.spec.ts`
+**File:** `App/BackEnd/test/scraper/scraper.processor.spec.ts`
 ```typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { ScraperProcessor } from '../../src/scraper/scraper.processor';
@@ -1531,7 +1531,7 @@ describe('ScraperProcessor', () => {
 
 **Step 5.2: Integration Tests**
 
-**File:** `nodejs_space/test/queue/jobs.e2e-spec.ts`
+**File:** `App/BackEnd/test/queue/jobs.e2e-spec.ts`
 ```typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';

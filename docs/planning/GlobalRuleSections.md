@@ -77,7 +77,7 @@ We use **vertical slicing** where each feature owns its complete stack from UI �
 
 **Vertical Slice Structure:**
 ```
-nodejs_space/src/
+App/BackEnd/src/
 ├── businesses/      # VERTICAL SLICE: Business management
 │   ├── businesses.controller.ts    # HTTP endpoints
 │   ├── businesses.service.ts       # Business logic
@@ -127,12 +127,12 @@ nodejs_space/src/
 
 **Vertical Slice Structure (Next.js 16 App Router):**
 ```
-dashboard/
+App/FrontEnd/
 ├── app/                          # Routes (vertical slices by page)
 │   ├── (auth)/
 │   │   └── login/               # SLICE: Authentication
 │   │       └── page.tsx
-│   └── dashboard/
+│   └── App/FrontEnd/
 │       ├── page.tsx             # SLICE: Stats Dashboard
 │       ├── businesses/          # SLICE: Business Management
 │       │   ├── page.tsx         # List view

@@ -134,19 +134,19 @@ Stats updated via stats:updated WebSocket event
 
 ### Core Backend Files (for API integration)
 
-1. **`nodejs_space/src/scraper/scraper.controller.ts:1-20`**
+1. **`App/BackEnd/src/scraper/scraper.controller.ts:1-20`**
    - HTTP endpoint: `POST /api/scrape`
    - Request body: `ScrapeRequestDto`
    - Response shape: `{ success, found, saved, skipped, errors }`
    - **Key insight**: Synchronous response after scraping completes
 
-2. **`nodejs_space/src/scraper/dto/scrape-request.dto.ts:1-45`**
+2. **`App/BackEnd/src/scraper/dto/scrape-request.dto.ts:1-45`**
    - Request validation schema
    - **Required field**: `location` (string)
    - **Optional fields**: `radius` (0.5-5), `business_type` (string), `max_results` (1-500)
    - **Defaults**: radius=1, max_results=50
 
-3. **`nodejs_space/src/websocket/websocket.gateway.ts:49-52`**
+3. **`App/BackEnd/src/websocket/websocket.gateway.ts:49-52`**
    - WebSocket event: `scraping:progress`
    - **Payload shape**: `{ status, location, progress?, found?, saved?, skipped? }`
    - **Status values**: 'running', 'processing', 'completed', 'failed'
@@ -159,7 +159,7 @@ Stats updated via stats:updated WebSocket event
    - State management pattern: Zustand store per feature
    - WebSocket integration pattern
 
-5. **`docs/dashboard/DASHBOARD_BUILD_PLAN.md:1-99`**
+5. **`docs/App/FrontEnd/DASHBOARD_BUILD_PLAN.md:1-99`**
    - **Design system** (lines 70-99):
      - Colors: background=#0f0f0f, surface=#1a1a1a, accent=#3b82f6
      - Typography: Space Grotesk (headings), Inter (body)
@@ -175,10 +175,10 @@ Stats updated via stats:updated WebSocket event
 ### Similar Implementations (for reference)
 
 7. **Look for existing dashboard features** (if any):
-   - `dashboard/app/dashboard/page.tsx` - Stats dashboard pattern
-   - `dashboard/features/stats/` - Stats feature slice example
-   - `dashboard/lib/hooks/useWebSocket.ts` - WebSocket hook pattern
-   - `dashboard/stores/statsStore.ts` - Zustand store pattern
+   - `App/FrontEnd/app/App/FrontEnd/page.tsx` - Stats dashboard pattern
+   - `App/FrontEnd/features/stats/` - Stats feature slice example
+   - `App/FrontEnd/lib/hooks/useWebSocket.ts` - WebSocket hook pattern
+   - `App/FrontEnd/stores/statsStore.ts` - Zustand store pattern
 
 ---
 
@@ -192,7 +192,7 @@ Stats updated via stats:updated WebSocket event
 
 **Key Patterns for Scraper UI**:
 ```typescript
-// app/dashboard/scraper/page.tsx (Server Component by default)
+// app/App/FrontEnd/scraper/page.tsx (Server Component by default)
 export default function ScraperPage() {
   return <ScraperInterface />; // Client Component
 }
@@ -425,7 +425,7 @@ const celebrationVariants = {
     - Framer Motion layout animations
 
 13. **Create Scraper Page Route**
-    - File: `app/dashboard/scraper/page.tsx`
+    - File: `app/App/FrontEnd/scraper/page.tsx`
     - Import and render ScraperInterface
     - Add page metadata (title, description)
 
@@ -727,7 +727,7 @@ const celebrationVariants = {
 
 **Manual Test Checklist**:
 
-1. [ ] Navigate to /dashboard/scraper
+1. [ ] Navigate to /App/FrontEnd/scraper
 2. [ ] Form renders with all fields and proper styling
 3. [ ] Enter location "Route 9, Freehold, NJ"
 4. [ ] Adjust radius slider to 2 miles
@@ -935,7 +935,7 @@ npm run build
 npm run dev
 ```
 
-**Navigate to**: `http://localhost:3000/dashboard/scraper`
+**Navigate to**: `http://localhost:3000/App/FrontEnd/scraper`
 
 **Checklist**:
 - [ ] Page loads without errors
@@ -1026,7 +1026,7 @@ Received stats:updated { totalBusinesses: 108, ... }
 ```bash
 npm run build
 npm run start
-# Open http://localhost:3000/dashboard/scraper
+# Open http://localhost:3000/App/FrontEnd/scraper
 # Run Lighthouse
 ```
 

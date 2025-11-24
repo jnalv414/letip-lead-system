@@ -8,7 +8,7 @@ You're building a Next.js 16 dashboard for an already-completed NestJS backend.
 - ✅ NestJS API fully built at `http://localhost:3000/api`
 - ✅ WebSocket (Socket.io) ready at `ws://localhost:3000`
 - ✅ PostgreSQL database with all models
-- ❌ Dashboard (empty `dashboard/` folder)
+- ❌ Dashboard (empty `App/FrontEnd/` folder)
 
 ### What You're Building
 - Modern dark-mode Next.js 16 dashboard
@@ -23,7 +23,7 @@ You're building a Next.js 16 dashboard for an already-completed NestJS backend.
 ```
 1. Spawn ALL 5 agents simultaneously
 2. Each agent works on separate concern in parallel
-3. Merge outputs into dashboard/
+3. Merge outputs into App/FrontEnd/
 4. Done! MVP ready
 ```
 
@@ -290,13 +290,13 @@ A: 2-3 hours (parallel, recommended) or 10-12 hours (sequential, safer).
 A: Immediately after Phase 1 integration completes and validation passes.
 
 **Q: Is there already a dashboard somewhere?**
-A: No, the `dashboard/` folder is empty. We're building it from scratch.
+A: No, the `App/FrontEnd/` folder is empty. We're building it from scratch.
 
 **Q: What if something breaks during integration?**
 A: See ORCHESTRATION_INSTRUCTIONS.md troubleshooting section.
 
 **Q: How is the backend API structured?**
-A: See nodejs_space/README.md for full backend documentation.
+A: See App/BackEnd/README.md for full backend documentation.
 
 ---
 

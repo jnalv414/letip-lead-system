@@ -229,7 +229,7 @@ This is your central hub. It has:
 - Verify file completeness
 - Check for TODOs or placeholders
 
-### Step 2: Merge into dashboard/ (15 min)
+### Step 2: Merge into App/FrontEnd/ (15 min)
 - Copy all files to correct locations
 - Verify folder structure
 - Check file permissions
@@ -336,7 +336,7 @@ Build the 4 MVP features:
 1. All agents must use context7 MCP for documentation
 2. Agents 3, 4, 5 should use chrome-devtools MCP for testing
 3. All deliverables must be production-ready (no TODOs)
-4. All file paths are relative to dashboard/ directory
+4. All file paths are relative to App/FrontEnd/ directory
 5. TypeScript strict mode is mandatory
 
 ### For Integration

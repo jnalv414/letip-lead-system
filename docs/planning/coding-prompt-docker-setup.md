@@ -195,12 +195,12 @@ docker-compose up -d --scale backend=3
 
 ### Files to Create
 
-1. **Dockerfile** (backend) - `nodejs_space/Dockerfile`
+1. **Dockerfile** (backend) - `App/BackEnd/Dockerfile`
    - Multi-stage build: dependencies → build → production
    - Node.js 20 Alpine base image
    - Production-optimized
 
-2. **Dockerfile** (dashboard) - `dashboard/Dockerfile`
+2. **Dockerfile** (dashboard) - `App/FrontEnd/Dockerfile`
    - Next.js static export build
    - Nginx to serve static files
    - Production-optimized
@@ -219,12 +219,12 @@ docker-compose up -d --scale backend=3
 5. **.dockerignore** - Project root
    - Exclude node_modules, .git, etc. from Docker context
 
-6. **nginx.conf** - `dashboard/nginx.conf`
+6. **nginx.conf** - `App/FrontEnd/nginx.conf`
    - Nginx configuration for serving Next.js static export
 
 ### Environment Variables
 
-**Add to `nodejs_space/.env`:**
+**Add to `App/BackEnd/.env`:**
 ```env
 # Database (Docker service name)
 DATABASE_URL=postgresql://postgres:postgres@postgres:5432/letip_leads
@@ -237,7 +237,7 @@ REDIS_PORT=6379
 FRONTEND_URL=http://localhost:3001
 ```
 
-**Add to `dashboard/.env.local`:**
+**Add to `App/FrontEnd/.env.local`:**
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_PUBLIC_WS_URL=http://localhost:3000
@@ -251,7 +251,7 @@ NEXT_PUBLIC_WS_URL=http://localhost:3000
 
 **Step 1.1: Create Backend Dockerfile**
 
-**File:** `nodejs_space/Dockerfile`
+**File:** `App/BackEnd/Dockerfile`
 ```dockerfile
 # Stage 1: Dependencies
 FROM node:20-alpine AS deps
@@ -312,7 +312,7 @@ CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
 
 **Step 1.2: Create .dockerignore**
 
-**File:** `nodejs_space/.dockerignore`
+**File:** `App/BackEnd/.dockerignore`
 ```
 node_modules
 dist
@@ -339,7 +339,7 @@ docker build -t letip-backend .
 
 **Step 2.1: Create Dashboard Dockerfile**
 
-**File:** `dashboard/Dockerfile`
+**File:** `App/FrontEnd/Dockerfile`
 ```dockerfile
 # Stage 1: Dependencies
 FROM node:20-alpine AS deps
@@ -387,7 +387,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 **Step 2.2: Create Nginx configuration**
 
-**File:** `dashboard/nginx.conf`
+**File:** `App/FrontEnd/nginx.conf`
 ```nginx
 server {
     listen 80;
@@ -428,7 +428,7 @@ server {
 
 **Step 2.3: Create .dockerignore**
 
-**File:** `dashboard/.dockerignore`
+**File:** `App/FrontEnd/.dockerignore`
 ```
 node_modules
 .next
@@ -444,7 +444,7 @@ README.md
 
 **Step 2.4: Update package.json build script**
 
-**File:** `dashboard/package.json`
+**File:** `App/FrontEnd/package.json`
 ```json
 {
   "scripts": {
@@ -529,8 +529,8 @@ services:
       - "3000:3000"
     volumes:
       # Mount source code for hot-reload
-      - ./nodejs_space/src:/app/src
-      - ./nodejs_space/prisma:/app/prisma
+      - ./App/BackEnd/src:/app/src
+      - ./App/BackEnd/prisma:/app/prisma
     depends_on:
       postgres:
         condition: service_healthy
@@ -555,11 +555,11 @@ services:
       - "3001:3001"
     volumes:
       # Mount source code for hot-reload
-      - ./dashboard/app:/app/app
-      - ./dashboard/components:/app/components
-      - ./dashboard/lib:/app/lib
-      - ./dashboard/hooks:/app/hooks
-      - ./dashboard/providers:/app/providers
+      - ./App/FrontEnd/app:/app/app
+      - ./App/FrontEnd/components:/app/components
+      - ./App/FrontEnd/lib:/app/lib
+      - ./App/FrontEnd/hooks:/app/hooks
+      - ./App/FrontEnd/providers:/app/providers
     depends_on:
       - backend
     command: npm run dev
@@ -591,11 +591,11 @@ docker-compose up
 
 **Step 3.3: Test hot-reload**
 ```bash
-# Edit nodejs_space/src/app.controller.ts
+# Edit App/BackEnd/src/app.controller.ts
 # Save file
 # Expected: Backend auto-reloads
 
-# Edit dashboard/app/page.tsx
+# Edit App/FrontEnd/app/page.tsx
 # Save file
 # Expected: Dashboard auto-reloads
 ```
@@ -764,7 +764,7 @@ TELEGRAM_CHAT_ID=your_telegram_chat_id
 
 **Step 4.3: Add health check endpoint to backend**
 
-**File:** `nodejs_space/src/app.controller.ts`
+**File:** `App/BackEnd/src/app.controller.ts`
 ```typescript
 import { Controller, Get } from '@nestjs/common';
 
@@ -1105,7 +1105,7 @@ docker-compose exec redis redis-cli ping
 
 ### 7. Test Hot-Reload (Backend)
 ```bash
-# Edit nodejs_space/src/app.controller.ts
+# Edit App/BackEnd/src/app.controller.ts
 # Add: console.log('Hot reload test');
 # Save file
 # Check logs:
@@ -1115,7 +1115,7 @@ docker-compose logs -f backend
 
 ### 8. Test Hot-Reload (Dashboard)
 ```bash
-# Edit dashboard/app/page.tsx
+# Edit App/FrontEnd/app/page.tsx
 # Add: <h1>Hot Reload Test</h1>
 # Save file
 # Refresh http://localhost:3001

@@ -134,7 +134,7 @@ Building a stunning dark-mode dashboard for the Le Tip Lead Management System wi
 ## Folder Structure
 
 ```
-dashboard/
+App/FrontEnd/
 ├── app/
 │   ├── layout.tsx              # Root layout with providers
 │   ├── middleware.ts           # Password protection
@@ -142,7 +142,7 @@ dashboard/
 │   ├── (auth)/
 │   │   └── login/
 │   │       └── page.tsx        # Login page
-│   └── dashboard/
+│   └── App/FrontEnd/
 │       ├── layout.tsx          # Dashboard layout (header, sidebar)
 │       ├── page.tsx            # Stats dashboard
 │       ├── businesses/
@@ -155,7 +155,7 @@ dashboard/
 │           └── page.tsx        # Enrichment manager
 ├── components/
 │   ├── ui/                     # ShadCN components
-│   ├── dashboard/
+│   ├── App/FrontEnd/
 │   │   ├── Header.tsx
 │   │   ├── Sidebar.tsx
 │   │   ├── StatsCard.tsx

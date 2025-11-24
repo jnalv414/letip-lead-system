@@ -132,7 +132,7 @@
 
 ### Backend (Already Built)
 ```
-nodejs_space/
+App/BackEnd/
   - API: http://localhost:3000/api
   - Docs: http://localhost:3000/api-docs
   - WebSocket: ws://localhost:3000
@@ -140,7 +140,7 @@ nodejs_space/
 
 ### Dashboard (Building)
 ```
-dashboard/  (currently empty, Phase 1 will populate)
+App/FrontEnd/  (currently empty, Phase 1 will populate)
 ```
 
 ---

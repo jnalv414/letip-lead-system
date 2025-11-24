@@ -67,11 +67,11 @@ dashboard/
 **Backend Implementation:** ✅ **COMPLETE**
 
 Verified backend files exist and appear production-ready:
-- `/nodejs_space/src/businesses/` - CRUD operations
-- `/nodejs_space/src/scraper/` - Google Maps scraping
-- `/nodejs_space/src/enrichment/` - Hunter.io + AbstractAPI integration
-- `/nodejs_space/src/websocket/` - Socket.io gateway
-- `/nodejs_space/src/prisma/` - Database client
+- `/App/BackEnd/src/businesses/` - CRUD operations
+- `/App/BackEnd/src/scraper/` - Google Maps scraping
+- `/App/BackEnd/src/enrichment/` - Hunter.io + AbstractAPI integration
+- `/App/BackEnd/src/websocket/` - Socket.io gateway
+- `/App/BackEnd/src/prisma/` - Database client
 
 **API Endpoints Available:**
 - `GET /api/businesses` ✅
