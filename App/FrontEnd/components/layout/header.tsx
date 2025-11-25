@@ -28,13 +28,13 @@ export function Header({ title = 'Dashboard' }: HeaderProps) {
       {/* Center: Search */}
       <div className="flex-1 max-w-lg mx-12">
         <div className="relative">
-          <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
           <input
             type="text"
             placeholder="Search businesses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-12 pl-12 pr-5 rounded-xl glass border border-[var(--border-default)] text-[var(--text-primary)] text-base placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-purple)]/50 focus:ring-2 focus:ring-[var(--accent-purple)]/20 transition-all"
+            className="w-full h-12 pl-14 pr-5 rounded-xl glass border border-[var(--border-default)] text-[var(--text-primary)] text-base placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-purple)]/50 focus:ring-2 focus:ring-[var(--accent-purple)]/20 transition-all"
           />
         </div>
       </div>
@@ -55,15 +55,23 @@ export function Header({ title = 'Dashboard' }: HeaderProps) {
 
         {/* Date Navigation */}
         <div className="flex items-center gap-1 px-4 py-2.5 rounded-xl glass border border-[var(--border-default)]">
-          <button className="p-1.5 hover:bg-white/10 rounded-lg transition-colors">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-1.5 hover:bg-[var(--accent-purple)]/10 rounded-lg transition-colors"
+          >
             <ChevronLeft size={16} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors" />
-          </button>
+          </motion.button>
           <span className="text-sm font-medium text-[var(--text-secondary)] px-3">
             Today, {formattedDate}
           </span>
-          <button className="p-1.5 hover:bg-white/10 rounded-lg transition-colors">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-1.5 hover:bg-[var(--accent-purple)]/10 rounded-lg transition-colors"
+          >
             <ChevronRight size={16} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors" />
-          </button>
+          </motion.button>
         </div>
 
         {/* User Profile */}

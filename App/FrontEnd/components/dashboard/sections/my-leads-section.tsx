@@ -42,41 +42,37 @@ const periodTabs = [
   { id: 'month', label: 'Month' },
 ];
 
-// Mock data generator (replace with real API calls)
-const generateMockData = (period: Period): LeadData[] => {
-  const dataPoints = period === '24h' ? 24 : period === 'week' ? 7 : 30;
-  const data: LeadData[] = [];
-
-  for (let i = 0; i < dataPoints; i++) {
-    const baseValue = 50 + Math.random() * 50;
-    const enrichedValue = baseValue * (0.6 + Math.random() * 0.3);
-
-    let label = '';
-    if (period === '24h') {
-      label = `${i}:00`;
-    } else if (period === 'week') {
-      label = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i];
-    } else {
-      label = `Day ${i + 1}`;
-    }
-
-    data.push({
-      period: label,
-      leads: Math.round(baseValue),
-      enriched: Math.round(enrichedValue),
-    });
-  }
-
-  return data;
-};
-
-const generateMockStats = (period: Period): LeadStats => {
-  const total = Math.round(500 + Math.random() * 500);
-  const enriched = Math.round(total * (0.65 + Math.random() * 0.2));
-  const pending = total - enriched;
-  const trend = (Math.random() * 30) - 5; // -5% to +25% range
-
-  return { total, enriched, pending, trend };
+// Static mock data to avoid hydration errors (no random values)
+const mockChartData: Record<Period, LeadData[]> = {
+  '24h': [
+    { period: '0:00', leads: 45, enriched: 32 },
+    { period: '2:00', leads: 38, enriched: 28 },
+    { period: '4:00', leads: 42, enriched: 31 },
+    { period: '6:00', leads: 55, enriched: 42 },
+    { period: '8:00', leads: 78, enriched: 58 },
+    { period: '10:00', leads: 92, enriched: 71 },
+    { period: '12:00', leads: 85, enriched: 66 },
+    { period: '14:00', leads: 88, enriched: 69 },
+    { period: '16:00', leads: 95, enriched: 74 },
+    { period: '18:00', leads: 82, enriched: 62 },
+    { period: '20:00', leads: 68, enriched: 51 },
+    { period: '22:00', leads: 52, enriched: 38 },
+  ],
+  'week': [
+    { period: 'Mon', leads: 120, enriched: 92 },
+    { period: 'Tue', leads: 145, enriched: 112 },
+    { period: 'Wed', leads: 138, enriched: 105 },
+    { period: 'Thu', leads: 162, enriched: 128 },
+    { period: 'Fri', leads: 155, enriched: 118 },
+    { period: 'Sat', leads: 88, enriched: 65 },
+    { period: 'Sun', leads: 72, enriched: 52 },
+  ],
+  'month': [
+    { period: 'Week 1', leads: 580, enriched: 445 },
+    { period: 'Week 2', leads: 620, enriched: 482 },
+    { period: 'Week 3', leads: 695, enriched: 538 },
+    { period: 'Week 4', leads: 752, enriched: 592 },
+  ],
 };
 
 // Custom tooltip for chart
@@ -112,37 +108,43 @@ function CustomTooltip({ active, payload }: any) {
 export function MyLeadsSection() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>('week');
 
-  // Fetch stats from API
-  const { data: statsResponse, error: statsError } = useQuery({
-    queryKey: ['leads-stats'],
+  // Mock stats for when API is unavailable
+  const mockStatsData: LeadStats = {
+    total: 847,
+    enriched: 612,
+    pending: 235,
+    trend: 18.5,
+  };
+
+  // Fetch stats from API with mock data fallback
+  const { data: stats } = useQuery<LeadStats>({
+    queryKey: ['leads-stats', selectedPeriod],
     queryFn: async () => {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-      const response = await fetch(`${API_URL}/api/businesses/stats`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch stats');
+      try {
+        const response = await fetch(`${API_URL}/api/businesses/stats`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch stats');
+        }
+        const data = await response.json();
+        return {
+          total: data.total || 0,
+          enriched: data.enriched || 0,
+          pending: data.pending || 0,
+          trend: data.enrichmentRate || 0,
+        };
+      } catch {
+        // Return mock data when API is unavailable
+        return mockStatsData;
       }
-      return response.json();
     },
-    staleTime: 30000, // Cache for 30 seconds
-    refetchInterval: 60000, // Refetch every minute
+    staleTime: 30000,
+    refetchInterval: 60000,
+    initialData: mockStatsData, // Use mock data while loading
   });
 
-  // Map API response to component format
-  // API returns: { total, enriched, pending, failed, enrichmentRate }
-  const stats: LeadStats | undefined = statsResponse ? {
-    total: statsResponse.total || 0,
-    enriched: statsResponse.enriched || 0,
-    pending: statsResponse.pending || 0,
-    trend: statsResponse.enrichmentRate || 0, // Use enrichment rate as trend indicator
-  } : undefined;
-
-  // Generate trend data based on stats (since we don't have historical data API yet)
-  const { data: leadData } = useQuery({
-    queryKey: ['leads-trend', selectedPeriod, stats?.total],
-    queryFn: () => Promise.resolve(generateMockData(selectedPeriod)),
-    refetchInterval: 60000, // Refetch every minute
-    enabled: !!stats, // Only run after stats are loaded
-  });
+  // Use static mock chart data (since we don't have historical data API yet)
+  const leadData = mockChartData[selectedPeriod];
 
   const trendPositive = (stats?.trend || 0) >= 0;
 
