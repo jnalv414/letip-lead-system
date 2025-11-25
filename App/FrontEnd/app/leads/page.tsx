@@ -7,9 +7,11 @@ import { PageHeader } from '@/components/shared/page-header';
 import { FilterBar } from '@/components/shared/filter-bar';
 import { Pagination } from '@/components/shared/pagination';
 import { BusinessList } from '@/components/leads/business-list';
+import { CreateLeadModal, ViewLeadModal, DeleteLeadModal } from '@/components/leads/modals';
 import { ErrorBoundary, ErrorState } from '@/components/shared/error-boundary';
 import { Button } from '@/components/ui/button';
 import { useBusinesses } from '@/features/business-management';
+import { useEnrichBusiness } from '@/features/lead-enrichment';
 import { cn } from '@/lib/utils';
 import type { Business, QueryBusinessesDto } from '@/types/api';
 
@@ -54,6 +56,15 @@ export default function LeadsPage() {
   const [filters, setFilters] = useState<FilterValues>({});
   const itemsPerPage = 20;
 
+  // Modal state
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
+
+  // Enrichment mutation
+  const enrichMutation = useEnrichBusiness();
+
   // Build query params from filters
   const queryParams: QueryBusinessesDto = useMemo(
     () => ({
@@ -84,17 +95,44 @@ export default function LeadsPage() {
     setCurrentPage(page);
   }, []);
 
-  const handleBusinessClick = useCallback(
-    (business: Business) => {
-      router.push(`/leads/${business.id}`);
-    },
-    [router]
-  );
+  const handleBusinessClick = useCallback((business: Business) => {
+    setSelectedBusiness(business);
+    setViewModalOpen(true);
+  }, []);
 
   const handleAddLead = useCallback(() => {
-    // Will be implemented in Checkpoint 3
-    console.log('Add lead clicked');
+    setCreateModalOpen(true);
   }, []);
+
+  const handleEditLead = useCallback((business: Business) => {
+    // For now, navigate to edit page - can be replaced with edit modal later
+    router.push(`/leads/${business.id}/edit`);
+  }, [router]);
+
+  const handleDeleteLead = useCallback((business: Business) => {
+    setSelectedBusiness(business);
+    setViewModalOpen(false);
+    setDeleteModalOpen(true);
+  }, []);
+
+  const handleEnrichLead = useCallback((business: Business) => {
+    enrichMutation.mutate(business.id, {
+      onSuccess: () => {
+        refetch();
+      },
+    });
+  }, [enrichMutation, refetch]);
+
+  const handleCreateSuccess = useCallback(() => {
+    setCreateModalOpen(false);
+    refetch();
+  }, [refetch]);
+
+  const handleDeleteSuccess = useCallback(() => {
+    setDeleteModalOpen(false);
+    setSelectedBusiness(null);
+    refetch();
+  }, [refetch]);
 
   if (error) {
     return (
@@ -186,6 +224,39 @@ export default function LeadsPage() {
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
+        )}
+
+        {/* Modals */}
+        <CreateLeadModal
+          isOpen={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          onSuccess={handleCreateSuccess}
+        />
+
+        {selectedBusiness && (
+          <>
+            <ViewLeadModal
+              isOpen={viewModalOpen}
+              business={selectedBusiness}
+              onClose={() => {
+                setViewModalOpen(false);
+                setSelectedBusiness(null);
+              }}
+              onEdit={handleEditLead}
+              onDelete={handleDeleteLead}
+              onEnrich={handleEnrichLead}
+            />
+
+            <DeleteLeadModal
+              isOpen={deleteModalOpen}
+              business={selectedBusiness}
+              onClose={() => {
+                setDeleteModalOpen(false);
+                setSelectedBusiness(null);
+              }}
+              onSuccess={handleDeleteSuccess}
+            />
+          </>
         )}
       </div>
     </ErrorBoundary>
