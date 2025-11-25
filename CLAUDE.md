@@ -232,3 +232,5 @@ npm run build          # Production build
 **Full Documentation:**
 - Backend: [App/BackEnd/CLAUDE.md](App/BackEnd/CLAUDE.md)
 - Frontend: [App/FrontEnd/CLAUDE.md](App/FrontEnd/CLAUDE.md)
+- always use chrome-devtools mcp server when you make ANY changes to the frontend and also it is to be used 100% of the time for validation
+- never use playwright or puppeteer. ONLY USE CHROME-DEVTOOLS MCP SERVER

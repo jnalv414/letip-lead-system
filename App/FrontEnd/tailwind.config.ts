@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
@@ -7,52 +7,90 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './hooks/**/*.{js,ts,jsx,tsx}',
     './providers/**/*.{js,ts,jsx,tsx}',
+    './core/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
       colors: {
-        charcoal: {
-          DEFAULT: '#1A1A1D',
-          light: '#2A2A2E',
-          dark: '#0A0A0C',
+        // Design Guide: Base gray palette
+        gray: {
+          50: '#F9FAFB',
+          100: '#F3F4F6',
+          200: '#E5E7EB',
+          300: '#D1D5DB',
+          400: '#9CA3AF',
+          500: '#6B7280',
+          600: '#4B5563',
+          700: '#374151',
+          800: '#1F2937',
+          900: '#111827',
+          950: '#0F172A',
         },
-        teal: {
-          DEFAULT: '#0D3B3B',
-          light: '#145A5A',
-          lighter: '#1A7070',
-          dark: '#082828',
+        // NEW: Deep Navy Backgrounds (60%)
+        navy: {
+          950: '#0a0a0f',
+          900: '#111118',
+          800: '#1a1a24',
+          700: '#242430',
+          600: '#2e2e3a',
         },
-        orange: {
-          DEFAULT: '#FF5722',
-          light: '#FF7043',
-          dark: '#E64A19',
-          darker: '#BF360C',
+        // Keep slate for backwards compatibility
+        slate: {
+          900: '#0F172A',
+          800: '#1E293B',
+          700: '#334155',
+          600: '#475569',
         },
+        // NEW: Purple/Blue Accent (30%)
+        violet: {
+          500: '#8B5CF6',
+          400: '#A78BFA',
+          600: '#7C3AED',
+        },
+        // Update accent to purple
+        accent: {
+          DEFAULT: '#8B5CF6',
+          purple: '#8B5CF6',
+          blue: '#3B82F6',
+          cyan: '#06B6D4',
+        },
+        // Status colors
+        success: '#22C55E',
+        warning: '#F59E0B',
+        error: '#EF4444',
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'Inter', 'sans-serif'],
-        display: ['var(--font-space-grotesk)', 'Space Grotesk', 'sans-serif'],
+        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['var(--font-space-grotesk)', 'Space Grotesk', 'system-ui', 'sans-serif'],
       },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      // Design Guide: 8px spacing grid
+      spacing: {
+        '18': '4.5rem', // 72px
+        '22': '5.5rem', // 88px
       },
+      // Design Guide: Subtle shadows
       boxShadow: {
-        '3d-sm': '0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.08)',
-        '3d': '0 4px 8px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06)',
-        '3d-md': '0 8px 16px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.08)',
-        '3d-lg': '0 12px 24px rgba(0, 0, 0, 0.12), 0 6px 12px rgba(0, 0, 0, 0.1)',
-        '3d-xl': '0 20px 40px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.12)',
-        '3d-hover': '0 16px 32px rgba(0, 0, 0, 0.14), 0 8px 16px rgba(0, 0, 0, 0.1)',
-        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+        'subtle': '0 1px 3px rgba(0, 0, 0, 0.1)',
+        'medium': '0 4px 6px rgba(0, 0, 0, 0.1)',
+        'card': '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
+        'card-hover': '0 4px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12)',
+      },
+      // Design Guide: Border radius
+      borderRadius: {
+        'card': '8px',
+        'button': '6px',
+        'input': '6px',
+        'container': '12px',
+        'badge': '4px',
       },
       animation: {
-        'fade-in': 'fadeIn 0.5s ease-in-out',
-        'slide-up': 'slideUp 0.5s ease-out',
-        'slide-down': 'slideDown 0.5s ease-out',
-        'scale-in': 'scaleIn 0.3s ease-out',
-        'bounce-subtle': 'bounceSubtle 0.6s ease-out',
+        'fade-in': 'fadeIn 0.3s ease-out',
+        'slide-up': 'slideUp 0.3s ease-out',
+        'shine': 'shine 2s linear infinite',
+        'shimmer-slide': 'shimmer-slide 8s infinite',
+        'spin-around': 'spin-around 4s linear infinite',
+        'border-beam': 'border-beam 4s linear infinite',
+        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -60,29 +98,33 @@ const config: Config = {
           '100%': { opacity: '1' },
         },
         slideUp: {
-          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '0%': { transform: 'translateY(8px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
-        slideDown: {
-          '0%': { transform: 'translateY(-20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
+        shine: {
+          '0%': { backgroundPosition: '0% 0%' },
+          '50%': { backgroundPosition: '100% 100%' },
+          '100%': { backgroundPosition: '0% 0%' },
         },
-        scaleIn: {
-          '0%': { transform: 'scale(0.95)', opacity: '0' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
+        'shimmer-slide': {
+          to: { transform: 'translate(calc(100cqw - 100%), 0)' },
         },
-        bounceSubtle: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-4px)' },
+        'spin-around': {
+          '0%': { transform: 'translateZ(0) rotate(0)' },
+          '100%': { transform: 'translateZ(0) rotate(360deg)' },
         },
-      },
-      spacing: {
-        '18': '4.5rem',
-        '88': '22rem',
-        '100': '25rem',
+        'border-beam': {
+          '0%': { offsetDistance: '0%' },
+          '100%': { offsetDistance: '100%' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.8', transform: 'scale(1.05)' },
+        },
       },
     },
   },
   plugins: [],
-}
-export default config
+};
+
+export default config;

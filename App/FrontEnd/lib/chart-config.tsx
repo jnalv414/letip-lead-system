@@ -2,68 +2,68 @@
  * Chart Configuration
  *
  * Centralized color scheme and chart styling following the 60/30/10 rule:
- * - 60% Charcoal (#1A1A1D): Backgrounds, chart backgrounds
- * - 30% Teal (#0D3B3B, #145A5A): Primary data series, surfaces
- * - 10% Orange (#FF5722): Accents, highlights, CTAs
+ * - 60% Deep Navy (#0a0a0f, #111118, #1a1a24): Backgrounds, chart backgrounds
+ * - 30% Purple/Blue (#8B5CF6, #3B82F6): Primary data series, surfaces
+ * - 10% Cyan/Pink (#06B6D4, #EC4899): Accents, highlights, CTAs
  */
 
 export const chartConfig = {
   colors: {
     // Primary colors
-    primary: '#FF5722',      // Orange - 10% accent
-    secondary: '#145A5A',    // Teal - 30% primary data
-    tertiary: '#1A7070',     // Lighter teal - variation
+    primary: '#8B5CF6',      // Purple - 30% accent
+    secondary: '#3B82F6',    // Blue - 30% primary data
+    tertiary: '#06B6D4',     // Cyan - 10% variation
 
-    // Background colors (60% charcoal)
-    background: '#1A1A1D',   // Charcoal - main background
-    cardBg: '#2A2A2E',       // Charcoal light - card background
+    // Background colors (60% deep navy)
+    background: '#0a0a0f',   // Deep navy - main background
+    cardBg: '#1a1a24',       // Navy - card background
 
     // Grid and axis
-    grid: '#2A2A2E',         // Subtle grid lines
-    axis: '#4A4A4E',         // Axis lines
+    grid: '#2e2e3a',         // Subtle grid lines
+    axis: '#3e3e4a',         // Axis lines
 
     // Text
     text: {
       primary: '#FFFFFF',
-      secondary: '#9CA3AF',
-      muted: '#6B7280',
+      secondary: '#A1A1AA',
+      muted: '#71717A',
     },
 
     // Status colors
-    success: '#10B981',
+    success: '#22C55E',
     warning: '#F59E0B',
     error: '#EF4444',
     info: '#3B82F6',
   },
 
   gradients: {
-    // Orange gradients for accents (10% rule)
-    orange: {
-      start: '#FF5722',
-      end: '#E64A19',
+    // Purple gradients for primary data (30% rule)
+    purple: {
+      start: '#8B5CF6',
+      end: '#7C3AED',
       stops: [
-        { offset: '0%', color: '#FF5722', opacity: 0.8 },
-        { offset: '100%', color: '#E64A19', opacity: 0.2 },
+        { offset: '0%', color: '#8B5CF6', opacity: 0.8 },
+        { offset: '100%', color: '#7C3AED', opacity: 0.2 },
       ],
     },
 
-    // Teal gradients for primary data (30% rule)
-    teal: {
-      start: '#145A5A',
-      end: '#0D3B3B',
+    // Blue gradients for secondary data (30% rule)
+    blue: {
+      start: '#3B82F6',
+      end: '#2563EB',
       stops: [
-        { offset: '0%', color: '#145A5A', opacity: 0.8 },
-        { offset: '100%', color: '#0D3B3B', opacity: 0.2 },
+        { offset: '0%', color: '#3B82F6', opacity: 0.8 },
+        { offset: '100%', color: '#2563EB', opacity: 0.2 },
       ],
     },
 
-    // Light teal for secondary data
-    tealLight: {
-      start: '#1A7070',
-      end: '#145A5A',
+    // Cyan for accent highlights (10% rule)
+    cyan: {
+      start: '#06B6D4',
+      end: '#0891B2',
       stops: [
-        { offset: '0%', color: '#1A7070', opacity: 0.6 },
-        { offset: '100%', color: '#145A5A', opacity: 0.1 },
+        { offset: '0%', color: '#06B6D4', opacity: 0.6 },
+        { offset: '100%', color: '#0891B2', opacity: 0.1 },
       ],
     },
   },
@@ -74,7 +74,7 @@ export const chartConfig = {
     area: {
       strokeWidth: 2,
       fillOpacity: 0.4,
-      activeDot: { r: 6, fill: '#FF5722', stroke: '#FFFFFF', strokeWidth: 2 },
+      activeDot: { r: 6, fill: '#8B5CF6', stroke: '#FFFFFF', strokeWidth: 2 },
     },
 
     // Bar chart
@@ -87,7 +87,7 @@ export const chartConfig = {
     line: {
       strokeWidth: 3,
       dot: { r: 4, strokeWidth: 2 },
-      activeDot: { r: 6, fill: '#FF5722' },
+      activeDot: { r: 6, fill: '#8B5CF6' },
     },
 
     // Sparkline (mini charts)
@@ -99,14 +99,14 @@ export const chartConfig = {
     // Tooltip styling
     tooltip: {
       contentStyle: {
-        backgroundColor: '#1A1A1D',
-        border: '1px solid rgba(255, 87, 34, 0.3)',
+        backgroundColor: '#0a0a0f',
+        border: '1px solid rgba(139, 92, 246, 0.3)',
         borderRadius: '12px',
         padding: '12px',
         boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
       },
       labelStyle: {
-        color: '#9CA3AF',
+        color: '#A1A1AA',
         fontSize: '12px',
         fontWeight: 600,
         marginBottom: '4px',
@@ -117,23 +117,23 @@ export const chartConfig = {
         fontWeight: 500,
       },
       cursor: {
-        stroke: 'rgba(255, 87, 34, 0.2)',
+        stroke: 'rgba(139, 92, 246, 0.2)',
         strokeWidth: 2,
       },
     },
 
     // Grid styling
     grid: {
-      stroke: '#2A2A2E',
+      stroke: '#2e2e3a',
       strokeDasharray: '3 3',
       strokeWidth: 1,
     },
 
     // Axis styling
     axis: {
-      stroke: '#4A4A4E',
+      stroke: '#3e3e4a',
       tick: {
-        fill: '#9CA3AF',
+        fill: '#A1A1AA',
         fontSize: 12,
       },
     },
@@ -153,7 +153,7 @@ export type ChartGradients = typeof chartConfig.gradients;
 /**
  * Helper function to get gradient fill for area charts
  */
-export const getGradientId = (type: 'orange' | 'teal' | 'tealLight') => {
+export const getGradientId = (type: 'purple' | 'blue' | 'cyan') => {
   return `gradient-${type}`;
 };
 
@@ -163,9 +163,9 @@ export const getGradientId = (type: 'orange' | 'teal' | 'tealLight') => {
 export const createGradientDefs = () => {
   return (
     <defs>
-      {/* Orange gradient (10% accent) */}
-      <linearGradient id="gradient-orange" x1="0" y1="0" x2="0" y2="1">
-        {chartConfig.gradients.orange.stops.map((stop, i) => (
+      {/* Purple gradient (30% primary) */}
+      <linearGradient id="gradient-purple" x1="0" y1="0" x2="0" y2="1">
+        {chartConfig.gradients.purple.stops.map((stop, i) => (
           <stop
             key={i}
             offset={stop.offset}
@@ -175,9 +175,9 @@ export const createGradientDefs = () => {
         ))}
       </linearGradient>
 
-      {/* Teal gradient (30% primary) */}
-      <linearGradient id="gradient-teal" x1="0" y1="0" x2="0" y2="1">
-        {chartConfig.gradients.teal.stops.map((stop, i) => (
+      {/* Blue gradient (30% secondary) */}
+      <linearGradient id="gradient-blue" x1="0" y1="0" x2="0" y2="1">
+        {chartConfig.gradients.blue.stops.map((stop, i) => (
           <stop
             key={i}
             offset={stop.offset}
@@ -187,9 +187,9 @@ export const createGradientDefs = () => {
         ))}
       </linearGradient>
 
-      {/* Light teal gradient */}
-      <linearGradient id="gradient-tealLight" x1="0" y1="0" x2="0" y2="1">
-        {chartConfig.gradients.tealLight.stops.map((stop, i) => (
+      {/* Cyan gradient (10% accent) */}
+      <linearGradient id="gradient-cyan" x1="0" y1="0" x2="0" y2="1">
+        {chartConfig.gradients.cyan.stops.map((stop, i) => (
           <stop
             key={i}
             offset={stop.offset}

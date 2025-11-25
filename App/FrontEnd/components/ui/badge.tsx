@@ -37,6 +37,15 @@ const badgeVariants = cva(
         error: 'bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30',
         info: 'bg-blue-500/20 text-blue-400 border border-blue-500/40 hover:bg-blue-500/30',
 
+        // Enrichment status badges
+        enriched: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+        pending: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
+        failed: 'bg-red-500/20 text-red-400 border border-red-500/30',
+
+        // Privacy badges
+        public: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+        private: 'bg-violet-500/20 text-violet-400 border border-violet-500/30',
+
         // Outline variants
         outline: 'border border-orange/40 text-orange bg-transparent hover:bg-orange/10',
         outlineTeal: 'border border-teal-light/40 text-teal-lighter bg-transparent hover:bg-teal-light/10',

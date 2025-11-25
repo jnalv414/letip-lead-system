@@ -18,7 +18,7 @@ import { motion, HTMLMotionProps } from 'framer-motion';
 import { useKeyboardClick } from '@/hooks/use-keyboard-click';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'teal' | 'charcoal';
+  variant?: 'default' | 'teal' | 'charcoal' | 'glass' | 'glass-elevated';
   hover?: boolean;
   animated?: boolean;
   children?: React.ReactNode;
@@ -32,6 +32,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       default: 'bg-charcoal-light border-orange/20',
       teal: 'bg-teal border-orange/20',
       charcoal: 'bg-charcoal border-orange/10',
+      glass: 'glass',
+      'glass-elevated': 'glass-elevated',
     };
 
     const hoverClasses = hover
