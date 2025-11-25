@@ -9,7 +9,7 @@
 export { BusinessList } from './components/business-list';
 
 // Hooks
-export { useBusinesses, useBusiness, useCreateBusiness, useUpdateBusiness, useDeleteBusiness, businessKeys } from './hooks/use-businesses';
+export { useBusinesses, useBusiness, useCreateBusiness, useUpdateBusiness, useDeleteBusiness, useBulkDeleteBusinesses, businessKeys } from './hooks/use-businesses';
 export { useBusinessWebSocket } from './hooks/use-business-websocket';
 
 // Types

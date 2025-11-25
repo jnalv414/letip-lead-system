@@ -9,6 +9,7 @@ import {
   Building2,
   Users,
   Mail,
+  Check,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -18,7 +19,9 @@ import type { Business } from '@/types/api';
 interface BusinessCardProps {
   business: Business;
   onClick?: (business: Business) => void;
+  onSelect?: (business: Business, selected: boolean) => void;
   selected?: boolean;
+  selectable?: boolean;
   className?: string;
 }
 
@@ -31,11 +34,18 @@ const statusColors: Record<string, string> = {
 export function BusinessCard({
   business,
   onClick,
+  onSelect,
   selected = false,
+  selectable = false,
   className,
 }: BusinessCardProps) {
   const contactCount = business._count?.contacts || 0;
   const location = [business.city, business.state].filter(Boolean).join(', ');
+
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onSelect?.(business, !selected);
+  };
 
   return (
     <motion.div
@@ -59,6 +69,21 @@ export function BusinessCard({
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-3 min-w-0">
+              {/* Selection Checkbox */}
+              {selectable && (
+                <button
+                  onClick={handleCheckboxClick}
+                  className={cn(
+                    'flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors',
+                    selected
+                      ? 'bg-primary border-primary'
+                      : 'border-border/50 hover:border-primary/50'
+                  )}
+                  aria-label={selected ? 'Deselect' : 'Select'}
+                >
+                  {selected && <Check className="h-3 w-3 text-primary-foreground" />}
+                </button>
+              )}
               <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Building2 className="h-5 w-5 text-primary" />
               </div>

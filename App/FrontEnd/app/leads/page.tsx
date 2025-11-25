@@ -7,11 +7,12 @@ import { PageHeader } from '@/components/shared/page-header';
 import { FilterBar } from '@/components/shared/filter-bar';
 import { Pagination } from '@/components/shared/pagination';
 import { BusinessList } from '@/components/leads/business-list';
-import { CreateLeadModal, ViewLeadModal, DeleteLeadModal } from '@/components/leads/modals';
+import { BulkActionsBar } from '@/components/leads/bulk-actions-bar';
+import { CreateLeadModal, ViewLeadModal, DeleteLeadModal, BulkDeleteModal } from '@/components/leads/modals';
 import { ErrorBoundary, ErrorState } from '@/components/shared/error-boundary';
 import { Button } from '@/components/ui/button';
 import { useBusinesses } from '@/features/business-management';
-import { useEnrichBusiness } from '@/features/lead-enrichment';
+import { useEnrichBusiness, useBatchEnrichment } from '@/features/lead-enrichment';
 import { cn } from '@/lib/utils';
 import type { Business, QueryBusinessesDto } from '@/types/api';
 
@@ -60,10 +61,15 @@ export default function LeadsPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [bulkDeleteModalOpen, setBulkDeleteModalOpen] = useState(false);
   const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
 
-  // Enrichment mutation
+  // Selection state for bulk operations
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  // Mutations
   const enrichMutation = useEnrichBusiness();
+  const batchEnrichMutation = useBatchEnrichment();
 
   // Build query params from filters
   const queryParams: QueryBusinessesDto = useMemo(
@@ -131,6 +137,37 @@ export default function LeadsPage() {
   const handleDeleteSuccess = useCallback(() => {
     setDeleteModalOpen(false);
     setSelectedBusiness(null);
+    refetch();
+  }, [refetch]);
+
+  // Bulk operations handlers
+  const handleSelectionChange = useCallback((ids: number[]) => {
+    setSelectedIds(ids);
+  }, []);
+
+  const handleBulkDelete = useCallback(() => {
+    if (selectedIds.length > 0) {
+      setBulkDeleteModalOpen(true);
+    }
+  }, [selectedIds]);
+
+  const handleBulkEnrich = useCallback(() => {
+    if (selectedIds.length > 0) {
+      // Enrich each selected business
+      selectedIds.forEach((id) => {
+        enrichMutation.mutate(id);
+      });
+      setSelectedIds([]);
+    }
+  }, [selectedIds, enrichMutation]);
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedIds([]);
+  }, []);
+
+  const handleBulkDeleteSuccess = useCallback(() => {
+    setBulkDeleteModalOpen(false);
+    setSelectedIds([]);
     refetch();
   }, [refetch]);
 
@@ -215,6 +252,8 @@ export default function LeadsPage() {
           isLoading={isLoading}
           viewMode={viewMode}
           totalCount={totalItems}
+          selectedIds={selectedIds}
+          onSelectionChange={handleSelectionChange}
         />
 
         {/* Pagination */}
@@ -258,6 +297,23 @@ export default function LeadsPage() {
             />
           </>
         )}
+
+        {/* Bulk Delete Modal */}
+        <BulkDeleteModal
+          isOpen={bulkDeleteModalOpen}
+          selectedIds={selectedIds}
+          onClose={() => setBulkDeleteModalOpen(false)}
+          onSuccess={handleBulkDeleteSuccess}
+        />
+
+        {/* Bulk Actions Bar */}
+        <BulkActionsBar
+          selectedCount={selectedIds.length}
+          onDelete={handleBulkDelete}
+          onEnrich={handleBulkEnrich}
+          onClearSelection={handleClearSelection}
+          isLoading={enrichMutation.isPending}
+        />
       </div>
     </ErrorBoundary>
   );

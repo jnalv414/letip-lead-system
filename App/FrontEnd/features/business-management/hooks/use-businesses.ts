@@ -100,3 +100,29 @@ export function useDeleteBusiness() {
     },
   });
 }
+
+/**
+ * Hook to bulk delete businesses
+ */
+export function useBulkDeleteBusinesses() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (ids: number[]) => {
+      // Delete each business sequentially
+      // In a production app, you'd want a bulk delete API endpoint
+      const results = await Promise.all(
+        ids.map((id) => businessApi.deleteBusiness(id).catch((err) => ({ error: err, id })))
+      );
+      return results;
+    },
+    onSuccess: (_, deletedIds) => {
+      // Remove all deleted items from cache
+      deletedIds.forEach((id) => {
+        queryClient.removeQueries({ queryKey: businessKeys.detail(id) });
+      });
+      // Invalidate list to refetch
+      queryClient.invalidateQueries({ queryKey: businessKeys.lists() });
+    },
+  });
+}

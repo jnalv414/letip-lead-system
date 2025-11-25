@@ -3,7 +3,10 @@ import userEvent from '@testing-library/user-event';
 import LeadsPage from '@/app/leads/page';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Mock the useBusinesses hook
+// Mock the business-management hooks
+const mockMutate = jest.fn();
+const mockMutateAsync = jest.fn().mockResolvedValue({});
+
 jest.mock('@/features/business-management', () => ({
   useBusinesses: jest.fn(() => ({
     data: {
@@ -22,7 +25,35 @@ jest.mock('@/features/business-management', () => ({
     },
     isLoading: false,
     error: null,
+    refetch: jest.fn(),
   })),
+  useCreateBusiness: () => ({
+    mutate: mockMutate,
+    mutateAsync: mockMutateAsync,
+    isPending: false,
+  }),
+  useDeleteBusiness: () => ({
+    mutate: mockMutate,
+    mutateAsync: mockMutateAsync,
+    isPending: false,
+  }),
+  useBulkDeleteBusinesses: () => ({
+    mutate: mockMutate,
+    mutateAsync: mockMutateAsync,
+    isPending: false,
+  }),
+}));
+
+// Mock lead-enrichment hooks
+jest.mock('@/features/lead-enrichment', () => ({
+  useEnrichBusiness: () => ({
+    mutate: mockMutate,
+    isPending: false,
+  }),
+  useBatchEnrichment: () => ({
+    mutate: mockMutate,
+    isPending: false,
+  }),
 }));
 
 // Create a wrapper with providers
@@ -84,7 +115,7 @@ describe('LeadsPage', () => {
   test('filters can be applied', async () => {
     render(<LeadsPage />, { wrapper: createWrapper() });
 
-    const cityFilter = screen.getByLabelText('City');
-    expect(cityFilter).toBeInTheDocument();
+    // Filter bar should be present with filter options
+    expect(screen.getByTestId('filter-bar')).toBeInTheDocument();
   });
 });

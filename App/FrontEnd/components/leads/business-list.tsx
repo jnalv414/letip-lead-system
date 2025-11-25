@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Check } from 'lucide-react';
 import { BusinessCard } from './business-card';
 import { EmptyState } from '@/components/shared/empty-state';
 import { CardSkeleton } from '@/components/shared/loading-skeleton';
@@ -65,11 +66,27 @@ export function BusinessList({
     onBusinessClick?.(business);
   };
 
+  const handleSelect = (business: Business, isSelected: boolean) => {
+    if (!onSelectionChange) return;
+
+    if (isSelected) {
+      onSelectionChange([...selectedIds, business.id]);
+    } else {
+      onSelectionChange(selectedIds.filter((id) => id !== business.id));
+    }
+  };
+
+  const selectable = !!onSelectionChange;
+
   if (viewMode === 'table') {
     return (
       <div data-view="table" className={cn('space-y-1', className)}>
         {/* Table Header */}
-        <div className="grid grid-cols-12 gap-4 px-4 py-2 text-sm font-medium text-muted-foreground border-b border-border/50">
+        <div className={cn(
+          'grid gap-4 px-4 py-2 text-sm font-medium text-muted-foreground border-b border-border/50',
+          selectable ? 'grid-cols-13' : 'grid-cols-12'
+        )}>
+          {selectable && <div className="col-span-1"></div>}
           <div className="col-span-4">Business</div>
           <div className="col-span-2">Location</div>
           <div className="col-span-2">Industry</div>
@@ -93,13 +110,35 @@ export function BusinessList({
                 visible: { opacity: 1, x: 0 },
               }}
               className={cn(
-                'grid grid-cols-12 gap-4 px-4 py-3 items-center',
+                'grid gap-4 px-4 py-3 items-center',
+                selectable ? 'grid-cols-13' : 'grid-cols-12',
                 'border-b border-border/30 cursor-pointer',
                 'hover:bg-card/50 transition-colors',
                 selectedIds.includes(business.id) && 'bg-primary/10'
               )}
               onClick={() => handleCardClick(business)}
             >
+              {selectable && (
+                <div className="col-span-1">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelect(business, !selectedIds.includes(business.id));
+                    }}
+                    className={cn(
+                      'w-5 h-5 rounded border-2 flex items-center justify-center transition-colors',
+                      selectedIds.includes(business.id)
+                        ? 'bg-primary border-primary'
+                        : 'border-border/50 hover:border-primary/50'
+                    )}
+                    aria-label={selectedIds.includes(business.id) ? 'Deselect' : 'Select'}
+                  >
+                    {selectedIds.includes(business.id) && (
+                      <Check className="h-3 w-3 text-primary-foreground" />
+                    )}
+                  </button>
+                </div>
+              )}
               <div className="col-span-4 font-medium truncate">{business.name}</div>
               <div className="col-span-2 text-sm text-muted-foreground truncate">
                 {[business.city, business.state].filter(Boolean).join(', ') || '-'}
@@ -160,7 +199,9 @@ export function BusinessList({
             <BusinessCard
               business={business}
               onClick={handleCardClick}
+              onSelect={handleSelect}
               selected={selectedIds.includes(business.id)}
+              selectable={selectable}
             />
           </motion.div>
         ))}
