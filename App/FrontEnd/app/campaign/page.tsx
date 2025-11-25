@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Megaphone, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AppShell } from '@/components/layout';
 import { CampaignStats, OutreachFunnel, MessageStatusList } from '@/components/campaign';
 import { useBusinesses } from '@/hooks/queries/use-businesses';
 import { useOutreachMessages } from '@/hooks/queries/use-outreach-messages';
@@ -77,49 +78,51 @@ export default function CampaignPage() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="p-6 space-y-6"
-    >
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/20">
-            <Megaphone className="h-6 w-6 text-primary" />
+    <AppShell title="Campaign">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="space-y-6"
+      >
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/20">
+              <Megaphone className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Campaign Overview</h1>
+              <p className="text-sm text-muted-foreground">
+                Track your outreach performance and message status
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Campaign Overview</h1>
-            <p className="text-sm text-muted-foreground">
-              Track your outreach performance and message status
-            </p>
-          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={isLoading}
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleRefresh}
-          disabled={isLoading}
-          className="gap-2"
-        >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
-      </div>
 
-      {/* Campaign Stats */}
-      <CampaignStats stats={campaignStats} isLoading={isLoading} />
+        {/* Campaign Stats */}
+        <CampaignStats stats={campaignStats} isLoading={isLoading} />
 
-      {/* Two Column Layout: Funnel + Message List */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <OutreachFunnel data={funnelData} isLoading={isLoading} />
-        <MessageStatusList
-          messages={messagesData?.messages || []}
-          businessMap={businessMap}
-          isLoading={isLoading}
-        />
-      </div>
-    </motion.div>
+        {/* Two Column Layout: Funnel + Message List */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <OutreachFunnel data={funnelData} isLoading={isLoading} />
+          <MessageStatusList
+            messages={messagesData?.messages || []}
+            businessMap={businessMap}
+            isLoading={isLoading}
+          />
+        </div>
+      </motion.div>
+    </AppShell>
   );
 }

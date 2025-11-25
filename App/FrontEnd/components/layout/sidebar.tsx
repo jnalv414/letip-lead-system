@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Home, Users, Search, Sparkles, Send, Settings, Menu, X, ChevronRight
+  Home, Users, Search, Sparkles, Send, Settings, Menu, X, ChevronRight, Megaphone
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LeTipLogoCompact } from '@/components/ui/letip-logo';
@@ -16,6 +16,7 @@ const navItems = [
   { href: '/search', icon: Search, label: 'Search' },
   { href: '/enrichment', icon: Sparkles, label: 'Enrichment' },
   { href: '/outreach', icon: Send, label: 'Outreach' },
+  { href: '/campaign', icon: Megaphone, label: 'Campaign' },
 ];
 
 // Animation variants for sidebar panel
