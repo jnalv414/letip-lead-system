@@ -15,7 +15,7 @@ export function AppShell({ children, title }: AppShellProps) {
       <Sidebar />
       <div className="pl-[60px]">
         <Header title={title} />
-        <main className="p-6">
+        <main className="p-8 max-w-[1600px] mx-auto">
           {children}
         </main>
       </div>

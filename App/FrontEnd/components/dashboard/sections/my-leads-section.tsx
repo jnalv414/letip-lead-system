@@ -130,26 +130,26 @@ export function MyLeadsSection() {
   return (
     <BlurFade delay={0.2} duration={0.5}>
       <motion.div
-        whileHover={{ scale: 1.005 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        whileHover={{ scale: 1.002 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       >
-        <Card variant="glass" className="p-6">
+        <Card variant="glass" className="p-8">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-1">
+              <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-3 tracking-tight">
                 My Leads
               </h2>
-              <div className="flex items-center gap-2">
-                <span className="text-3xl font-bold text-[var(--accent-purple)]">
+              <div className="flex items-center gap-3">
+                <span className="text-5xl font-bold text-[var(--accent-purple)]">
                   <NumberTicker value={stats?.total || 0} />
                 </span>
                 <div
                   className={cn(
-                    'flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold',
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold backdrop-blur-sm',
                     trendPositive
-                      ? 'bg-green-500/10 text-green-400'
-                      : 'bg-red-500/10 text-red-400'
+                      ? 'bg-[var(--highlight-emerald)]/10 text-[var(--highlight-emerald)] border border-[var(--highlight-emerald)]/20'
+                      : 'bg-red-500/10 text-red-400 border border-red-500/20'
                   )}
                 >
                   {trendPositive ? (
@@ -195,7 +195,7 @@ export function MyLeadsSection() {
           </div>
 
           {/* Chart */}
-          <div className="h-64 mb-6">
+          <div className="h-72 mb-8">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={leadData || []}>
                 {createGradientDefs()}
@@ -246,30 +246,30 @@ export function MyLeadsSection() {
           </div>
 
           {/* Mini stats row */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="glass-subtle rounded-xl p-4 border border-[var(--border-subtle)]">
-              <p className="text-xs font-medium text-[var(--text-muted)] mb-1">
+          <div className="grid grid-cols-3 gap-6">
+            <div className="glass-subtle rounded-xl p-6 border border-[var(--border-subtle)] hover:border-[var(--border-default)] transition-colors">
+              <p className="text-sm font-semibold text-[var(--text-muted)] mb-2 uppercase tracking-wide">
                 Total Leads
               </p>
-              <p className="text-2xl font-bold text-[var(--text-primary)]">
+              <p className="text-3xl font-bold text-[var(--text-primary)]">
                 <NumberTicker value={stats?.total || 0} />
               </p>
             </div>
 
-            <div className="glass-subtle rounded-xl p-4 border border-[var(--border-subtle)]">
-              <p className="text-xs font-medium text-[var(--text-muted)] mb-1">
+            <div className="glass-subtle rounded-xl p-6 border border-[var(--border-subtle)] hover:border-[var(--accent-purple)]/30 transition-colors">
+              <p className="text-sm font-semibold text-[var(--text-muted)] mb-2 uppercase tracking-wide">
                 Enriched
               </p>
-              <p className="text-2xl font-bold text-[var(--accent-purple)]">
+              <p className="text-3xl font-bold text-[var(--accent-purple)]">
                 <NumberTicker value={stats?.enriched || 0} />
               </p>
             </div>
 
-            <div className="glass-subtle rounded-xl p-4 border border-[var(--border-subtle)]">
-              <p className="text-xs font-medium text-[var(--text-muted)] mb-1">
+            <div className="glass-subtle rounded-xl p-6 border border-[var(--border-subtle)] hover:border-[var(--border-default)] transition-colors">
+              <p className="text-sm font-semibold text-[var(--text-muted)] mb-2 uppercase tracking-wide">
                 Pending
               </p>
-              <p className="text-2xl font-bold text-[var(--text-secondary)]">
+              <p className="text-3xl font-bold text-[var(--text-secondary)]">
                 <NumberTicker value={stats?.pending || 0} />
               </p>
             </div>

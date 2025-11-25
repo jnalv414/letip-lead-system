@@ -17,7 +17,7 @@ export default function DashboardPage() {
     <AppShell title="Dashboard">
       {/* Connection Status Banner */}
       <BlurFade delay={0.1} duration={0.4}>
-        <div className="mb-6">
+        <div className="mb-8">
           <div className={`
             flex items-center gap-2 px-4 py-2 rounded-lg text-sm w-fit
             ${isConnected
@@ -34,7 +34,7 @@ export default function DashboardPage() {
       </BlurFade>
 
       {/* Main Dashboard Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column - My Leads Chart */}
         <BlurFade delay={0.2} duration={0.5} className="lg:col-span-7">
           <MyLeadsSection />
@@ -48,14 +48,14 @@ export default function DashboardPage() {
 
       {/* Top Businesses Grid */}
       <BlurFade delay={0.4} duration={0.5}>
-        <div className="mt-8">
+        <div className="mt-10">
           <TopBusinessesGrid />
         </div>
       </BlurFade>
 
       {/* Recent Businesses Table */}
       <BlurFade delay={0.5} duration={0.5}>
-        <div className="mt-8">
+        <div className="mt-10">
           <RecentBusinessesTable />
         </div>
       </BlurFade>

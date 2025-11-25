@@ -26,7 +26,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', hover = false, animated = false, children, onClick, ...props }, ref) => {
-    const baseClasses = 'rounded-3xl p-6 border shadow-xl transition-all duration-300';
+    const baseClasses = 'rounded-2xl p-6 border transition-all duration-300 ease-out';
 
     const variantClasses = {
       default: 'bg-charcoal-light border-orange/20',
@@ -37,7 +37,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     };
 
     const hoverClasses = hover
-      ? 'hover:border-orange/40 hover:shadow-3d-hover hover:-translate-y-1'
+      ? 'hover:border-[var(--border-accent)] hover:shadow-[0_8px_32px_rgba(155,109,255,0.15)] hover:-translate-y-1 hover:scale-[1.02]'
       : '';
 
     const handleKeyDown = useKeyboardClick(onClick);
@@ -52,7 +52,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           className={cn(baseClasses, variantClasses[variant], hoverClasses, className)}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           onClick={onClick}
           onKeyDown={handleKeyDown}
           {...(safeProps as any)}
@@ -94,7 +94,7 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn('text-xl font-semibold text-white tracking-tight', className)}
+      className={cn('text-xl font-bold text-[var(--text-primary)] tracking-tight', className)}
       {...props}
     />
   )
@@ -106,7 +106,7 @@ const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttribu
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn('text-sm text-gray-400', className)}
+      className={cn('text-sm text-[var(--text-secondary)] leading-relaxed', className)}
       {...props}
     />
   )

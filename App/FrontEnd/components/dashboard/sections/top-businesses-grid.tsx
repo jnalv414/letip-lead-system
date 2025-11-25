@@ -168,9 +168,9 @@ function BusinessCard({ business }: BusinessCardProps) {
         variant="glass"
         className="h-full cursor-pointer group"
       >
-        <CardContent className="p-6">
+        <CardContent className="p-7">
           {/* Header with avatar and status */}
-          <div className="flex items-start justify-between mb-4">
+          <div className="flex items-start justify-between mb-5">
             <div className="flex items-center gap-3">
               {/* Business avatar */}
               <Avatar
@@ -201,7 +201,7 @@ function BusinessCard({ business }: BusinessCardProps) {
           </div>
 
           {/* Metrics row */}
-          <div className="flex items-center justify-between mb-4 pt-4 border-t border-[var(--border-primary)]">
+          <div className="flex items-center justify-between mb-5 pt-5 border-t border-[var(--border-primary)]">
             <div className="flex items-center gap-2 text-sm">
               <Users className="w-4 h-4 text-violet-400" />
               <span className="text-[var(--text-secondary)]">
@@ -220,7 +220,7 @@ function BusinessCard({ business }: BusinessCardProps) {
           </div>
 
           {/* Progress bar */}
-          <div className="mb-4">
+          <div className="mb-5">
             <div
               className="h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden"
               role="progressbar"
@@ -330,7 +330,7 @@ export function TopBusinessesGrid() {
   }
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-8">
       {/* Section header */}
       <BlurFade delay={0.1}>
         <div className="flex items-center justify-between">
@@ -355,7 +355,7 @@ export function TopBusinessesGrid() {
       </BlurFade>
 
       {/* Business grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {currentBusinesses.map((business, index) => (
           <BlurFade key={business.id} delay={0.05 * (index + 1)}>
             <BusinessCard business={business} />
