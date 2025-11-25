@@ -12,3 +12,7 @@ export * from './queries';
 
 // Mutation hooks
 export * from './mutations';
+
+// Utility hooks
+export { useDebounce } from './use-debounce';
+export { usePagination } from './use-pagination';
