@@ -93,12 +93,7 @@ function StatCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-2xl p-6"
-      style={{
-        background: 'linear-gradient(135deg, rgba(30, 30, 50, 0.9) 0%, rgba(20, 20, 35, 0.95) 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-      }}
+      className="relative overflow-hidden rounded-2xl p-6 glass-card"
     >
       <div className="flex items-start justify-between mb-4">
         <div
@@ -153,14 +148,8 @@ function BusinessCard({ business }: { business: typeof topBusinesses[0] }) {
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(139, 92, 246, 0.15)' }}
       transition={{ duration: 0.2 }}
-      className="rounded-2xl cursor-pointer"
-      style={{
-        padding: '28px',
-        background: 'linear-gradient(135deg, rgba(30, 30, 50, 0.8) 0%, rgba(20, 20, 35, 0.9) 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
-        minHeight: '200px',
-      }}
+      className="rounded-2xl cursor-pointer glass-card p-7"
+      style={{ minHeight: '200px' }}
     >
       {/* Header with avatar and status */}
       <div className="flex items-start justify-between" style={{ marginBottom: '20px' }}>
@@ -306,12 +295,7 @@ function AIChatbot() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="rounded-2xl p-8 relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 50%, rgba(20, 20, 35, 0.95) 100%)',
-        border: '1px solid rgba(139, 92, 246, 0.4)',
-        boxShadow: '0 12px 48px rgba(139, 92, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-      }}
+      className="rounded-2xl p-8 relative overflow-hidden glass-hero"
     >
       {/* Decorative glow */}
       <div
@@ -474,13 +458,7 @@ function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
 
   return (
-    <div
-      className="rounded-lg p-3 text-sm"
-      style={{
-        background: 'rgba(20, 20, 35, 0.95)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-      }}
+    <div className="rounded-lg p-3 text-sm glass-tooltip"
     >
       <p className="text-slate-400 mb-2">{label}</p>
       {payload.map((entry: any, i: number) => (
@@ -608,12 +586,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-2xl p-6"
-          style={{
-            background: 'linear-gradient(135deg, rgba(30, 30, 50, 0.9) 0%, rgba(20, 20, 35, 0.95) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          }}
+          className="rounded-2xl p-6 glass-card"
         >
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -683,12 +656,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-2xl p-6"
-          style={{
-            background: 'linear-gradient(135deg, rgba(30, 30, 50, 0.9) 0%, rgba(20, 20, 35, 0.95) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          }}
+          className="rounded-2xl p-6 glass-card"
         >
           <h2 className="text-xl font-semibold text-white mb-2">Enrichment Status</h2>
           <p className="text-sm text-slate-400 mb-4">Distribution overview</p>
@@ -732,12 +700,7 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.25 }}
-        className="rounded-2xl p-6 mb-8"
-        style={{
-          background: 'linear-gradient(135deg, rgba(30, 30, 50, 0.9) 0%, rgba(20, 20, 35, 0.95) 100%)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-        }}
+        className="rounded-2xl p-6 mb-8 glass-card"
       >
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -804,12 +767,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-2xl p-6"
-          style={{
-            background: 'linear-gradient(135deg, rgba(30, 30, 50, 0.9) 0%, rgba(20, 20, 35, 0.95) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          }}
+          className="rounded-2xl p-6 glass-card"
         >
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -833,12 +791,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="rounded-2xl p-6"
-          style={{
-            background: 'linear-gradient(135deg, rgba(30, 30, 50, 0.9) 0%, rgba(20, 20, 35, 0.95) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          }}
+          className="rounded-2xl p-6 glass-card"
         >
           <h2 className="text-xl font-semibold text-white mb-2">Recent Activity</h2>
           <p className="text-sm text-slate-400 mb-4">Latest actions</p>
@@ -856,12 +809,7 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="rounded-2xl p-6"
-        style={{
-          background: 'linear-gradient(135deg, rgba(30, 30, 50, 0.9) 0%, rgba(20, 20, 35, 0.95) 100%)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-        }}
+        className="rounded-2xl p-6 glass-card"
       >
         <div className="flex items-center justify-between mb-6">
           <div>

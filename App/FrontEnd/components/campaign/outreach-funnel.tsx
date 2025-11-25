@@ -68,7 +68,7 @@ export function OutreachFunnel({
 
   if (isLoading) {
     return (
-      <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
+      <Card className={cn('glass-card', className)}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingDown className="h-5 w-5 text-muted-foreground" />
@@ -96,7 +96,7 @@ export function OutreachFunnel({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
+      <Card className={cn('glass-card', className)}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingDown className="h-5 w-5 text-primary" />
