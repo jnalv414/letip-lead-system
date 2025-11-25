@@ -164,34 +164,44 @@ Full API documentation available at `/api-docs` when running.
 ## 🏗️ Project Structure
 
 ```
-letip_lead_system/
+letip-lead-system/
 ├── App/
-│   ├── BackEnd/           # NestJS Backend
+│   ├── BackEnd/                    # NestJS Backend (Port 3000)
 │   │   ├── src/
-│   │   │   ├── businesses/    # Business module
-│   │   │   ├── scraper/       # Scraping module
-│   │   │   ├── enrichment/    # Enrichment module
-│   │   │   ├── outreach/      # Outreach module
-│   │   │   ├── telegram/      # Telegram notifications
-│   │   │   ├── websocket/     # WebSocket gateway
-│   │   │   └── prisma/        # Database service
-│   │   ├── prisma/            # Database schema
-│   │   └── dist/              # Compiled code
+│   │   │   ├── features/           # Vertical slice modules
+│   │   │   │   ├── business-management/
+│   │   │   │   │   ├── api/        # Controllers + DTOs
+│   │   │   │   │   ├── domain/     # Services
+│   │   │   │   │   └── data/       # Repository
+│   │   │   │   ├── map-scraping/
+│   │   │   │   ├── lead-enrichment/
+│   │   │   │   ├── outreach-campaigns/
+│   │   │   │   ├── job-queue/
+│   │   │   │   └── analytics/      # Dashboard analytics
+│   │   │   ├── prisma/             # Database client
+│   │   │   ├── websocket/          # Socket.io gateway
+│   │   │   ├── config/             # API secrets loader
+│   │   │   └── caching/            # Redis cache layer
+│   │   └── prisma/
+│   │       └── schema.prisma       # 5 models
 │   │
-│   └── FrontEnd/          # Next.js Dashboard
-│       ├── app/           # App pages
-│       ├── components/    # React components
-│       ├── lib/           # Utilities
-│       └── out/           # Static build
+│   └── FrontEnd/                   # Next.js 16 Dashboard (Port 3001)
+│       ├── app/                    # App Router pages
+│       ├── components/
+│       │   ├── dashboard/          # Dashboard sections
+│       │   ├── ui/                 # ShadCN/UI components
+│       │   ├── magicui/            # Magic-UI animations
+│       │   └── layout/             # AppShell, Sidebar, Header
+│       ├── core/                   # Providers, API client
+│       └── features/               # Feature-specific code
 │
-├── docs/                  # Project Documentation
-│   ├── planning/          # Planning frameworks & implementation guides
-│   ├── orchestration/     # Multi-agent coordination
-│   └── dashboard/         # Dashboard build plans
+├── docs/                           # Project Documentation
+│   ├── planning/                   # Planning frameworks & implementation guides
+│   ├── orchestration/              # Multi-agent coordination
+│   └── dashboard/                  # Dashboard build plans
 │
-├── CLAUDE.md              # AI development instructions
-└── README.md              # This file
-
+├── CLAUDE.md                       # AI development instructions
+└── README.md                       # This file
 ```
 
 ## 📖 Documentation
@@ -251,27 +261,72 @@ The application can be deployed to any Node.js hosting platform:
 
 ## 📊 Database Schema
 
-### Business Model
+### Core Models (5 total)
 ```prisma
-model Business {
-  id          String   @id @default(uuid())
-  name        String
-  address     String?
-  city        String?
-  state       String?
-  zip         String?
-  phone       String?
-  website     String?
-  email       String?
-  category    String?
-  rating      Float?
-  reviews     Int?
-  latitude    Float?
-  longitude   Float?
-  enriched    Boolean  @default(false)
-  contacted   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model business {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  address            String?
+  city               String?
+  state              String?              @default("NJ")
+  zip                String?
+  phone              String?
+  website            String?
+  business_type      String?
+  industry           String?
+  employee_count     Int?
+  year_founded       Int?
+  google_maps_url    String?
+  latitude           Float?
+  longitude          Float?
+  enrichment_status  String               @default("pending") // pending, enriched, failed
+  source             String               @default("google_maps")
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt
+
+  contacts           contact[]
+  enrichment_logs    enrichment_log[]
+  outreach_messages  outreach_message[]
+
+  @@index([city])
+  @@index([industry])
+  @@index([enrichment_status])
+}
+
+model contact {
+  id                 Int                  @id @default(autoincrement())
+  business_id        Int
+  name               String?
+  email              String?
+  email_verified     Boolean?             @default(false)
+  phone              String?
+  is_primary         Boolean              @default(false)
+  // ... relations: business, outreach_messages
+}
+
+model enrichment_log {
+  id                 Int                  @id @default(autoincrement())
+  business_id        Int
+  service            String               // hunter, abstract
+  status             String               // success, failed
+  // ... audit fields
+}
+
+model outreach_message {
+  id                 Int                  @id @default(autoincrement())
+  business_id        Int
+  contact_id         Int?
+  message_text       String               @db.Text
+  status             String               @default("generated") // generated, sent, failed
+  // ... relations: business, contact
+}
+
+model job_history {
+  id                 String               @id @default(uuid())
+  jobId              String               @unique
+  queueName          String
+  status             String               // pending, active, completed, failed
+  // ... job metadata
 }
 ```
 

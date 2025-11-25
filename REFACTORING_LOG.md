@@ -1,5 +1,12 @@
 # Vertical Slice Refactoring Log
 
+> **HISTORICAL DOCUMENT**
+>
+> This planning document is now **archived**. The refactoring described here has been completed.
+> See **PROGRESS.md** for current status (10/10 vertical slices complete).
+
+---
+
 ## Overview
 
 This log tracks the vertical slice architecture refactoring of the Le Tip Lead System. The refactoring transforms the current horizontal layer architecture into self-contained vertical slices, improving maintainability, testability, and team scalability.
