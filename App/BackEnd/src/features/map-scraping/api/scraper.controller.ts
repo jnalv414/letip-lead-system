@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ScraperService } from '../domain/scraper.service';
 import { ScrapeRequestDto } from './dto/scrape-request.dto';
@@ -27,7 +27,7 @@ export class ScraperController {
   })
   @ApiResponse({ status: 200, description: 'Status retrieved successfully', type: ScrapeStatusDto })
   @ApiResponse({ status: 404, description: 'Run ID not found' })
-  async getScrapingStatus(@Query('runId') runId: string) {
+  async getScrapingStatus(@Param('runId') runId: string) {
     return this.scraperService.getScrapingStatus(runId);
   }
 }
