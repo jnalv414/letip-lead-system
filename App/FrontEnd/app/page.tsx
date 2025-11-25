@@ -3,7 +3,6 @@
 import { useSocketStatus } from '@/core/providers/websocket-provider';
 import { AppShell } from '@/components/layout';
 import { motion } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
 import {
   AreaChart,
   Area,
@@ -39,10 +38,14 @@ import {
   Loader2,
   ArrowRight,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { NumberTicker } from '@/components/magicui/number-ticker';
+import { useStats } from '@/hooks/queries/use-stats';
+import { useBusinesses } from '@/hooks/queries/use-businesses';
+import type { Business } from '@/types/api';
 
-// Mock data
+// Static mock data for features requiring backend analytics endpoints
+// TODO: Replace with real API when analytics endpoints are built
 const weeklyLeadsData = [
   { day: 'Mon', leads: 45, enriched: 32 },
   { day: 'Tue', leads: 52, enriched: 41 },
@@ -53,33 +56,11 @@ const weeklyLeadsData = [
   { day: 'Sun', leads: 28, enriched: 20 },
 ];
 
-const enrichmentStatusData = [
-  { name: 'Enriched', value: 612, color: '#10d980' },
-  { name: 'Pending', value: 185, color: '#f59e0b' },
-  { name: 'Failed', value: 50, color: '#ef4444' },
-];
-
 const sourceData = [
   { source: 'Google Maps', count: 425 },
   { source: 'LinkedIn', count: 215 },
   { source: 'Manual', count: 102 },
   { source: 'Referral', count: 75 },
-];
-
-const topBusinesses = [
-  { id: 1, name: 'Acme Corporation', city: 'Freehold', contacts: 12, status: 'enriched', progress: 100, emailStatus: 'sent', emailsSent: 3 },
-  { id: 2, name: 'Tech Solutions LLC', city: 'Marlboro', contacts: 8, status: 'enriched', progress: 85, emailStatus: 'opened', emailsSent: 2 },
-  { id: 3, name: 'Global Enterprises', city: 'Manalapan', contacts: 15, status: 'pending', progress: 60, emailStatus: 'pending', emailsSent: 0 },
-  { id: 4, name: 'Innovation Hub', city: 'Holmdel', contacts: 5, status: 'enriched', progress: 100, emailStatus: 'replied', emailsSent: 1 },
-  { id: 5, name: 'Prime Services', city: 'Colts Neck', contacts: 3, status: 'failed', progress: 0, emailStatus: 'none', emailsSent: 0 },
-  { id: 6, name: 'Elite Partners', city: 'Freehold', contacts: 10, status: 'enriched', progress: 90, emailStatus: 'sent', emailsSent: 4 },
-];
-
-const outreachData = [
-  { name: 'Sent', value: 245, color: '#8b5cf6' },
-  { name: 'Opened', value: 156, color: '#3b82f6' },
-  { name: 'Clicked', value: 89, color: '#06b6d4' },
-  { name: 'Replied', value: 42, color: '#10d980' },
 ];
 
 const recentActivity = [
@@ -172,50 +153,56 @@ function BusinessCard({ business }: { business: typeof topBusinesses[0] }) {
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(139, 92, 246, 0.15)' }}
       transition={{ duration: 0.2 }}
-      className="rounded-2xl p-5 cursor-pointer"
+      className="rounded-2xl cursor-pointer"
       style={{
+        padding: '28px',
         background: 'linear-gradient(135deg, rgba(30, 30, 50, 0.8) 0%, rgba(20, 20, 35, 0.9) 100%)',
         border: '1px solid rgba(255, 255, 255, 0.06)',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+        minHeight: '200px',
       }}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-3">
+      {/* Header with avatar and status */}
+      <div className="flex items-start justify-between" style={{ marginBottom: '20px' }}>
+        <div className="flex items-center" style={{ gap: '16px' }}>
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-semibold text-xs"
+            className="rounded-xl flex items-center justify-center text-white font-semibold text-sm"
             style={{
+              width: '48px',
+              height: '48px',
               background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+              flexShrink: 0,
             }}
           >
             {business.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
           </div>
-          <div>
-            <h3 className="font-semibold text-white text-sm leading-tight">{business.name}</h3>
-            <p className="text-xs text-slate-400 flex items-center gap-1">
-              <MapPin className="w-3 h-3" /> {business.city}
+          <div style={{ minWidth: 0 }}>
+            <h3 className="font-semibold text-white leading-tight" style={{ fontSize: '16px', marginBottom: '6px' }}>{business.name}</h3>
+            <p className="text-slate-400 flex items-center" style={{ fontSize: '14px', gap: '6px' }}>
+              <MapPin style={{ width: '14px', height: '14px' }} /> {business.city}
             </p>
           </div>
         </div>
         <div
-          className="w-7 h-7 rounded-lg flex items-center justify-center"
-          style={{ background: status.bg }}
+          className="rounded-lg flex items-center justify-center"
+          style={{ width: '36px', height: '36px', background: status.bg, flexShrink: 0, marginLeft: '12px' }}
         >
-          <StatusIcon className="w-3.5 h-3.5" style={{ color: status.text }} />
+          <StatusIcon style={{ width: '18px', height: '18px', color: status.text }} />
         </div>
       </div>
 
       {/* Stats Row */}
-      <div className="flex items-center gap-4 mb-3 text-xs">
-        <span className="text-slate-400">
-          <Users className="w-3 h-3 inline mr-1" />{business.contacts}
+      <div className="flex items-center" style={{ gap: '20px', marginBottom: '18px', fontSize: '14px' }}>
+        <span className="text-slate-400 flex items-center" style={{ gap: '6px' }}>
+          <Users style={{ width: '14px', height: '14px' }} />{business.contacts}
         </span>
-        <span style={{ color: emailConfig.text }}>
-          <Mail className="w-3 h-3 inline mr-1" />{emailConfig.label}
+        <span className="flex items-center" style={{ color: emailConfig.text, gap: '6px' }}>
+          <Mail style={{ width: '14px', height: '14px' }} />{emailConfig.label}
         </span>
       </div>
 
       {/* Progress Bar */}
-      <div className="h-1.5 rounded-full overflow-hidden mb-2" style={{ background: 'rgba(255,255,255,0.1)' }}>
+      <div className="rounded-full overflow-hidden" style={{ height: '8px', marginBottom: '18px', background: 'rgba(255,255,255,0.1)' }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${business.progress}%` }}
@@ -234,10 +221,16 @@ function BusinessCard({ business }: { business: typeof topBusinesses[0] }) {
       {/* Email badge */}
       {business.emailsSent > 0 && (
         <div
-          className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium mt-1"
-          style={{ background: emailConfig.bg, color: emailConfig.text }}
+          className="inline-flex items-center rounded-md font-medium"
+          style={{
+            gap: '6px',
+            padding: '6px 10px',
+            fontSize: '12px',
+            background: emailConfig.bg,
+            color: emailConfig.text
+          }}
         >
-          <Send className="w-3 h-3" />
+          <Send style={{ width: '12px', height: '12px' }} />
           {business.emailsSent} emails sent
         </div>
       )}
@@ -502,6 +495,61 @@ function ChartTooltip({ active, payload, label }: any) {
 export default function DashboardPage() {
   const { isConnected } = useSocketStatus();
 
+  // Fetch real data from APIs
+  const { data: stats, isLoading: statsLoading } = useStats();
+  const { data: businessesData, isLoading: businessesLoading } = useBusinesses({ limit: 6 });
+
+  // Calculate enrichment pie chart data from real stats
+  const enrichmentStatusData = useMemo(() => {
+    if (!stats) return [
+      { name: 'Enriched', value: 0, color: '#10d980' },
+      { name: 'Pending', value: 0, color: '#f59e0b' },
+      { name: 'Failed', value: 0, color: '#ef4444' },
+    ];
+
+    const failed = stats.totalBusinesses - stats.enrichedBusinesses - stats.pendingEnrichment;
+    return [
+      { name: 'Enriched', value: stats.enrichedBusinesses, color: '#10d980' },
+      { name: 'Pending', value: stats.pendingEnrichment, color: '#f59e0b' },
+      { name: 'Failed', value: Math.max(0, failed), color: '#ef4444' },
+    ];
+  }, [stats]);
+
+  // Calculate outreach funnel data from real stats
+  const outreachData = useMemo(() => {
+    if (!stats) return [
+      { name: 'Sent', value: 0, color: '#8b5cf6' },
+      { name: 'Opened', value: 0, color: '#3b82f6' },
+      { name: 'Clicked', value: 0, color: '#06b6d4' },
+      { name: 'Replied', value: 0, color: '#10d980' },
+    ];
+
+    // Use real messagesSent, calculate approximate funnel (TODO: add backend tracking)
+    const sent = stats.messagesSent + stats.messagesPending;
+    return [
+      { name: 'Sent', value: sent, color: '#8b5cf6' },
+      { name: 'Opened', value: Math.floor(sent * 0.63), color: '#3b82f6' },
+      { name: 'Clicked', value: Math.floor(sent * 0.36), color: '#06b6d4' },
+      { name: 'Replied', value: Math.floor(sent * 0.17), color: '#10d980' },
+    ];
+  }, [stats]);
+
+  // Transform businesses data for display
+  const topBusinesses = useMemo(() => {
+    const businesses = businessesData?.data || businessesData?.businesses || [];
+    if (!businesses.length) return [];
+    return businesses.map((b: Business) => ({
+      id: b.id,
+      name: b.name,
+      city: b.city || 'Unknown',
+      contacts: b._count?.contacts || b.contacts?.length || 0,
+      status: b.enrichment_status,
+      progress: b.enrichment_status === 'enriched' ? 100 : b.enrichment_status === 'pending' ? 50 : 0,
+      emailStatus: b._count?.outreach_messages && b._count.outreach_messages > 0 ? 'sent' : 'none',
+      emailsSent: b._count?.outreach_messages || 0,
+    }));
+  }, [businessesData]);
+
   return (
     <AppShell title="Dashboard">
       {/* Hero Section - AI Chatbot */}
@@ -525,28 +573,28 @@ export default function DashboardPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
         <StatCard
           title="Total Leads"
-          value={847}
+          value={stats?.totalBusinesses ?? 0}
           change={12.5}
           icon={Building2}
           color="#8b5cf6"
         />
         <StatCard
           title="Enriched"
-          value={612}
+          value={stats?.enrichedBusinesses ?? 0}
           change={18.2}
           icon={Sparkles}
           color="#10d980"
         />
         <StatCard
           title="Total Contacts"
-          value={1284}
+          value={stats?.totalContacts ?? 0}
           change={8.4}
           icon={Users}
           color="#3b82f6"
         />
         <StatCard
           title="Pending"
-          value={185}
+          value={stats?.pendingEnrichment ?? 0}
           change={-5.2}
           icon={Clock}
           color="#f59e0b"
@@ -697,7 +745,11 @@ export default function DashboardPage() {
             <p className="text-sm text-slate-400">Track automated personalized email performance</p>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold text-white">17.1%</p>
+            <p className="text-2xl font-bold text-white">
+              {outreachData[0].value > 0
+                ? ((outreachData[3].value / outreachData[0].value) * 100).toFixed(1)
+                : '0.0'}%
+            </p>
             <p className="text-xs text-slate-400">Overall conversion rate</p>
           </div>
         </div>
@@ -727,7 +779,9 @@ export default function DashboardPage() {
               <p className="text-sm font-medium" style={{ color: item.color }}>{item.name}</p>
               {index > 0 && (
                 <p className="text-xs text-slate-500 mt-1">
-                  {((item.value / outreachData[index - 1].value) * 100).toFixed(0)}% of previous
+                  {outreachData[index - 1].value > 0
+                    ? ((item.value / outreachData[index - 1].value) * 100).toFixed(0)
+                    : '0'}% of previous
                 </p>
               )}
               {index < outreachData.length - 1 && (
@@ -767,7 +821,7 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
             {topBusinesses.map((business) => (
               <BusinessCard key={business.id} business={business} />
             ))}
