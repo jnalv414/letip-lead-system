@@ -24,6 +24,7 @@ import type {
   EnrichmentResult,
   BatchEnrichmentDto,
   BatchEnrichmentResult,
+  OutreachMessage,
 } from '../types/api';
 
 // ============================================================================
@@ -249,6 +250,35 @@ export const api = {
     const response = await apiClient.get<JobStatus[]>('/api/jobs/failed', {
       params: { limit },
     });
+    return response.data;
+  },
+
+  // ==========================================================================
+  // Outreach
+  // ==========================================================================
+
+  /**
+   * Generate outreach message for a business
+   */
+  generateMessage: async (
+    businessId: number,
+    regenerate: boolean = false
+  ): Promise<OutreachMessage> => {
+    const response = await apiClient.post<OutreachMessage>(
+      `/api/outreach/${businessId}`,
+      null,
+      { params: { regenerate: regenerate.toString() } }
+    );
+    return response.data;
+  },
+
+  /**
+   * Get outreach messages for a business
+   */
+  getOutreachMessages: async (
+    businessId: number
+  ): Promise<{ business: { id: number; name: string; city: string | null }; messages: OutreachMessage[] }> => {
+    const response = await apiClient.get(`/api/outreach/${businessId}`);
     return response.data;
   },
 };

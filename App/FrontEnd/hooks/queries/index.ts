@@ -24,3 +24,6 @@ export type { UseJobStatusData } from './use-job-status';
 
 export { useFailedJobs } from './use-failed-jobs';
 export type { UseFailedJobsData } from './use-failed-jobs';
+
+export { useOutreachMessages, outreachKeys } from './use-outreach-messages';
+export type { UseOutreachMessagesData, OutreachMessagesResponse } from './use-outreach-messages';
