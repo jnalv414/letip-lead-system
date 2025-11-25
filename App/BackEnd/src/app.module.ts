@@ -12,6 +12,7 @@ import { MapScrapingModule } from './features/map-scraping';
 import { LeadEnrichmentModule } from './features/lead-enrichment';
 import { OutreachCampaignsModule } from './features/outreach-campaigns';
 import { JobQueueModule } from './features/job-queue';
+import { AnalyticsModule } from './features/analytics';
 import { WebsocketModule } from './websocket/websocket.module';
 
 // Determine the correct path for FrontEnd files
@@ -52,6 +53,7 @@ function getDashboardPath(): string {
     MapScrapingModule,
     LeadEnrichmentModule,
     OutreachCampaignsModule,
+    AnalyticsModule,
     WebsocketModule,
   ],
   controllers: [AppController],
