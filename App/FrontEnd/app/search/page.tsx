@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Lightbulb, Clock, ArrowRight } from 'lucide-react';
 import { PageHeader } from '@/components/shared/page-header';
-import { SearchForm } from '@/components/search/search-form';
+import { SearchForm, ScrapeProgress } from '@/components/search';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ErrorBoundary } from '@/components/shared/error-boundary';
@@ -24,7 +24,7 @@ const recentSearches = [
 ];
 
 export default function SearchPage() {
-  const { progress, startScrape, isStarting } = useScraping();
+  const { progress, startScrape, isStarting, resetProgress } = useScraping();
 
   const handleSearch = useCallback(
     (data: ScrapingFormData) => {
@@ -38,6 +38,8 @@ export default function SearchPage() {
     [startScrape]
   );
 
+  const isSearching = progress.status !== 'idle';
+
   return (
     <ErrorBoundary>
       <div className="p-6 space-y-6">
@@ -50,7 +52,11 @@ export default function SearchPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Search Form */}
           <div className="lg:col-span-2">
-            <SearchForm onSubmit={handleSearch} isLoading={isStarting} />
+            {!isSearching ? (
+              <SearchForm onSubmit={handleSearch} isLoading={isStarting} />
+            ) : (
+              <ScrapeProgress progress={progress} onReset={resetProgress} />
+            )}
 
             {/* Search Tips */}
             <motion.div
