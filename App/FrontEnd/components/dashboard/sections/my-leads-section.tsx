@@ -112,17 +112,36 @@ function CustomTooltip({ active, payload }: any) {
 export function MyLeadsSection() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>('week');
 
-  // Fetch lead data (using mock data for now)
-  const { data: leadData } = useQuery({
-    queryKey: ['leads-trend', selectedPeriod],
-    queryFn: () => Promise.resolve(generateMockData(selectedPeriod)),
+  // Fetch stats from API
+  const { data: statsResponse, error: statsError } = useQuery({
+    queryKey: ['leads-stats'],
+    queryFn: async () => {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${API_URL}/api/businesses/stats`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch stats');
+      }
+      return response.json();
+    },
+    staleTime: 30000, // Cache for 30 seconds
     refetchInterval: 60000, // Refetch every minute
   });
 
-  const { data: stats } = useQuery({
-    queryKey: ['leads-stats', selectedPeriod],
-    queryFn: () => Promise.resolve(generateMockStats(selectedPeriod)),
-    refetchInterval: 60000,
+  // Map API response to component format
+  // API returns: { total, enriched, pending, failed, enrichmentRate }
+  const stats: LeadStats | undefined = statsResponse ? {
+    total: statsResponse.total || 0,
+    enriched: statsResponse.enriched || 0,
+    pending: statsResponse.pending || 0,
+    trend: statsResponse.enrichmentRate || 0, // Use enrichment rate as trend indicator
+  } : undefined;
+
+  // Generate trend data based on stats (since we don't have historical data API yet)
+  const { data: leadData } = useQuery({
+    queryKey: ['leads-trend', selectedPeriod, stats?.total],
+    queryFn: () => Promise.resolve(generateMockData(selectedPeriod)),
+    refetchInterval: 60000, // Refetch every minute
+    enabled: !!stats, // Only run after stats are loaded
   });
 
   const trendPositive = (stats?.trend || 0) >= 0;

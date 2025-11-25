@@ -21,27 +21,37 @@ interface LocationData {
 }
 
 export function GeographicStats() {
-  const { data: locations, isLoading } = useQuery({
+  const { data: locationsData, isLoading, error } = useQuery({
     queryKey: ['geographic-stats'],
     queryFn: async () => {
-      // TODO: Replace with actual API endpoint
-      // return apiClient.get('/api/analytics/locations');
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const mockLocations: LocationData[] = [
-        { city: 'Freehold', count: 287, percentage: 38 },
-        { city: 'Manalapan', count: 198, percentage: 26 },
-        { city: 'Marlboro', count: 145, percentage: 19 },
-        { city: 'Howell', count: 89, percentage: 12 },
-        { city: 'Englishtown', count: 37, percentage: 5 },
-      ];
-
-      return mockLocations;
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${API_URL}/api/analytics/locations`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch location data');
+      }
+      return response.json();
     },
+    staleTime: 30000, // Cache for 30 seconds
   });
 
+  // Map API response to component's expected format
+  const locations: LocationData[] = locationsData?.locations || [];
+
   const totalBusinesses = locations?.reduce((sum, loc) => sum + loc.count, 0) || 0;
+
+  // Handle error state
+  if (error) {
+    return (
+      <Card variant="charcoal" hover animated>
+        <CardHeader>
+          <CardTitle className="text-lg font-medium">Geographic Distribution</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-red-400 text-center py-8">Failed to load location data</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card variant="charcoal" hover animated>

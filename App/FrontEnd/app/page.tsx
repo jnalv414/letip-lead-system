@@ -17,16 +17,16 @@ export default function DashboardPage() {
     <AppShell title="Dashboard">
       {/* Connection Status Banner */}
       <BlurFade delay={0.1} duration={0.4}>
-        <div className="mb-8">
+        <div className="mb-10">
           <div className={`
-            flex items-center gap-2 px-4 py-2 rounded-lg text-sm w-fit
+            flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-medium w-fit glass border
             ${isConnected
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-              : 'bg-red-500/10 text-red-400 border border-red-500/20'}
+              ? 'bg-[var(--highlight-emerald)]/10 text-[var(--highlight-emerald)] border-[var(--highlight-emerald)]/20'
+              : 'bg-red-500/10 text-red-400 border-red-500/20'}
           `}>
             <span className={`
-              w-2 h-2 rounded-full
-              ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}
+              w-2.5 h-2.5 rounded-full
+              ${isConnected ? 'bg-[var(--highlight-emerald)] animate-pulse shadow-lg shadow-[var(--highlight-emerald)]/50' : 'bg-red-400'}
             `} />
             {isConnected ? 'Live Updates Active' : 'Connecting...'}
           </div>
@@ -34,7 +34,7 @@ export default function DashboardPage() {
       </BlurFade>
 
       {/* Main Dashboard Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         {/* Left Column - My Leads Chart */}
         <BlurFade delay={0.2} duration={0.5} className="lg:col-span-7">
           <MyLeadsSection />
@@ -48,14 +48,14 @@ export default function DashboardPage() {
 
       {/* Top Businesses Grid */}
       <BlurFade delay={0.4} duration={0.5}>
-        <div className="mt-10">
+        <div className="mt-12">
           <TopBusinessesGrid />
         </div>
       </BlurFade>
 
       {/* Recent Businesses Table */}
       <BlurFade delay={0.5} duration={0.5}>
-        <div className="mt-10">
+        <div className="mt-12">
           <RecentBusinessesTable />
         </div>
       </BlurFade>

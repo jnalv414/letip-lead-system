@@ -8,6 +8,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge, StatusBadge } from '@/components/ui/badge';
@@ -24,65 +25,47 @@ interface Business {
 }
 
 export function TopBusinessesList() {
-  const { data: businesses, isLoading } = useQuery({
+  const { data: businessesResponse, isLoading, error } = useQuery({
     queryKey: ['top-businesses'],
     queryFn: async () => {
-      // TODO: Replace with actual API endpoint
-      // return apiClient.get('/api/businesses/top', { params: { limit: 5 } });
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const mockBusinesses: Business[] = [
-        {
-          id: 1,
-          name: 'ABC Plumbing Services',
-          city: 'Freehold',
-          industry: 'Plumbing',
-          enrichment_status: 'enriched',
-          contacts_count: 3,
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          name: 'Elite Legal Advisors',
-          city: 'Manalapan',
-          industry: 'Legal',
-          enrichment_status: 'enriched',
-          contacts_count: 5,
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: 3,
-          name: 'Precision Dental Care',
-          city: 'Howell',
-          industry: 'Healthcare',
-          enrichment_status: 'pending',
-          contacts_count: 0,
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: 4,
-          name: 'Sunrise Construction LLC',
-          city: 'Marlboro',
-          industry: 'Construction',
-          enrichment_status: 'enriched',
-          contacts_count: 4,
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: 5,
-          name: 'TechStart Solutions',
-          city: 'Freehold',
-          industry: 'Technology',
-          enrichment_status: 'failed',
-          contacts_count: 0,
-          created_at: new Date().toISOString(),
-        },
-      ];
-
-      return mockBusinesses;
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${API_URL}/api/businesses?limit=5&orderBy=created_at&order=desc`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch businesses');
+      }
+      return response.json();
     },
+    staleTime: 30000, // Cache for 30 seconds
   });
+
+  // Map API response to component format
+  // API returns: { data: Business[], meta: { total, page, limit } }
+  const businesses: Business[] = useMemo(() => {
+    const rawData = businessesResponse?.data || [];
+    return rawData.map((b: Record<string, unknown>) => ({
+      id: b.id as number,
+      name: b.name as string,
+      city: b.city as string || 'Unknown',
+      industry: b.industry as string || 'General',
+      enrichment_status: (b.enrichment_status as 'pending' | 'enriched' | 'failed') || 'pending',
+      contacts_count: (b.contacts as unknown[])?.length || b.contacts_count as number || 0,
+      created_at: b.created_at as string || new Date().toISOString(),
+    }));
+  }, [businessesResponse]);
+
+  // Handle error state
+  if (error) {
+    return (
+      <Card variant="charcoal" hover animated>
+        <CardHeader>
+          <CardTitle className="text-lg font-medium">Top Businesses</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-red-400 text-center py-8">Failed to load businesses</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card variant="charcoal" hover animated>

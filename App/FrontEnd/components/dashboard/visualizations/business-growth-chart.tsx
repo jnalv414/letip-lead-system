@@ -29,48 +29,45 @@ type TimePeriod = 'week' | 'month' | 'quarter';
 export function BusinessGrowthChart() {
   const [period, setPeriod] = React.useState<TimePeriod>('month');
 
-  // Mock data - replace with real API call
-  const { data, isLoading } = useQuery({
+  // Fetch growth data from API
+  const { data: growthResponse, isLoading, error } = useQuery({
     queryKey: ['business-growth', period],
     queryFn: async () => {
-      // TODO: Replace with actual API endpoint
-      // return apiClient.get('/api/analytics/growth', { params: { period } });
-
-      // Mock data for demonstration
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const mockData: GrowthData[] =
-        period === 'week'
-          ? [
-              { period: 'Mon', businesses: 12, enriched: 8 },
-              { period: 'Tue', businesses: 18, enriched: 12 },
-              { period: 'Wed', businesses: 15, enriched: 10 },
-              { period: 'Thu', businesses: 22, enriched: 15 },
-              { period: 'Fri', businesses: 19, enriched: 14 },
-              { period: 'Sat', businesses: 8, enriched: 5 },
-              { period: 'Sun', businesses: 5, enriched: 3 },
-            ]
-          : period === 'month'
-          ? [
-              { period: 'Week 1', businesses: 45, enriched: 32 },
-              { period: 'Week 2', businesses: 58, enriched: 41 },
-              { period: 'Week 3', businesses: 52, enriched: 38 },
-              { period: 'Week 4', businesses: 67, enriched: 49 },
-            ]
-          : [
-              { period: 'Jan', businesses: 234, enriched: 187 },
-              { period: 'Feb', businesses: 289, enriched: 221 },
-              { period: 'Mar', businesses: 312, enriched: 245 },
-            ];
-
-      return mockData;
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${API_URL}/api/analytics/growth?period=${period}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch growth data');
+      }
+      return response.json();
     },
+    staleTime: 30000, // Cache for 30 seconds
   });
+
+  // Map API response to component format
+  // API returns: { data: [{ period, businesses, enriched }], total, enrichmentRate }
+  const data: GrowthData[] = growthResponse?.data || [];
 
   // Calculate totals
   const totalBusinesses = data?.reduce((sum, item) => sum + item.businesses, 0) || 0;
   const totalEnriched = data?.reduce((sum, item) => sum + item.enriched, 0) || 0;
   const enrichmentRate = totalBusinesses > 0 ? ((totalEnriched / totalBusinesses) * 100).toFixed(1) : '0';
+
+  // Handle error state
+  if (error) {
+    return (
+      <Card variant="charcoal" hover animated>
+        <CardHeader>
+          <CardDescription className="text-gray-400 text-xs uppercase tracking-wider font-bold">
+            Business Growth
+          </CardDescription>
+          <CardTitle className="text-4xl font-light tracking-tight mt-2">--</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-red-400 text-center py-8">Failed to load growth data</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card variant="charcoal" hover animated>

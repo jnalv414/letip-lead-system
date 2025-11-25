@@ -22,7 +22,7 @@
  * - Color contrast compliance
  */
 
-import { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -61,83 +61,6 @@ interface TopBusiness {
   contacts: Contact[];
 }
 
-// Mock data for demo - replace with API call
-const mockBusinesses: TopBusiness[] = [
-  {
-    id: 1,
-    name: 'Acme Corporation',
-    city: 'Freehold',
-    contactCount: 12,
-    enrichmentStatus: 'enriched',
-    progress: 100,
-    contacts: [
-      { initials: 'JD', name: 'John Doe' },
-      { initials: 'SM', name: 'Sarah Miller' },
-      { initials: 'RJ', name: 'Robert Johnson' },
-      { initials: 'EW', name: 'Emily Wilson' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Tech Solutions LLC',
-    city: 'Marlboro',
-    contactCount: 8,
-    enrichmentStatus: 'enriched',
-    progress: 85,
-    contacts: [
-      { initials: 'MJ', name: 'Michael Johnson' },
-      { initials: 'LB', name: 'Lisa Brown' },
-      { initials: 'DW', name: 'David Williams' },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Global Enterprises',
-    city: 'Manalapan',
-    contactCount: 15,
-    enrichmentStatus: 'pending',
-    progress: 60,
-    contacts: [
-      { initials: 'JT', name: 'James Taylor' },
-      { initials: 'AM', name: 'Anna Martinez' },
-    ],
-  },
-  {
-    id: 4,
-    name: 'Innovation Hub',
-    city: 'Holmdel',
-    contactCount: 5,
-    enrichmentStatus: 'enriched',
-    progress: 100,
-    contacts: [
-      { initials: 'CW', name: 'Chris White' },
-      { initials: 'NH', name: 'Nancy Harris' },
-    ],
-  },
-  {
-    id: 5,
-    name: 'Prime Services',
-    city: 'Colts Neck',
-    contactCount: 0,
-    enrichmentStatus: 'failed',
-    progress: 0,
-    contacts: [],
-  },
-  {
-    id: 6,
-    name: 'Elite Partners',
-    city: 'Freehold',
-    contactCount: 10,
-    enrichmentStatus: 'enriched',
-    progress: 90,
-    contacts: [
-      { initials: 'RL', name: 'Rachel Lee' },
-      { initials: 'TH', name: 'Thomas Hall' },
-      { initials: 'KA', name: 'Karen Allen' },
-    ],
-  },
-];
-
 // Status icon mapping
 const statusIcons = {
   enriched: CheckCircle2,
@@ -161,30 +84,31 @@ function BusinessCard({ business }: BusinessCardProps) {
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02, y: -4 }}
-      transition={{ duration: 0.2 }}
+      whileHover={{ scale: 1.02, y: -6 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
       <Card
         variant="glass"
+        hover
         className="h-full cursor-pointer group"
       >
         <CardContent className="p-7">
           {/* Header with avatar and status */}
-          <div className="flex items-start justify-between mb-5">
-            <div className="flex items-center gap-3">
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-4">
               {/* Business avatar */}
               <Avatar
                 name={business.name}
                 size="lg"
-                className="ring-4 ring-[var(--bg-card)] group-hover:ring-violet-500/30 transition-all"
+                className="ring-4 ring-[var(--bg-card)] group-hover:ring-[var(--accent-purple)]/40 transition-all duration-300"
               />
 
               <div>
-                <h3 className="font-semibold text-white text-base line-clamp-1">
+                <h3 className="font-bold text-white text-lg line-clamp-1">
                   {business.name}
                 </h3>
-                <div className="flex items-center gap-1 text-xs text-[var(--text-secondary)] mt-0.5">
-                  <MapPin className="w-3 h-3" />
+                <div className="flex items-center gap-1.5 text-sm text-[var(--text-secondary)] mt-1">
+                  <MapPin className="w-3.5 h-3.5" />
                   <span>{business.city}</span>
                 </div>
               </div>
@@ -297,21 +221,63 @@ export function TopBusinessesGrid() {
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 6;
 
-  // Fetch businesses (replace with real API)
-  const { data: businesses = mockBusinesses, isLoading } = useQuery({
-    queryKey: ['top-businesses'],
+  // Fetch businesses from real API
+  const { data: businessesResponse, isLoading, error } = useQuery({
+    queryKey: ['top-businesses-grid'],
     queryFn: async () => {
-      // Replace with actual API call
-      // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/businesses/top`);
-      // return response.json();
-      return mockBusinesses;
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${API_URL}/api/businesses?limit=6`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch businesses');
+      }
+      return response.json();
     },
+    staleTime: 30000, // Cache for 30 seconds
   });
+
+  // Transform API response to component format
+  // API returns: { data: Business[], meta: { total, page, limit } }
+  const businesses: TopBusiness[] = React.useMemo(() => {
+    const rawData = businessesResponse?.data || [];
+    return rawData.map((b: Record<string, unknown>) => ({
+      id: b.id as number,
+      name: b.name as string,
+      city: b.city as string || 'Unknown',
+      contactCount: (b.contacts as unknown[])?.length || b.contacts_count as number || 0,
+      enrichmentStatus: (b.enrichment_status as 'enriched' | 'pending' | 'failed') || 'pending',
+      progress: b.enrichment_status === 'enriched' ? 100 : b.enrichment_status === 'pending' ? 50 : 0,
+      contacts: ((b.contacts as Array<{ name?: string }>) || []).slice(0, 4).map((c, i) => ({
+        initials: c.name ? c.name.split(' ').map(n => n[0]).join('').toUpperCase() : `C${i + 1}`,
+        name: c.name || `Contact ${i + 1}`,
+      })),
+    }));
+  }, [businessesResponse]);
 
   // Pagination
   const totalPages = Math.ceil(businesses.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
   const currentBusinesses = businesses.slice(startIndex, startIndex + itemsPerPage);
+
+  // Handle error state
+  if (error) {
+    return (
+      <section className="space-y-8">
+        <BlurFade delay={0.1}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-3xl font-bold text-white flex items-center gap-3 tracking-tight">
+                <Building2 className="w-7 h-7 text-[var(--accent-purple)]" />
+                Top Businesses
+              </h2>
+            </div>
+          </div>
+        </BlurFade>
+        <Card variant="glass" className="p-12 text-center">
+          <div className="text-red-400">Failed to load businesses</div>
+        </Card>
+      </section>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -335,11 +301,11 @@ export function TopBusinessesGrid() {
       <BlurFade delay={0.1}>
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-              <Building2 className="w-6 h-6 text-violet-400" />
+            <h2 className="text-3xl font-bold text-white flex items-center gap-3 tracking-tight">
+              <Building2 className="w-7 h-7 text-[var(--accent-purple)]" />
               Top Businesses
             </h2>
-            <p className="text-sm text-[var(--text-secondary)] mt-1">
+            <p className="text-base text-[var(--text-secondary)] mt-2">
               Most active leads with enrichment progress
             </p>
           </div>

@@ -20,35 +20,37 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[60px] bg-[var(--bg-secondary)] border-r border-[var(--border-default)] flex flex-col items-center py-4 z-50">
+    <aside className="fixed left-0 top-0 h-screen w-[70px] glass-elevated border-r border-[var(--border-default)] flex flex-col items-center py-6 z-50 backdrop-blur-xl">
       {/* Logo */}
-      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center mb-8">
-        <span className="text-white font-bold text-lg">L</span>
+      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--accent-purple)] to-[var(--accent-blue)] flex items-center justify-center mb-10 shadow-lg shadow-[var(--accent-purple)]/20">
+        <span className="text-white font-bold text-xl">L</span>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 flex flex-col gap-2">
+      <nav className="flex-1 flex flex-col gap-3">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link key={item.href} href={item.href}>
               <motion.div
-                whileHover={{ scale: 1.1 }}
+                whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
                 className={cn(
-                  'w-10 h-10 rounded-lg flex items-center justify-center transition-colors relative',
+                  'w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 relative',
                   isActive
-                    ? 'bg-violet-500/20 text-violet-400'
-                    : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-white/5'
+                    ? 'bg-[var(--accent-purple)]/20 text-[var(--accent-purple)] shadow-lg shadow-[var(--accent-purple)]/10'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5'
                 )}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeNav"
-                    className="absolute left-0 w-0.5 h-6 bg-violet-500 rounded-r"
+                    className="absolute left-0 w-1 h-8 bg-[var(--accent-purple)] rounded-r-full"
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   />
                 )}
-                <item.icon size={20} />
+                <item.icon size={22} />
               </motion.div>
             </Link>
           );
@@ -58,16 +60,17 @@ export function Sidebar() {
       {/* Settings at bottom */}
       <Link href="/settings">
         <motion.div
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
           className={cn(
-            'w-10 h-10 rounded-lg flex items-center justify-center transition-colors',
+            'w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300',
             pathname === '/settings'
-              ? 'bg-violet-500/20 text-violet-400'
-              : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-white/5'
+              ? 'bg-[var(--accent-purple)]/20 text-[var(--accent-purple)] shadow-lg shadow-[var(--accent-purple)]/10'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5'
           )}
         >
-          <Settings size={20} />
+          <Settings size={22} />
         </motion.div>
       </Link>
     </aside>

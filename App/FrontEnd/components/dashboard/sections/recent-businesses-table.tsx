@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import {
   MoreHorizontal,
   Eye,
@@ -33,82 +34,6 @@ interface RecentBusiness {
   status: 'enriched' | 'pending' | 'failed';
   avatarUrl?: string;
 }
-
-// Mock data for demonstration
-const mockBusinesses: RecentBusiness[] = [
-  {
-    id: 1,
-    rank: 1,
-    name: 'Freehold Plumbing Co',
-    city: 'Freehold',
-    source: 'Google Maps',
-    contactCount: 3,
-    status: 'enriched',
-  },
-  {
-    id: 2,
-    rank: 2,
-    name: 'Shore Electric LLC',
-    city: 'Marlboro',
-    source: 'Google Maps',
-    contactCount: 2,
-    status: 'enriched',
-  },
-  {
-    id: 3,
-    rank: 3,
-    name: 'Garden State HVAC',
-    city: 'Manalapan',
-    source: 'Manual',
-    contactCount: 1,
-    status: 'pending',
-  },
-  {
-    id: 4,
-    rank: 4,
-    name: 'Atlantic Roofing',
-    city: 'Colts Neck',
-    source: 'Google Maps',
-    contactCount: 4,
-    status: 'enriched',
-  },
-  {
-    id: 5,
-    rank: 5,
-    name: 'Premier Landscaping',
-    city: 'Holmdel',
-    source: 'Google Maps',
-    contactCount: 0,
-    status: 'failed',
-  },
-  {
-    id: 6,
-    rank: 6,
-    name: 'Monmouth Auto Body',
-    city: 'Freehold',
-    source: 'Manual',
-    contactCount: 2,
-    status: 'enriched',
-  },
-  {
-    id: 7,
-    rank: 7,
-    name: 'Elite Painting Services',
-    city: 'Marlboro',
-    source: 'Google Maps',
-    contactCount: 1,
-    status: 'pending',
-  },
-  {
-    id: 8,
-    rank: 8,
-    name: 'Coastal Construction',
-    city: 'Howell',
-    source: 'Google Maps',
-    contactCount: 3,
-    status: 'enriched',
-  },
-];
 
 // Enhanced RankCell with medal icons for top 3
 function EnhancedRankCell({ rank }: { rank: number }) {
@@ -237,7 +162,35 @@ function ActionsCell({
 
 // Main component
 export function RecentBusinessesTable() {
-  const [businesses] = useState<RecentBusiness[]>(mockBusinesses);
+  // Fetch businesses from real API
+  const { data: businessesResponse, isLoading, error } = useQuery({
+    queryKey: ['recent-businesses-table'],
+    queryFn: async () => {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${API_URL}/api/businesses?limit=10`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch businesses');
+      }
+      return response.json();
+    },
+    staleTime: 30000, // Cache for 30 seconds
+  });
+
+  // Transform API response to component format
+  // API returns: { data: Business[], meta: { total, page, limit } }
+  const businesses: RecentBusiness[] = useMemo(() => {
+    const rawData = businessesResponse?.data || [];
+    return rawData.map((b: Record<string, unknown>, index: number) => ({
+      id: b.id as number,
+      rank: index + 1,
+      name: b.name as string,
+      city: b.city as string || 'Unknown',
+      source: b.source as string || 'Google Maps',
+      contactCount: (b.contacts as unknown[])?.length || b.contacts_count as number || 0,
+      status: (b.enrichment_status as 'enriched' | 'pending' | 'failed') || 'pending',
+      avatarUrl: undefined,
+    }));
+  }, [businessesResponse]);
 
   const handleAction = (action: string, id: number) => {
     console.log(`Action: ${action} on business ID: ${id}`);
@@ -248,6 +201,41 @@ export function RecentBusinessesTable() {
     // - outreach: Generate outreach message
     // - delete: Show confirmation modal then delete
   };
+
+  // Handle error state
+  if (error) {
+    return (
+      <Card variant="glass" className="overflow-hidden">
+        <CardHeader>
+          <CardTitle>Recent Businesses</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-red-400 text-center py-8">Failed to load businesses</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <Card variant="glass" className="overflow-hidden">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Recent Businesses</span>
+            <Badge variant="teal" size="sm">Loading...</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="space-y-2 p-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-12 bg-[var(--bg-tertiary)] rounded animate-pulse" />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const columns = [
     {

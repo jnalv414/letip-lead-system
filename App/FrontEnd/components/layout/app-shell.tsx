@@ -13,9 +13,9 @@ export function AppShell({ children, title }: AppShellProps) {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
       <Sidebar />
-      <div className="pl-[60px]">
+      <div className="pl-[70px]">
         <Header title={title} />
-        <main className="p-8 max-w-[1600px] mx-auto">
+        <main className="p-10 max-w-[1680px] mx-auto">
           {children}
         </main>
       </div>

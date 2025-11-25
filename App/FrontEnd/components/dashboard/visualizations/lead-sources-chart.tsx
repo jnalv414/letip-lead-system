@@ -24,28 +24,47 @@ interface SourceData {
 }
 
 export function LeadSourcesChart() {
-  // Mock data - replace with real API call
-  const { data, isLoading } = useQuery({
+  // Fetch lead sources data from API
+  const { data: sourcesData, isLoading, error } = useQuery({
     queryKey: ['lead-sources'],
     queryFn: async () => {
-      // TODO: Replace with actual API endpoint
-      // return apiClient.get('/api/analytics/sources');
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const mockData: SourceData[] = [
-        { day: 'Mon', scraping: 45, manual: 12, import: 8 },
-        { day: 'Tue', scraping: 52, manual: 15, import: 6 },
-        { day: 'Wed', scraping: 38, manual: 18, import: 10 },
-        { day: 'Thu', scraping: 61, manual: 14, import: 5 },
-        { day: 'Fri', scraping: 48, manual: 20, import: 12 },
-        { day: 'Sat', scraping: 15, manual: 8, import: 3 },
-        { day: 'Sun', scraping: 8, manual: 5, import: 2 },
-      ];
-
-      return mockData;
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${API_URL}/api/analytics/sources`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch sources data');
+      }
+      return response.json();
     },
+    staleTime: 30000, // Cache for 30 seconds
   });
+
+  // Transform API response to chart format (sources array to daily breakdown)
+  // API returns: { sources: [{ source, count, percentage }], total }
+  // Chart expects: { day, scraping, manual, import }[]
+  const data: SourceData[] = React.useMemo(() => {
+    if (!sourcesData?.sources) return [];
+
+    // If API returns aggregated totals, create a single data point
+    // or transform to daily format if daily data is provided
+    const sources = sourcesData.sources;
+    const scrapingSource = sources.find((s: { source: string; count: number }) =>
+      s.source.toLowerCase().includes('scraping') || s.source.toLowerCase().includes('google')
+    );
+    const manualSource = sources.find((s: { source: string; count: number }) =>
+      s.source.toLowerCase().includes('manual')
+    );
+    const importSource = sources.find((s: { source: string; count: number }) =>
+      s.source.toLowerCase().includes('import')
+    );
+
+    // Return aggregated data as a single entry for display
+    return [{
+      day: 'Total',
+      scraping: scrapingSource?.count || 0,
+      manual: manualSource?.count || 0,
+      import: importSource?.count || 0,
+    }];
+  }, [sourcesData]);
 
   // Calculate totals
   const totals = data?.reduce(
@@ -58,6 +77,23 @@ export function LeadSourcesChart() {
   ) || { scraping: 0, manual: 0, import: 0 };
 
   const grandTotal = totals.scraping + totals.manual + totals.import;
+
+  // Handle error state
+  if (error) {
+    return (
+      <Card variant="charcoal" hover animated>
+        <CardHeader>
+          <CardDescription className="text-gray-400 text-xs uppercase tracking-wider font-bold">
+            Lead Sources
+          </CardDescription>
+          <CardTitle className="text-4xl font-light tracking-tight mt-2">--</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-red-400 text-center py-8">Failed to load sources data</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card variant="charcoal" hover animated>

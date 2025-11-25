@@ -21,25 +21,51 @@ interface PipelineStage {
 }
 
 export function PipelineBubbles() {
-  const { data: stages, isLoading } = useQuery({
+  const { data: pipelineData, isLoading, error } = useQuery({
     queryKey: ['pipeline-stages'],
     queryFn: async () => {
-      // TODO: Replace with actual API endpoint
-      // return apiClient.get('/api/analytics/pipeline');
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const mockStages: PipelineStage[] = [
-        { stage: 'Qualified', count: 234, percentage: 46, color: '#FF5722', size: 'large' },
-        { stage: 'Contacted', count: 156, percentage: 32, color: '#145A5A', size: 'medium' },
-        { stage: 'Engaged', count: 89, percentage: 18, color: '#1A7070', size: 'small' },
-      ];
-
-      return mockStages;
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${API_URL}/api/analytics/pipeline`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch pipeline data');
+      }
+      return response.json();
     },
+    staleTime: 30000, // Cache for 30 seconds
   });
 
+  // Transform API response to component format with colors and sizes
+  // API returns: { stages: [{ stage, count, percentage }], total }
+  const stages: PipelineStage[] = React.useMemo(() => {
+    if (!pipelineData?.stages) return [];
+
+    const colors = ['#FF5722', '#145A5A', '#1A7070', '#FF7043', '#0D3B3B'];
+    const sizes: ('large' | 'medium' | 'small')[] = ['large', 'medium', 'small'];
+
+    return pipelineData.stages.map((stage: { stage: string; count: number; percentage: number }, index: number) => ({
+      stage: stage.stage,
+      count: stage.count,
+      percentage: stage.percentage,
+      color: colors[index % colors.length],
+      size: sizes[Math.min(index, sizes.length - 1)],
+    }));
+  }, [pipelineData]);
+
   const totalLeads = stages?.reduce((sum, stage) => sum + stage.count, 0) || 0;
+
+  // Handle error state
+  if (error) {
+    return (
+      <Card variant="charcoal" hover animated>
+        <CardHeader>
+          <CardTitle className="text-lg font-medium">Pipeline Stages</CardTitle>
+        </CardHeader>
+        <CardContent className="relative min-h-[300px] flex items-center justify-center">
+          <div className="text-red-400 text-center">Failed to load pipeline data</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card variant="charcoal" hover animated>
