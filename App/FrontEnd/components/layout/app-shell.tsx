@@ -88,9 +88,9 @@ export function AppShell({ children, title }: AppShellProps) {
       />
 
       <Sidebar />
-      <div className="pl-[84px] relative z-10">
+      <div className="relative z-10">
         <Header title={title} />
-        <main className="p-10 max-w-[1680px] mx-auto">
+        <main className="p-10 pt-6 max-w-[1680px] mx-auto">
           {children}
         </main>
       </div>
