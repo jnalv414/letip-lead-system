@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { scrapingApi } from '../api/scraping-api';
 import type { ScrapeRequestDto } from '@/core/types/global.types';
@@ -54,27 +54,29 @@ export function useScraping() {
   });
 
   // Update progress based on job status
-  if (jobStatus && progress.status === 'scraping') {
-    if (jobStatus.status === 'completed') {
-      setProgress((prev) => ({
-        ...prev,
-        status: 'completed',
-        progress: 100,
-        message: 'Scraping completed successfully',
-      }));
-    } else if (jobStatus.status === 'failed') {
-      setProgress((prev) => ({
-        ...prev,
-        status: 'failed',
-        message: jobStatus.failedReason || 'Scraping failed',
-      }));
-    } else {
-      setProgress((prev) => ({
-        ...prev,
-        progress: jobStatus.progress || 0,
-      }));
+  useEffect(() => {
+    if (jobStatus && progress.status === 'scraping') {
+      if (jobStatus.status === 'completed') {
+        setProgress((prev) => ({
+          ...prev,
+          status: 'completed',
+          progress: 100,
+          message: 'Scraping completed successfully',
+        }));
+      } else if (jobStatus.status === 'failed') {
+        setProgress((prev) => ({
+          ...prev,
+          status: 'failed',
+          message: jobStatus.failedReason || 'Scraping failed',
+        }));
+      } else if (jobStatus.progress !== undefined && jobStatus.progress !== progress.progress) {
+        setProgress((prev) => ({
+          ...prev,
+          progress: jobStatus.progress || 0,
+        }));
+      }
     }
-  }
+  }, [jobStatus, progress.status, progress.progress]);
 
   return {
     progress,
