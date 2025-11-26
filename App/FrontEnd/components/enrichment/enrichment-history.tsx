@@ -43,7 +43,7 @@ function formatDate(dateString: string): string {
 export function EnrichmentHistory({ logs, isLoading, className }: EnrichmentHistoryProps) {
   if (isLoading) {
     return (
-      <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
+      <Card className={cn('glass-card rounded-2xl', className)}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <History className="h-5 w-5 text-muted-foreground" />
@@ -66,7 +66,7 @@ export function EnrichmentHistory({ logs, isLoading, className }: EnrichmentHist
   }
 
   return (
-    <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
+    <Card className={cn('glass-card rounded-2xl', className)}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">

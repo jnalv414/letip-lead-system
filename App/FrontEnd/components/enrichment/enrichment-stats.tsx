@@ -55,7 +55,7 @@ export function EnrichmentStats({ stats, isLoading, className }: EnrichmentStats
     return (
       <div className={cn('grid grid-cols-2 lg:grid-cols-4 gap-4', className)}>
         {[...Array(4)].map((_, i) => (
-          <Card key={i} className="bg-card/50 backdrop-blur-sm border-border/50">
+          <Card key={i} className="glass-card rounded-2xl">
             <CardContent className="pt-6">
               <Skeleton data-testid="skeleton" className="h-4 w-20 mb-2" />
               <Skeleton data-testid="skeleton" className="h-8 w-16" />
@@ -67,8 +67,8 @@ export function EnrichmentStats({ stats, isLoading, className }: EnrichmentStats
   }
 
   return (
-    <div className={cn('space-y-4', className)}>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className={cn('space-y-6', className)}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         {statConfig.map((config, index) => {
           const Icon = config.icon;
           const value = stats[config.key as keyof Stats];
@@ -80,14 +80,14 @@ export function EnrichmentStats({ stats, isLoading, className }: EnrichmentStats
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                <CardContent className="pt-6">
+              <Card className="glass-card rounded-2xl">
+                <CardContent className="p-5">
                   <div className="flex items-center gap-3">
-                    <div className={cn('p-2 rounded-lg', config.bgColor)}>
+                    <div className={cn('p-2.5 rounded-xl', config.bgColor)}>
                       <Icon className={cn('h-5 w-5', config.color)} />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">{config.label}</p>
+                      <p className="text-sm text-muted-foreground mb-0.5">{config.label}</p>
                       <p className="text-2xl font-bold text-foreground">{value}</p>
                     </div>
                   </div>
@@ -104,18 +104,18 @@ export function EnrichmentStats({ stats, isLoading, className }: EnrichmentStats
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.4 }}
       >
-        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-          <CardContent className="pt-6">
+        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 rounded-2xl">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Enrichment Rate</p>
+                <p className="text-sm text-muted-foreground mb-1">Enrichment Rate</p>
                 <p className="text-3xl font-bold text-primary">{enrichmentRate}%</p>
               </div>
               <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center">
                 <span className="text-xl font-bold text-primary">{enrichmentRate}%</span>
               </div>
             </div>
-            <div className="mt-4 h-2 bg-background/50 rounded-full overflow-hidden">
+            <div className="mt-5 h-2.5 bg-background/50 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${enrichmentRate}%` }}

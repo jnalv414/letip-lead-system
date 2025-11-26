@@ -31,24 +31,24 @@ export function ErrorState({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
       className={cn(
-        'error-state flex flex-col items-center justify-center py-12 px-6 text-center',
-        'rounded-lg border border-destructive/30',
+        'error-state flex flex-col items-center justify-center py-16 px-8 text-center',
+        'rounded-xl border border-destructive/30',
         'bg-destructive/5 backdrop-blur-sm',
         className
       )}
     >
-      <div className="mb-4 rounded-full p-4 bg-destructive/10">
+      <div className="mb-5 rounded-full p-4 bg-destructive/10">
         <Icon className="h-8 w-8 text-destructive" />
       </div>
 
       <h3 className="text-lg font-semibold text-foreground">{title}</h3>
 
       {message && (
-        <p className="mt-2 max-w-sm text-sm text-muted-foreground">{message}</p>
+        <p className="mt-3 max-w-md text-sm text-muted-foreground leading-relaxed">{message}</p>
       )}
 
       {onRetry && (
-        <Button onClick={onRetry} variant="outline" className="mt-6 gap-2">
+        <Button onClick={onRetry} variant="outline" className="mt-8 gap-2.5 px-5">
           <RefreshCw className="h-4 w-4" />
           Retry
         </Button>

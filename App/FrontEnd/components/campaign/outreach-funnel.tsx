@@ -103,7 +103,7 @@ export function OutreachFunnel({
             <span>Outreach Funnel</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="pt-2 space-y-4">
           {funnelStages.map((stage, index) => {
             const Icon = stage.icon;
             const value = data[stage.key as keyof typeof data];
@@ -116,12 +116,12 @@ export function OutreachFunnel({
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
-                className="space-y-1"
+                className="space-y-2"
               >
                 <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
                     <Icon className={cn('h-4 w-4', stage.color)} />
-                    <span className="text-foreground">{stage.label}</span>
+                    <span className="text-foreground font-medium">{stage.label}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="font-semibold text-foreground">{value}</span>
@@ -132,7 +132,7 @@ export function OutreachFunnel({
                     )}
                   </div>
                 </div>
-                <div className="h-8 bg-background/30 rounded-lg overflow-hidden">
+                <div className="h-9 bg-background/30 rounded-lg overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${widthPercent}%` }}
@@ -145,10 +145,10 @@ export function OutreachFunnel({
           })}
 
           {/* Summary */}
-          <div className="pt-4 mt-4 border-t border-border/50">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Overall Conversion</span>
-              <span className="font-semibold text-primary">
+          <div className="pt-5 mt-5 border-t border-border/50">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Overall Conversion</span>
+              <span className="text-lg font-semibold text-primary">
                 {getConversionRate(data.responded, data.generated)}
               </span>
             </div>

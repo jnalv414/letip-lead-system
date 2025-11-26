@@ -69,7 +69,7 @@ export function BusinessDetailCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
+      <Card className={cn('glass-card rounded-2xl', className)}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3">

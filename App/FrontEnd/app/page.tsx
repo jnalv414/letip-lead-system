@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useSocketStatus } from '@/core/providers/websocket-provider';
 import { AppShell } from '@/components/layout';
 import { motion } from 'framer-motion';
@@ -37,12 +38,26 @@ import {
   Bot,
   Loader2,
   ArrowRight,
+  Wifi,
+  WifiOff,
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { NumberTicker } from '@/components/magicui/number-ticker';
 import { useStats } from '@/hooks/queries/use-stats';
 import { useBusinesses } from '@/hooks/queries/use-businesses';
 import type { Business } from '@/types/api';
+
+// Type for transformed business data
+interface BusinessCardData {
+  id: number;
+  name: string;
+  city: string;
+  contacts: number;
+  status: 'pending' | 'enriched' | 'failed';
+  progress: number;
+  emailStatus: 'none' | 'pending' | 'sent' | 'opened' | 'replied';
+  emailsSent: number;
+}
 
 // Static mock data for features requiring backend analytics endpoints
 // TODO: Replace with real API when analytics endpoints are built
@@ -93,15 +108,18 @@ function StatCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-2xl p-6 glass-card"
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.3 }}
+      className="relative overflow-hidden rounded-2xl p-6 glass-card-glow group"
     >
       <div className="flex items-start justify-between mb-4">
-        <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center"
+        <motion.div
+          className="w-12 h-12 rounded-xl flex items-center justify-center icon-breathe"
           style={{ background: `${color}20` }}
+          whileHover={{ scale: 1.1 }}
         >
           <Icon className="w-6 h-6" style={{ color }} />
-        </div>
+        </motion.div>
         <div className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
           {isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
           {Math.abs(change)}%
@@ -109,9 +127,18 @@ function StatCard({
       </div>
 
       <p className="text-sm text-slate-400 mb-1">{title}</p>
-      <p className="text-3xl font-bold text-white">
-        <NumberTicker value={value} />
-      </p>
+      <motion.p
+        className="text-3xl font-bold text-white"
+        whileHover={{ scale: 1.05 }}
+        transition={{ duration: 0.2 }}
+      >
+        <span className="group-hover:glow-pulse-purple transition-all duration-300">
+          <NumberTicker value={value} />
+        </span>
+      </motion.p>
+
+      {/* Subtle inner glow on hover */}
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none inner-glow" />
 
       {chart && (
         <div className="mt-4 h-16">
@@ -123,11 +150,11 @@ function StatCard({
 }
 
 // Business Card Component
-function BusinessCard({ business }: { business: typeof topBusinesses[0] }) {
+function BusinessCard({ business, onClick }: { business: BusinessCardData; onClick?: () => void }) {
   const statusColors = {
-    enriched: { bg: '#10d98020', text: '#10d980', icon: CheckCircle2 },
-    pending: { bg: '#f59e0b20', text: '#f59e0b', icon: Clock },
-    failed: { bg: '#ef444420', text: '#ef4444', icon: XCircle },
+    enriched: { bg: '#10d98020', text: '#10d980', icon: CheckCircle2, glow: 'glow-success' },
+    pending: { bg: '#f59e0b20', text: '#f59e0b', icon: Clock, glow: 'glow-warning' },
+    failed: { bg: '#ef444420', text: '#ef4444', icon: XCircle, glow: 'glow-error' },
   };
 
   const emailStatusConfig = {
@@ -143,60 +170,59 @@ function BusinessCard({ business }: { business: typeof topBusinesses[0] }) {
   const StatusIcon = status.icon;
 
   return (
-    <motion.div
+    <motion.button
+      onClick={onClick}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(139, 92, 246, 0.15)' }}
-      transition={{ duration: 0.2 }}
-      className="rounded-2xl cursor-pointer glass-card p-7"
-      style={{ minHeight: '200px' }}
+      whileHover={{ y: -6, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.3 }}
+      className="rounded-2xl cursor-pointer glass-card-premium p-6 min-h-[200px] w-full text-left focus:outline-none focus:ring-2 focus:ring-violet-500/50"
     >
       {/* Header with avatar and status */}
-      <div className="flex items-start justify-between" style={{ marginBottom: '20px' }}>
-        <div className="flex items-center" style={{ gap: '16px' }}>
-          <div
-            className="rounded-xl flex items-center justify-center text-white font-semibold text-sm"
-            style={{
-              width: '48px',
-              height: '48px',
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
-              flexShrink: 0,
-            }}
+      <div className="flex items-start justify-between mb-5">
+        <div className="flex items-center gap-4">
+          <motion.div
+            className="w-12 h-12 shrink-0 rounded-xl flex items-center justify-center text-white font-semibold text-sm bg-gradient-to-br from-violet-500 to-indigo-500"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            transition={{ type: 'spring', stiffness: 300 }}
           >
             {business.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
-          </div>
-          <div style={{ minWidth: 0 }}>
-            <h3 className="font-semibold text-white leading-tight" style={{ fontSize: '16px', marginBottom: '6px' }}>{business.name}</h3>
-            <p className="text-slate-400 flex items-center" style={{ fontSize: '14px', gap: '6px' }}>
-              <MapPin style={{ width: '14px', height: '14px' }} /> {business.city}
+          </motion.div>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-white leading-tight text-base mb-1.5">{business.name}</h3>
+            <p className="text-slate-400 flex items-center text-sm gap-1.5">
+              <MapPin className="w-3.5 h-3.5" /> {business.city}
             </p>
           </div>
         </div>
-        <div
-          className="rounded-lg flex items-center justify-center"
-          style={{ width: '36px', height: '36px', background: status.bg, flexShrink: 0, marginLeft: '12px' }}
+        <motion.div
+          className={`w-9 h-9 shrink-0 ml-3 rounded-lg flex items-center justify-center ${status.glow}`}
+          whileHover={{ scale: 1.1 }}
+          transition={{ type: 'spring', stiffness: 400 }}
+          style={{ background: status.bg }}
         >
-          <StatusIcon style={{ width: '18px', height: '18px', color: status.text }} />
-        </div>
+          <StatusIcon className="w-4.5 h-4.5" style={{ color: status.text }} />
+        </motion.div>
       </div>
 
       {/* Stats Row */}
-      <div className="flex items-center" style={{ gap: '20px', marginBottom: '18px', fontSize: '14px' }}>
-        <span className="text-slate-400 flex items-center" style={{ gap: '6px' }}>
-          <Users style={{ width: '14px', height: '14px' }} />{business.contacts}
+      <div className="flex items-center gap-5 mb-4 text-sm">
+        <span className="text-slate-400 flex items-center gap-1.5">
+          <Users className="w-3.5 h-3.5" />{business.contacts}
         </span>
-        <span className="flex items-center" style={{ color: emailConfig.text, gap: '6px' }}>
-          <Mail style={{ width: '14px', height: '14px' }} />{emailConfig.label}
+        <span className="flex items-center gap-1.5" style={{ color: emailConfig.text }}>
+          <Mail className="w-3.5 h-3.5" />{emailConfig.label}
         </span>
       </div>
 
       {/* Progress Bar */}
-      <div className="rounded-full overflow-hidden" style={{ height: '8px', marginBottom: '18px', background: 'rgba(255,255,255,0.1)' }}>
+      <div className="h-2 mb-4 rounded-full overflow-hidden bg-white/10">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${business.progress}%` }}
           transition={{ duration: 1, delay: 0.2 }}
-          className="h-full rounded-full"
+          className="h-full rounded-full progress-glow"
           style={{
             background: business.status === 'enriched'
               ? 'linear-gradient(90deg, #10d980 0%, #8b5cf6 100%)'
@@ -209,21 +235,16 @@ function BusinessCard({ business }: { business: typeof topBusinesses[0] }) {
 
       {/* Email badge */}
       {business.emailsSent > 0 && (
-        <div
-          className="inline-flex items-center rounded-md font-medium"
-          style={{
-            gap: '6px',
-            padding: '6px 10px',
-            fontSize: '12px',
-            background: emailConfig.bg,
-            color: emailConfig.text
-          }}
+        <motion.div
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md font-medium text-xs"
+          whileHover={{ scale: 1.05 }}
+          style={{ background: emailConfig.bg, color: emailConfig.text }}
         >
-          <Send style={{ width: '12px', height: '12px' }} />
+          <Send className="w-3 h-3" />
           {business.emailsSent} emails sent
-        </div>
+        </motion.div>
       )}
-    </motion.div>
+    </motion.button>
   );
 }
 
@@ -251,7 +272,7 @@ function ActivityItem({ activity }: { activity: typeof recentActivity[0] }) {
   );
 }
 
-// AI Chatbot Component - Hero Section
+// AI Chatbot Component - PREMIUM Hero Section
 function AIChatbot() {
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -292,102 +313,149 @@ function AIChatbot() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 }}
-      className="rounded-2xl p-8 relative overflow-hidden glass-hero"
+      initial={{ opacity: 0, y: 30, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: 0.1, duration: 0.5, ease: 'easeOut' }}
+      className="rounded-3xl p-10 lg:p-12 relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.15) 30%, rgba(20, 20, 35, 0.95) 100%)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        border: '1px solid rgba(139, 92, 246, 0.4)',
+        boxShadow: '0 20px 80px rgba(139, 92, 246, 0.25), 0 0 0 1px rgba(139, 92, 246, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+      }}
     >
-      {/* Decorative glow */}
+      {/* Multiple decorative glows for depth - Enhanced visibility */}
       <div
-        className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%)' }}
+        className="absolute -top-24 -right-24 w-80 h-80 rounded-full blur-2xl pointer-events-none orb-animated glow-pulse"
+        style={{ background: 'radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, rgba(139, 92, 246, 0.2) 40%, transparent 70%)' }}
+      />
+      <div
+        className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full blur-2xl pointer-events-none orb-animated-slow glow-pulse"
+        style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.45) 0%, rgba(59, 130, 246, 0.15) 40%, transparent 70%)' }}
+      />
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] rounded-full blur-3xl pointer-events-none opacity-40"
+        style={{ background: 'radial-gradient(ellipse, rgba(6, 182, 212, 0.3) 0%, rgba(6, 182, 212, 0.1) 30%, transparent 60%)' }}
+      />
+      {/* Additional accent orb for visual richness */}
+      <div
+        className="absolute top-1/4 right-1/4 w-32 h-32 rounded-full blur-xl pointer-events-none orb-animated-fast"
+        style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, transparent 70%)' }}
       />
 
       <div className="relative z-10">
-        <div className="flex items-center gap-4 mb-6">
-          <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
+        {/* Header with large icon and gradient text */}
+        <div className="flex items-start gap-6 mb-8">
+          <motion.div
+            initial={{ scale: 0.8, rotate: -10 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+            className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-2xl shrink-0"
             style={{
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
-              boxShadow: '0 8px 24px rgba(139, 92, 246, 0.4)',
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%)',
+              boxShadow: '0 12px 40px rgba(139, 92, 246, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
             }}
           >
-            <Bot className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-white">AI Lead Assistant</h2>
-            <p className="text-sm text-slate-300">Ask anything about your leads, enrichment status, or outreach performance</p>
+            <Bot className="w-10 h-10 text-white" />
+          </motion.div>
+          <div className="pt-1">
+            <motion.h2
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-4xl lg:text-5xl font-bold mb-3"
+              style={{
+                background: 'linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #a78bfa 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              AI Lead Assistant
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-lg text-slate-300/90 max-w-xl"
+            >
+              Ask anything about your leads, enrichment status, or outreach performance
+            </motion.p>
           </div>
         </div>
 
-        {/* Messages */}
-        <div className="space-y-3 mb-6 max-h-40 overflow-y-auto">
+        {/* Messages area with more space */}
+        <div className="space-y-4 mb-8 min-h-[120px] max-h-[200px] overflow-y-auto">
           {messages.length === 0 ? (
-            <div className="flex flex-wrap gap-2">
+            <motion.div
+              className="flex flex-wrap gap-3"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
               {suggestedQuestions.map((q, i) => (
                 <motion.button
                   key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1, duration: 0.3 }}
-                  whileHover={{ scale: 1.03, y: -3 }}
+                  initial={{ opacity: 0, y: 15, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 0.5 + i * 0.1, duration: 0.4, type: 'spring' }}
+                  whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => setQuery(q)}
-                  className="px-4 py-2.5 rounded-xl text-sm font-medium text-white hover:text-white transition-all"
+                  className="px-5 py-3 rounded-xl text-sm font-medium text-white transition-all"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(139,92,246,0.35) 0%, rgba(99,102,241,0.25) 100%)',
+                    background: 'linear-gradient(135deg, rgba(139,92,246,0.4) 0%, rgba(99,102,241,0.3) 100%)',
                     border: '1px solid rgba(139,92,246,0.5)',
-                    boxShadow: '0 4px 12px rgba(139,92,246,0.25), inset 0 1px 0 rgba(255,255,255,0.1)',
+                    boxShadow: '0 8px 20px rgba(139,92,246,0.3), inset 0 1px 0 rgba(255,255,255,0.15)',
                   }}
                 >
                   {q}
                 </motion.button>
               ))}
-            </div>
+            </motion.div>
           ) : (
             messages.map((msg, i) => (
               msg.role === 'user' ? (
-                /* User message with slide-in from right and gradient glow */
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: 30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.4 }}
                   className="flex justify-end"
                 >
                   <div
-                    className="max-w-[80%] px-4 py-3 rounded-2xl rounded-br-md text-sm text-violet-50"
+                    className="max-w-[75%] px-5 py-4 rounded-2xl rounded-br-md text-sm text-violet-50"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(139,92,246,0.25) 0%, rgba(99,102,241,0.2) 100%)',
-                      border: '1px solid rgba(139,92,246,0.35)',
-                      boxShadow: '0 0 20px rgba(139,92,246,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
+                      background: 'linear-gradient(135deg, rgba(139,92,246,0.35) 0%, rgba(99,102,241,0.25) 100%)',
+                      border: '1px solid rgba(139,92,246,0.4)',
+                      boxShadow: '0 4px 24px rgba(139,92,246,0.25), inset 0 1px 0 rgba(255,255,255,0.1)',
                     }}
                   >
                     {msg.content}
                   </div>
                 </motion.div>
               ) : (
-                /* AI message with slide-in from left and bot icon */
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.4 }}
                   className="flex justify-start"
                 >
                   <div
-                    className="max-w-[80%] px-4 py-3 rounded-2xl rounded-bl-md text-sm text-slate-100 backdrop-blur-sm"
+                    className="max-w-[75%] px-5 py-4 rounded-2xl rounded-bl-md text-sm text-slate-100 backdrop-blur-sm"
                     style={{
-                      background: 'rgba(30, 41, 59, 0.8)',
-                      border: '1px solid rgba(71, 85, 105, 0.4)',
-                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+                      background: 'rgba(30, 41, 59, 0.85)',
+                      border: '1px solid rgba(71, 85, 105, 0.5)',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)',
                     }}
                   >
-                    <div className="flex items-start gap-2">
-                      <div className="w-5 h-5 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Bot className="w-3 h-3 text-white" />
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-lg">
+                        <Bot className="w-3.5 h-3.5 text-white" />
                       </div>
-                      <span>{msg.content}</span>
+                      <span className="leading-relaxed">{msg.content}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -395,57 +463,70 @@ function AIChatbot() {
             ))
           )}
           {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-slate-800/80 px-5 py-3 rounded-2xl rounded-bl-md border border-slate-700/50">
-                <div className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-violet-400" />
-                  <span className="text-sm text-slate-400">Analyzing your data...</span>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-start"
+            >
+              <div className="bg-slate-800/90 px-6 py-4 rounded-2xl rounded-bl-md border border-slate-700/60 shadow-lg">
+                <div className="flex items-center gap-3">
+                  <Loader2 className="w-5 h-5 animate-spin text-violet-400" />
+                  <span className="text-sm text-slate-300">Analyzing your data...</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
 
-        {/* Input */}
-        <form onSubmit={handleSubmit} className="flex gap-3">
-          {/* Input with animated glow border effect */}
+        {/* Premium Input */}
+        <form onSubmit={handleSubmit} className="flex gap-4">
           <div className="relative flex-1 group">
             {/* Animated glow border effect */}
-            <div
-              className="absolute -inset-0.5 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"
+            <motion.div
+              className="absolute -inset-1 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-all duration-500"
               style={{
-                background: 'linear-gradient(90deg, rgba(139,92,246,0.4), rgba(59,130,246,0.4), rgba(6,182,212,0.4))',
-                filter: 'blur(8px)',
+                background: 'linear-gradient(90deg, rgba(139,92,246,0.5), rgba(59,130,246,0.5), rgba(6,182,212,0.5), rgba(139,92,246,0.5))',
+                backgroundSize: '300% 100%',
+                filter: 'blur(12px)',
               }}
+              animate={{
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
             />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Ask about leads, enrichment, contact status, email campaigns..."
-              className="relative w-full px-5 py-4 rounded-xl bg-slate-900/50 border border-slate-700/50 text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all text-sm"
+              className="relative w-full px-6 py-5 rounded-2xl bg-slate-900/60 border border-slate-600/50 text-white text-base placeholder:text-slate-500 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/30 transition-all"
+              style={{
+                boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.2)',
+              }}
             />
           </div>
 
-          {/* Send button with shimmer sweep effect */}
           <motion.button
             type="submit"
             disabled={!query.trim() || isLoading}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="relative overflow-hidden px-6 py-4 rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="relative overflow-hidden px-8 py-5 rounded-2xl bg-gradient-to-r from-violet-500 via-indigo-500 to-violet-500 bg-[length:200%_100%] disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0"
             style={{
-              boxShadow: '0 0 30px rgba(139,92,246,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+              boxShadow: '0 8px 40px rgba(139,92,246,0.5), inset 0 1px 0 rgba(255,255,255,0.2)',
             }}
+            animate={{
+              backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
           >
-            {/* Shimmer sweep effect */}
             <motion.div
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
               initial={{ x: '-100%' }}
               whileHover={{ x: '100%' }}
               transition={{ duration: 0.6, ease: 'easeInOut' }}
             />
-            <Send className="relative w-5 h-5 text-white" />
+            <Send className="relative w-6 h-6 text-white" />
           </motion.button>
         </form>
       </div>
@@ -471,6 +552,7 @@ function ChartTooltip({ active, payload, label }: any) {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const { isConnected } = useSocketStatus();
 
   // Fetch real data from APIs
@@ -513,8 +595,8 @@ export default function DashboardPage() {
   }, [stats]);
 
   // Transform businesses data for display
-  const topBusinesses = useMemo(() => {
-    const businesses = businessesData?.data || businessesData?.businesses || [];
+  const topBusinesses = useMemo((): BusinessCardData[] => {
+    const businesses = businessesData?.data || [];
     if (!businesses.length) return [];
     return businesses.map((b: Business) => ({
       id: b.id,
@@ -523,7 +605,7 @@ export default function DashboardPage() {
       contacts: b._count?.contacts || b.contacts?.length || 0,
       status: b.enrichment_status,
       progress: b.enrichment_status === 'enriched' ? 100 : b.enrichment_status === 'pending' ? 50 : 0,
-      emailStatus: b._count?.outreach_messages && b._count.outreach_messages > 0 ? 'sent' : 'none',
+      emailStatus: (b._count?.outreach_messages && b._count.outreach_messages > 0 ? 'sent' : 'none') as BusinessCardData['emailStatus'],
       emailsSent: b._count?.outreach_messages || 0,
     }));
   }, [businessesData]);
@@ -533,22 +615,59 @@ export default function DashboardPage() {
       {/* Hero Section - AI Chatbot */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <div
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-medium tracking-wider uppercase ${
               isConnected
-                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25'
+                : 'bg-amber-500/8 text-amber-400/80 border border-amber-500/20'
             }`}
+            style={{
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+            }}
           >
-            <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`} />
-            {isConnected ? 'Live Updates Active' : 'Connecting...'}
-          </div>
+            {isConnected ? (
+              <>
+                <motion.div
+                  className="relative flex items-center justify-center"
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <span className="absolute w-2 h-2 rounded-full bg-emerald-400/60 animate-ping" />
+                  <span className="relative w-2 h-2 rounded-full bg-emerald-400" />
+                </motion.div>
+                <Wifi size={14} className="opacity-80" />
+                <span>Live</span>
+              </>
+            ) : (
+              <>
+                <motion.div
+                  className="relative flex items-center justify-center"
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <span className="w-2 h-2 rounded-full bg-amber-400" />
+                </motion.div>
+                <motion.div
+                  animate={{ opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <WifiOff size={14} className="opacity-80" />
+                </motion.div>
+                <span>Connecting</span>
+              </>
+            )}
+          </motion.div>
         </div>
         <AIChatbot />
       </div>
 
       {/* Stats Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
+      <div className="grid grid-cols-4 gap-6 mb-8">
         <StatCard
           title="Total Leads"
           value={stats?.totalBusinesses ?? 0}
@@ -580,13 +699,13 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginBottom: '32px' }}>
+      <div className="grid grid-cols-[2fr_1fr] gap-6 mb-8">
         {/* Leads Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-2xl p-6 glass-card"
+          className="rounded-2xl p-6 glass-card inner-glow"
         >
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -605,9 +724,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div style={{ width: '100%', height: '288px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={weeklyLeadsData}>
+          <div className="w-full" style={{ height: '288px' }}>
+            <ResponsiveContainer width="100%" height={288}>
+              <AreaChart data={weeklyLeadsData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="leadsGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.4} />
@@ -656,13 +775,13 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-2xl p-6 glass-card"
+          className="rounded-2xl p-6 glass-card inner-glow"
         >
           <h2 className="text-xl font-semibold text-white mb-2">Enrichment Status</h2>
           <p className="text-sm text-slate-400 mb-4">Distribution overview</p>
 
-          <div style={{ width: '100%', height: '192px' }}>
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="w-full" style={{ height: '192px' }}>
+            <ResponsiveContainer width="100%" height={192}>
               <PieChart>
                 <Pie
                   data={enrichmentStatusData}
@@ -672,9 +791,11 @@ export default function DashboardPage() {
                   outerRadius={75}
                   paddingAngle={4}
                   dataKey="value"
+                  animationBegin={0}
+                  animationDuration={800}
                 >
                   {enrichmentStatusData.map((entry, index) => (
-                    <Cell key={index} fill={entry.color} />
+                    <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
               </PieChart>
@@ -700,7 +821,7 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.25 }}
-        className="rounded-2xl p-6 mb-8 glass-card"
+        className="rounded-2xl p-6 mb-8 glass-card inner-glow"
       >
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -717,25 +838,31 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+        <div className="grid grid-cols-4 gap-4">
           {outreachData.map((item, index) => (
-            <div
+            <motion.div
               key={item.name}
-              className="relative p-5 rounded-xl text-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+              whileHover={{ scale: 1.05, y: -4 }}
+              className="relative p-5 rounded-xl text-center glow-pulse"
               style={{
                 background: `${item.color}15`,
                 border: `1px solid ${item.color}30`,
               }}
             >
-              <div
+              <motion.div
                 className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center"
+                whileHover={{ rotate: 360, scale: 1.1 }}
+                transition={{ duration: 0.6 }}
                 style={{ background: `${item.color}25` }}
               >
                 {index === 0 && <Send className="w-6 h-6" style={{ color: item.color }} />}
                 {index === 1 && <Mail className="w-6 h-6" style={{ color: item.color }} />}
                 {index === 2 && <MousePointerClick className="w-6 h-6" style={{ color: item.color }} />}
                 {index === 3 && <Reply className="w-6 h-6" style={{ color: item.color }} />}
-              </div>
+              </motion.div>
               <p className="text-3xl font-bold text-white mb-1">
                 <NumberTicker value={item.value} />
               </p>
@@ -748,40 +875,49 @@ export default function DashboardPage() {
                 </p>
               )}
               {index < outreachData.length - 1 && (
-                <div
+                <motion.div
                   className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-6 h-6 rounded-full flex items-center justify-center z-10"
+                  animate={{ x: [0, 2, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                   style={{ background: 'rgba(30, 30, 50, 1)', border: '1px solid rgba(255,255,255,0.1)' }}
                 >
                   <span className="text-slate-400 text-xs">→</span>
-                </div>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
       </motion.div>
 
       {/* Second Row - Businesses Grid & Activity */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginBottom: '32px' }}>
+      <div className="grid grid-cols-[2fr_1fr] gap-6 mb-8">
         {/* Top Businesses Grid */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-2xl p-6 glass-card"
+          className="rounded-2xl p-6 glass-card inner-glow"
         >
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-white">Top Businesses</h2>
               <p className="text-sm text-slate-400">Most active leads with enrichment progress</p>
             </div>
-            <button className="text-sm text-violet-400 hover:text-violet-300 transition-colors">
+            <button
+              onClick={() => router.push('/leads')}
+              className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
+            >
               View All
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+          <div className="grid grid-cols-3 gap-6">
             {topBusinesses.map((business) => (
-              <BusinessCard key={business.id} business={business} />
+              <BusinessCard
+                key={business.id}
+                business={business}
+                onClick={() => router.push('/leads')}
+              />
             ))}
           </div>
         </motion.div>
@@ -791,7 +927,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="rounded-2xl p-6 glass-card"
+          className="rounded-2xl p-6 glass-card-glow"
         >
           <h2 className="text-xl font-semibold text-white mb-2">Recent Activity</h2>
           <p className="text-sm text-slate-400 mb-4">Latest actions</p>
@@ -809,7 +945,7 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="rounded-2xl p-6 glass-card"
+        className="rounded-2xl p-6 glass-card inner-glow"
       >
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -818,9 +954,15 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div style={{ width: '100%', height: '200px' }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={sourceData} layout="vertical">
+        <div className="w-full" style={{ height: '208px' }}>
+          <ResponsiveContainer width="100%" height={208}>
+            <BarChart data={sourceData} layout="vertical" margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+              <defs>
+                <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#8b5cf6" />
+                  <stop offset="100%" stopColor="#6366f1" />
+                </linearGradient>
+              </defs>
               <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
               <YAxis
                 type="category"
@@ -835,14 +977,9 @@ export default function DashboardPage() {
                 dataKey="count"
                 radius={[0, 8, 8, 0]}
                 fill="url(#barGradient)"
-              >
-                <defs>
-                  <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#8b5cf6" />
-                    <stop offset="100%" stopColor="#6366f1" />
-                  </linearGradient>
-                </defs>
-              </Bar>
+                animationBegin={0}
+                animationDuration={800}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>

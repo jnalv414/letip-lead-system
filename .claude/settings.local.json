@@ -12,7 +12,10 @@
       "Bash(git -C /Volumes/HOME-EX/Users/justinnalven/.claude/projects/letip-lead-system/App/BackEnd log --oneline -10)",
       "mcp__context7__resolve-library-id",
       "mcp__context7__get-library-docs",
-      "mcp__chrome-devtools__*"
+      "mcp__chrome-devtools__*",
+      "mcp__firecrawl__firecrawl_search",
+      "mcp__firecrawl__firecrawl_scrape",
+      "SlashCommand(/piv:prime)"
     ],
     "deny": [],
     "ask": []

@@ -82,95 +82,112 @@ export function Pagination({
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className={cn('flex items-center justify-center gap-1', className)}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+      className={cn('flex items-center justify-center gap-2', className)}
       data-testid="pagination"
     >
       {/* First Page */}
       {showFirstLast && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleFirst}
-          disabled={!hasPrevPage}
-          className="h-8 w-8"
-          aria-label="First page"
-        >
-          <ChevronsLeft className="h-4 w-4" />
-        </Button>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleFirst}
+            disabled={!hasPrevPage}
+            className="h-9 w-9 rounded-lg border border-white/10 hover:border-violet-500/30 hover:bg-white/5 disabled:opacity-40 transition-all duration-300"
+            aria-label="First page"
+          >
+            <ChevronsLeft className="h-4 w-4" />
+          </Button>
+        </motion.div>
       )}
 
       {/* Previous */}
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={handlePrevious}
-        disabled={!hasPrevPage}
-        className="h-8 w-8"
-        aria-label="Previous page"
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
+      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handlePrevious}
+          disabled={!hasPrevPage}
+          className="h-9 w-9 rounded-lg border border-white/10 hover:border-violet-500/30 hover:bg-white/5 disabled:opacity-40 transition-all duration-300"
+          aria-label="Previous page"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+      </motion.div>
 
       {/* Page Numbers */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1.5 mx-2">
         {getPageNumbers().map((page, index) =>
           page === 'ellipsis' ? (
             <span
               key={`ellipsis-${index}`}
-              className="px-2 text-muted-foreground"
+              className="px-2 text-slate-500"
             >
               ...
             </span>
           ) : (
-            <Button
+            <motion.div
               key={page}
-              variant={currentPage === page ? 'default' : 'ghost'}
-              size="icon"
-              onClick={() => onPageChange(page)}
-              className={cn(
-                'h-8 w-8',
-                currentPage === page && 'bg-primary text-primary-foreground'
-              )}
-              aria-label={`Page ${page}`}
-              aria-current={currentPage === page ? 'page' : undefined}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {page}
-            </Button>
+              <Button
+                variant={currentPage === page ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onPageChange(page)}
+                className={cn(
+                  'h-9 w-9 rounded-lg transition-all duration-300',
+                  currentPage === page
+                    ? 'bg-gradient-to-br from-violet-500 to-indigo-600 text-white glow-pulse-purple border-0'
+                    : 'border border-white/10 hover:border-violet-500/30 hover:bg-white/5 text-slate-300'
+                )}
+                aria-label={`Page ${page}`}
+                aria-current={currentPage === page ? 'page' : undefined}
+              >
+                {page}
+              </Button>
+            </motion.div>
           )
         )}
       </div>
 
       {/* Next */}
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={handleNext}
-        disabled={!hasNextPage}
-        className="h-8 w-8"
-        aria-label="Next page"
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
-
-      {/* Last Page */}
-      {showFirstLast && (
+      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
         <Button
           variant="ghost"
           size="icon"
-          onClick={handleLast}
+          onClick={handleNext}
           disabled={!hasNextPage}
-          className="h-8 w-8"
-          aria-label="Last page"
+          className="h-9 w-9 rounded-lg border border-white/10 hover:border-violet-500/30 hover:bg-white/5 disabled:opacity-40 transition-all duration-300"
+          aria-label="Next page"
         >
-          <ChevronsRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" />
         </Button>
+      </motion.div>
+
+      {/* Last Page */}
+      {showFirstLast && (
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleLast}
+            disabled={!hasNextPage}
+            className="h-9 w-9 rounded-lg border border-white/10 hover:border-violet-500/30 hover:bg-white/5 disabled:opacity-40 transition-all duration-300"
+            aria-label="Last page"
+          >
+            <ChevronsRight className="h-4 w-4" />
+          </Button>
+        </motion.div>
       )}
 
-      {/* Page Info */}
-      <span className="ml-2 text-sm text-muted-foreground">
-        Page {currentPage} of {totalPages}
+      {/* Page Info - Enhanced styling */}
+      <span className="ml-3 px-3 py-1.5 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10">
+        Page <span className="text-white font-medium">{currentPage}</span> of{' '}
+        <span className="text-white font-medium">{totalPages}</span>
       </span>
     </motion.div>
   );

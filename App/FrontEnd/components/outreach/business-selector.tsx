@@ -55,15 +55,15 @@ export function BusinessSelector({
 
   if (isLoading) {
     return (
-      <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
-        <CardHeader>
+      <Card className={cn('glass-card rounded-2xl', className)}>
+        <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-muted-foreground" />
             Select Business
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <Skeleton data-testid="skeleton" className="h-10 w-full" />
+        <CardContent className="space-y-4 pt-0">
+          <Skeleton data-testid="skeleton" className="h-10 w-full rounded-lg" />
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-background/30">
               <Skeleton data-testid="skeleton" className="h-10 w-10 rounded-lg" />
@@ -79,8 +79,8 @@ export function BusinessSelector({
   }
 
   return (
-    <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
-      <CardHeader>
+    <Card className={cn('glass-card rounded-2xl', className)}>
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" />
@@ -91,7 +91,7 @@ export function BusinessSelector({
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-0">
         {/* Search Input */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -106,10 +106,12 @@ export function BusinessSelector({
 
         {/* Business List */}
         {filteredBusinesses.length === 0 ? (
-          <div className="text-center py-8">
-            <Building2 className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-            <p className="text-muted-foreground">No businesses found</p>
-            <p className="text-sm text-muted-foreground/70 mt-1">
+          <div className="text-center py-10">
+            <div className="p-4 rounded-2xl bg-muted/10 w-fit mx-auto mb-4">
+              <Building2 className="h-10 w-10 text-muted-foreground/50" />
+            </div>
+            <p className="text-foreground font-medium mb-1">No businesses found</p>
+            <p className="text-sm text-muted-foreground">
               {searchQuery ? 'Try a different search term' : 'Enrich businesses first'}
             </p>
           </div>

@@ -98,9 +98,9 @@ export function CampaignStats({
             <span>Campaign Overview</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="pt-2">
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
             {statCards.map((card, index) => {
               const Icon = card.icon;
               const value = stats[card.key as keyof typeof stats];
@@ -111,32 +111,32 @@ export function CampaignStats({
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2, delay: index * 0.05 }}
-                  className="p-4 rounded-lg bg-background/30"
+                  className="p-5 rounded-xl bg-background/30"
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className={cn('p-1.5 rounded-md', card.bgColor)}>
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <div className={cn('p-2 rounded-lg', card.bgColor)}>
                       <Icon className={cn('h-4 w-4', card.color)} />
                     </div>
                   </div>
-                  <p className="text-2xl font-bold text-foreground">{value}</p>
-                  <p className="text-xs text-muted-foreground">{card.label}</p>
+                  <p className="text-3xl font-bold text-foreground tracking-tight">{value}</p>
+                  <p className="text-sm text-muted-foreground mt-1.5">{card.label}</p>
                 </motion.div>
               );
             })}
           </div>
 
           {/* Response Rate */}
-          <div className="p-4 rounded-lg bg-background/30">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-md bg-primary/20">
+          <div className="p-5 rounded-xl bg-background/30 mt-6">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-lg bg-primary/20">
                   <TrendingUp className="h-4 w-4 text-primary" />
                 </div>
-                <span className="text-sm text-muted-foreground">Response Rate</span>
+                <span className="text-sm font-medium text-muted-foreground">Response Rate</span>
               </div>
-              <span className="text-xl font-bold text-primary">{stats.responseRate}%</span>
+              <span className="text-2xl font-bold text-primary">{stats.responseRate}%</span>
             </div>
-            <div className="h-2 bg-background/50 rounded-full overflow-hidden">
+            <div className="h-2.5 bg-background/50 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(stats.responseRate, 100)}%` }}

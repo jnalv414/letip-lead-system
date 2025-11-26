@@ -1,15 +1,17 @@
 /**
  * Skeleton Component
  *
- * Loading state placeholders following 60/30/10 color rule:
+ * Loading state placeholders with premium shimmer animation.
+ * Follows 60/30/10 color rule with wave loading effect:
  * - Base: Charcoal light (#2A2A2E) - 60%
  * - Pulse: Teal tint - 30%
  * - Highlight: Orange glow - 10%
+ * - Shimmer: Wave animation with white gradient overlay (1.5s)
  *
  * Usage:
  * <Skeleton className="h-12 w-full" />
  * <Skeleton variant="teal" className="h-8 w-32" />
- * <Skeleton animated={false} /> // Disable animation
+ * <Skeleton animated={false} /> // Disable shimmer + pulse
  */
 
 'use client';
@@ -35,7 +37,7 @@ function Skeleton({
   };
 
   const animationClasses = animated
-    ? 'animate-pulse'
+    ? 'animate-pulse shimmer'
     : '';
 
   return (

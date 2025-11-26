@@ -29,7 +29,7 @@ export function LoadingSkeleton({
           key={index}
           data-testid="loading-skeleton"
           className={cn(
-            'animate-pulse bg-muted/50',
+            'shimmer bg-white/5',
             variant === 'default' && 'rounded',
             variant === 'rounded' && 'rounded-lg',
             variant === 'circle' && 'rounded-full',
@@ -57,7 +57,7 @@ export function CardSkeleton({ count = 1, className }: CardSkeletonProps) {
           key={index}
           data-testid="card-skeleton"
           className={cn(
-            'rounded-lg border border-border/50 bg-card/50 p-4 space-y-4',
+            'rounded-2xl border border-white/10 glass-card-premium p-5 space-y-4',
             className
           )}
         >
@@ -70,7 +70,7 @@ export function CardSkeleton({ count = 1, className }: CardSkeletonProps) {
           </div>
           <LoadingSkeleton width="100%" height="0.75rem" />
           <LoadingSkeleton width="80%" height="0.75rem" />
-          <div className="flex gap-2 pt-2">
+          <div className="flex gap-2 pt-2 border-t border-white/5">
             <LoadingSkeleton variant="rounded" width="60px" height="24px" />
             <LoadingSkeleton variant="rounded" width="60px" height="24px" />
           </div>
@@ -96,10 +96,10 @@ export function TableSkeleton({
   return (
     <div
       data-testid="table-skeleton"
-      className={cn('rounded-lg border border-border/50 bg-card/50', className)}
+      className={cn('rounded-xl border border-white/10 glass-card-glow', className)}
     >
       {/* Header */}
-      <div className="flex items-center gap-4 p-4 border-b border-border/50">
+      <div className="flex items-center gap-4 p-4 border-b border-white/10">
         {Array.from({ length: columns }, (_, i) => (
           <LoadingSkeleton key={i} width={`${100 / columns}%`} height="1rem" />
         ))}
@@ -110,7 +110,7 @@ export function TableSkeleton({
         <div
           key={index}
           data-testid="table-row-skeleton"
-          className="flex items-center gap-4 p-4 border-b border-border/30 last:border-b-0"
+          className="flex items-center gap-4 p-4 border-b border-white/5 last:border-b-0"
         >
           {Array.from({ length: columns }, (_, i) => (
             <LoadingSkeleton
@@ -139,7 +139,7 @@ export function ListSkeleton({ count = 5, className }: ListSkeletonProps) {
         <div
           key={index}
           data-testid="list-item-skeleton"
-          className="flex items-center gap-3 p-3 rounded-lg border border-border/30 bg-card/30"
+          className="flex items-center gap-3 p-4 rounded-xl border border-white/10 glass-card-glow"
         >
           <LoadingSkeleton variant="circle" width="32px" height="32px" />
           <div className="flex-1 space-y-2">

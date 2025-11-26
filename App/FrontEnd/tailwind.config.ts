@@ -50,14 +50,27 @@ const config: Config = {
         // Update accent to purple
         accent: {
           DEFAULT: '#8B5CF6',
-          purple: '#8B5CF6',
-          blue: '#3B82F6',
+          purple: '#9b6dff',
+          'purple-light': '#b794ff',
+          'purple-dark': '#7c3aed',
+          blue: '#3b9eff',
+          'blue-light': '#60b0ff',
           cyan: '#06B6D4',
+        },
+        // Highlight colors (10% - tertiary)
+        highlight: {
+          cyan: '#06d6f4',
+          pink: '#ff4d9d',
+          emerald: '#10d980',
         },
         // Status colors
         success: '#22C55E',
         warning: '#F59E0B',
         error: '#EF4444',
+        // Background colors
+        'bg-primary': '#0a0a0f',
+        'bg-secondary': '#111118',
+        'bg-tertiary': '#1a1a24',
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],

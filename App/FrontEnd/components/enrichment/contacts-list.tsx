@@ -26,7 +26,7 @@ interface ContactsListProps {
 export function ContactsList({ contacts, isLoading, className }: ContactsListProps) {
   if (isLoading) {
     return (
-      <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
+      <Card className={cn('glass-card rounded-2xl', className)}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5 text-muted-foreground" />
@@ -49,7 +49,7 @@ export function ContactsList({ contacts, isLoading, className }: ContactsListPro
   }
 
   return (
-    <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
+    <Card className={cn('glass-card rounded-2xl', className)}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">

@@ -57,8 +57,8 @@ export function EmptyState({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
       className={cn(
-        'empty-state flex flex-col items-center justify-center py-12 px-6 text-center',
-        'rounded-lg border border-dashed border-border/50',
+        'empty-state flex flex-col items-center justify-center py-16 px-8 text-center',
+        'rounded-xl border border-dashed border-border/50',
         'bg-card/30 backdrop-blur-sm',
         variant === 'error' && 'border-destructive/50 bg-destructive/5',
         className

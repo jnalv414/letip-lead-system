@@ -58,14 +58,14 @@ export function MessageHistory({
 
   if (isLoading) {
     return (
-      <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
-        <CardHeader>
+      <Card className={cn('glass-card rounded-2xl', className)}>
+        <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2">
             <History className="h-5 w-5 text-muted-foreground" />
             Message History
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 pt-0">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-background/30">
               <Skeleton data-testid="skeleton" className="h-10 w-10 rounded-lg" />
@@ -81,8 +81,8 @@ export function MessageHistory({
   }
 
   return (
-    <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
-      <CardHeader>
+    <Card className={cn('glass-card rounded-2xl', className)}>
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <History className="h-5 w-5 text-primary" />
@@ -93,12 +93,14 @@ export function MessageHistory({
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0">
         {messages.length === 0 ? (
-          <div className="text-center py-8">
-            <FileText className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-            <p className="text-muted-foreground">No messages generated</p>
-            <p className="text-sm text-muted-foreground/70 mt-1">
+          <div className="text-center py-10">
+            <div className="p-4 rounded-2xl bg-muted/10 w-fit mx-auto mb-4">
+              <FileText className="h-10 w-10 text-muted-foreground/50" />
+            </div>
+            <p className="text-foreground font-medium mb-1">No messages generated</p>
+            <p className="text-sm text-muted-foreground">
               Generate a message to see history
             </p>
           </div>

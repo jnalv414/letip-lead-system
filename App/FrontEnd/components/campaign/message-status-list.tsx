@@ -112,9 +112,9 @@ export function MessageStatusList({
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="pt-2 space-y-5">
           {/* Filter Buttons */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <Filter className="h-4 w-4 text-muted-foreground" />
             {(['all', 'generated', 'sent', 'failed'] as const).map((status) => (
               <Button
@@ -122,7 +122,7 @@ export function MessageStatusList({
                 variant={statusFilter === status ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setStatusFilter(status)}
-                className="text-xs"
+                className="text-xs px-3"
               >
                 {status === 'all' ? 'All' : statusConfig[status].label}
               </Button>
@@ -131,15 +131,15 @@ export function MessageStatusList({
 
           {/* Message List */}
           {sortedMessages.length === 0 ? (
-            <div className="text-center py-8">
-              <ListChecks className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-              <p className="text-muted-foreground">No messages found</p>
-              <p className="text-sm text-muted-foreground/70 mt-1">
+            <div className="text-center py-12">
+              <ListChecks className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+              <p className="text-muted-foreground font-medium">No messages found</p>
+              <p className="text-sm text-muted-foreground/70 mt-2">
                 {statusFilter !== 'all' ? 'Try a different filter' : 'Generate messages to see them here'}
               </p>
             </div>
           ) : (
-            <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
               <AnimatePresence>
                 {sortedMessages.map((message, index) => {
                   const status = statusConfig[message.status];
@@ -153,14 +153,14 @@ export function MessageStatusList({
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 10 }}
                       transition={{ duration: 0.2, delay: index * 0.03 }}
-                      className="p-3 rounded-lg bg-background/30 hover:bg-background/50 transition-colors"
+                      className="p-4 rounded-xl bg-background/30 hover:bg-background/50 transition-colors"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={cn('p-2 rounded-lg', status.bgColor)}>
+                      <div className="flex items-center gap-4">
+                        <div className={cn('p-2.5 rounded-lg', status.bgColor)}>
                           <StatusIcon className={cn('h-4 w-4', status.color)} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-2.5 flex-wrap">
                             <span className="font-medium text-sm text-foreground">
                               {business?.name || `Business #${message.business_id}`}
                             </span>
@@ -172,12 +172,12 @@ export function MessageStatusList({
                             </Badge>
                           </div>
                           {business?.city && (
-                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1.5">
                               <MapPin className="h-3 w-3" />
                               {business.city}
                             </p>
                           )}
-                          <p className="text-xs text-muted-foreground mt-1">
+                          <p className="text-xs text-muted-foreground mt-1.5">
                             {new Date(message.generated_at).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',

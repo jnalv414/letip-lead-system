@@ -62,14 +62,14 @@ export function MessagePreview({
 
   if (isLoading) {
     return (
-      <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
-        <CardHeader>
+      <Card className={cn('glass-card rounded-2xl', className)}>
+        <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-muted-foreground" />
             Message Preview
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4 pt-0">
           <Skeleton data-testid="skeleton" className="h-4 w-full" />
           <Skeleton data-testid="skeleton" className="h-4 w-3/4" />
           <Skeleton data-testid="skeleton" className="h-4 w-5/6" />
@@ -81,18 +81,20 @@ export function MessagePreview({
 
   if (!message) {
     return (
-      <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
-        <CardHeader>
+      <Card className={cn('glass-card rounded-2xl', className)}>
+        <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-muted-foreground" />
             Message Preview
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <Mail className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-            <p className="text-muted-foreground">No message generated yet</p>
-            <p className="text-sm text-muted-foreground/70 mt-1">
+        <CardContent className="pt-0">
+          <div className="text-center py-10">
+            <div className="p-4 rounded-2xl bg-muted/10 w-fit mx-auto mb-4">
+              <Mail className="h-10 w-10 text-muted-foreground/50" />
+            </div>
+            <p className="text-foreground font-medium mb-1">No message generated yet</p>
+            <p className="text-sm text-muted-foreground">
               Select a business and generate a message
             </p>
           </div>
@@ -110,32 +112,32 @@ export function MessagePreview({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
-        <CardHeader>
+      <Card className={cn('glass-card rounded-2xl', className)}>
+        <CardHeader className="pb-4">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
               <span>Message Preview</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Badge variant="outline" className={cn(status.color, status.borderColor)}>
-                <StatusIcon className="h-3 w-3 mr-1" />
+                <StatusIcon className="h-3 w-3 mr-1.5" />
                 {status.label}
               </Badge>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleCopy}
-                className="gap-1"
+                className="gap-2"
               >
                 {copied ? (
                   <>
-                    <Check className="h-3 w-3 text-green-400" />
+                    <Check className="h-3.5 w-3.5 text-green-400" />
                     Copied!
                   </>
                 ) : (
                   <>
-                    <Copy className="h-3 w-3" />
+                    <Copy className="h-3.5 w-3.5" />
                     Copy
                   </>
                 )}
@@ -143,17 +145,17 @@ export function MessagePreview({
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5 pt-0">
           {/* Message Content */}
-          <div className="p-4 rounded-lg bg-background/30 border border-border/30 max-h-[400px] overflow-y-auto">
+          <div className="p-5 rounded-xl bg-background/30 border border-border/30 max-h-[400px] overflow-y-auto">
             <pre className="whitespace-pre-wrap font-sans text-sm text-foreground leading-relaxed">
               {message.message_text}
             </pre>
           </div>
 
           {/* Timestamp */}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />
+          <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+            <Clock className="h-3.5 w-3.5" />
             <span>
               Generated on{' '}
               {new Date(message.generated_at).toLocaleDateString('en-US', {

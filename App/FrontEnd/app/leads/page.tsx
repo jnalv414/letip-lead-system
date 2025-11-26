@@ -3,13 +3,14 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, LayoutGrid, List, Download } from 'lucide-react';
+import { AppShell } from '@/components/layout';
 import { PageHeader } from '@/components/shared/page-header';
 import { FilterBar } from '@/components/shared/filter-bar';
 import { Pagination } from '@/components/shared/pagination';
 import { BusinessList } from '@/components/leads/business-list';
 import { BulkActionsBar } from '@/components/leads/bulk-actions-bar';
 import { CreateLeadModal, ViewLeadModal, DeleteLeadModal, BulkDeleteModal } from '@/components/leads/modals';
-import { ErrorBoundary, ErrorState } from '@/components/shared/error-boundary';
+import { ErrorState } from '@/components/shared/error-boundary';
 import { Button } from '@/components/ui/button';
 import { useBusinesses } from '@/features/business-management';
 import { useEnrichBusiness, useBatchEnrichment } from '@/features/lead-enrichment';
@@ -17,13 +18,6 @@ import { cn } from '@/lib/utils';
 import type { Business, QueryBusinessesDto } from '@/types/api';
 
 type ViewMode = 'grid' | 'table';
-
-interface FilterValues {
-  search?: string;
-  city?: string;
-  enrichment_status?: string;
-  industry?: string;
-}
 
 const filterConfig = [
   {
@@ -54,7 +48,7 @@ export default function LeadsPage() {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState<FilterValues>({});
+  const [filters, setFilters] = useState<Record<string, string>>({});
   const itemsPerPage = 20;
 
   // Modal state
@@ -92,7 +86,7 @@ export default function LeadsPage() {
   const totalItems = data?.meta?.total ?? 0;
   const totalPages = data?.meta?.totalPages ?? 1;
 
-  const handleFilterChange = useCallback((newFilters: FilterValues) => {
+  const handleFilterChange = useCallback((newFilters: Record<string, string>) => {
     setFilters(newFilters);
     setCurrentPage(1); // Reset to first page on filter change
   }, []);
@@ -173,20 +167,20 @@ export default function LeadsPage() {
 
   if (error) {
     return (
-      <div className="p-6">
+      <AppShell title="Leads">
         <PageHeader title="Leads" subtitle="Manage your business leads" />
         <ErrorState
           title="Failed to load leads"
           message="There was an error loading your leads. Please try again."
           onRetry={() => refetch()}
         />
-      </div>
+      </AppShell>
     );
   }
 
   return (
-    <ErrorBoundary>
-      <div className="p-6 space-y-6">
+    <AppShell title="Leads">
+      <div className="space-y-8">
         {/* Page Header */}
         <PageHeader
           title="Leads"
@@ -198,8 +192,8 @@ export default function LeadsPage() {
           }}
         />
 
-        {/* Filter Bar */}
-        <div className="flex items-center gap-4">
+        {/* Filter Bar with Premium Glass Styling */}
+        <div className="flex items-center gap-6">
           <div className="flex-1">
             <FilterBar
               filters={filterConfig}
@@ -210,15 +204,17 @@ export default function LeadsPage() {
             />
           </div>
 
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-card/50 border border-border/50">
+          {/* View Mode Toggle - Premium Glass */}
+          <div className="flex items-center gap-1.5 p-1.5 rounded-xl glass-card-glow">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setViewMode('grid')}
               className={cn(
-                'h-8 w-8',
-                viewMode === 'grid' && 'bg-primary/20 text-primary'
+                'h-9 w-9 rounded-lg transition-all duration-300',
+                viewMode === 'grid'
+                  ? 'bg-primary/20 text-primary glow-pulse-purple'
+                  : 'hover:bg-white/5'
               )}
               aria-label="Grid view"
             >
@@ -229,8 +225,10 @@ export default function LeadsPage() {
               size="icon"
               onClick={() => setViewMode('table')}
               className={cn(
-                'h-8 w-8',
-                viewMode === 'table' && 'bg-primary/20 text-primary'
+                'h-9 w-9 rounded-lg transition-all duration-300',
+                viewMode === 'table'
+                  ? 'bg-primary/20 text-primary glow-pulse-purple'
+                  : 'hover:bg-white/5'
               )}
               aria-label="Table view"
             >
@@ -238,31 +236,39 @@ export default function LeadsPage() {
             </Button>
           </div>
 
-          {/* Export Button */}
-          <Button variant="outline" size="sm" className="gap-2">
+          {/* Export Button - Enhanced Shimmer */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2.5 px-4 btn-shimmer glass-card-glow border-white/10 hover:border-violet-500/40"
+          >
             <Download className="h-4 w-4" />
             Export
           </Button>
         </div>
 
-        {/* Business List */}
-        <BusinessList
-          businesses={businesses}
-          onBusinessClick={handleBusinessClick}
-          isLoading={isLoading}
-          viewMode={viewMode}
-          totalCount={totalItems}
-          selectedIds={selectedIds}
-          onSelectionChange={handleSelectionChange}
-        />
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
+        {/* Business List Container with Inner Glow */}
+        <div className="rounded-2xl p-1 inner-glow">
+          <BusinessList
+            businesses={businesses}
+            onBusinessClick={handleBusinessClick}
+            isLoading={isLoading}
+            viewMode={viewMode}
+            totalCount={totalItems}
+            selectedIds={selectedIds}
+            onSelectionChange={handleSelectionChange}
           />
+        </div>
+
+        {/* Pagination with Glass Container */}
+        {totalPages > 1 && (
+          <div className="glass-card-glow rounded-xl p-4">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
         )}
 
         {/* Modals */}
@@ -315,6 +321,6 @@ export default function LeadsPage() {
           isLoading={enrichMutation.isPending}
         />
       </div>
-    </ErrorBoundary>
+    </AppShell>
   );
 }

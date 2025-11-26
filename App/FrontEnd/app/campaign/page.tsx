@@ -17,8 +17,8 @@ export default function CampaignPage() {
 
   // Get all enriched businesses to fetch their messages
   const enrichedBusinesses = useMemo(() => {
-    if (!businessesData?.businesses) return [];
-    return businessesData.businesses.filter(b => b.enrichment_status === 'enriched');
+    if (!businessesData?.data) return [];
+    return businessesData.data.filter(b => b.enrichment_status === 'enriched');
   }, [businessesData]);
 
   // For now, get messages from the first enriched business if available
@@ -31,9 +31,9 @@ export default function CampaignPage() {
 
   // Build business map for the message status list
   const businessMap = useMemo(() => {
-    if (!businessesData?.businesses) return {};
+    if (!businessesData?.data) return {};
     const map: Record<number, { name: string; city: string }> = {};
-    businessesData.businesses.forEach(b => {
+    businessesData.data.forEach(b => {
       map[b.id] = { name: b.name, city: b.city || '' };
     });
     return map;
@@ -83,17 +83,17 @@ export default function CampaignPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="space-y-6"
+        className="space-y-8"
       >
         {/* Page Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/20">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-primary/20">
               <Megaphone className="h-6 w-6 text-primary" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">Campaign Overview</h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mt-1">
                 Track your outreach performance and message status
               </p>
             </div>
@@ -103,7 +103,7 @@ export default function CampaignPage() {
             size="sm"
             onClick={handleRefresh}
             disabled={isLoading}
-            className="gap-2"
+            className="gap-2 btn-shimmer"
           >
             <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh

@@ -73,36 +73,37 @@ export function FilterBar({
     <motion.div
       initial={{ opacity: 0, y: -5 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
       className={cn(
-        'flex flex-wrap items-center gap-3 p-4 rounded-lg',
-        'bg-card/50 backdrop-blur-sm border border-border/50',
+        'flex flex-wrap items-center gap-4 p-4 rounded-xl',
+        'glass-card-glow inner-glow',
         className
       )}
       data-testid="filter-bar"
     >
-      {/* Search Input */}
+      {/* Search Input - Enhanced with focus glow */}
       {searchable && (
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative flex-1 min-w-[200px] group">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
           <input
             type="search"
             placeholder={searchPlaceholder}
             value={searchInput}
             onChange={handleSearchChange}
             className={cn(
-              'flex h-10 w-full rounded-md border border-border/50 bg-background/50',
-              'pl-9 pr-3 py-2 text-sm text-foreground',
-              'placeholder:text-muted-foreground',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
-              'transition-colors duration-200'
+              'flex h-11 w-full rounded-lg border border-white/10 bg-white/5',
+              'pl-10 pr-4 py-2 text-sm text-white',
+              'placeholder:text-slate-500',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50 focus-visible:border-violet-500/40',
+              'hover:border-white/20 hover:bg-white/[0.07]',
+              'transition-all duration-300'
             )}
             aria-label="Search"
           />
         </div>
       )}
 
-      {/* Filter Controls */}
+      {/* Filter Controls - Enhanced select styling */}
       {filters
         .filter((f) => f.type === 'select')
         .map((filter) => (
@@ -111,10 +112,13 @@ export function FilterBar({
             value={values[filter.key] || ''}
             onChange={(e) => handleSelectChange(filter.key, e.target.value)}
             className={cn(
-              'h-10 rounded-md border border-border/50 bg-background/50',
-              'px-3 py-2 text-sm text-foreground',
-              'focus:outline-none focus:ring-2 focus:ring-primary/50',
-              'min-w-[150px]'
+              'h-11 rounded-lg border border-white/10 bg-white/5',
+              'px-4 py-2 text-sm text-white',
+              'focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/40',
+              'hover:border-white/20 hover:bg-white/[0.07]',
+              'min-w-[150px] cursor-pointer',
+              'transition-all duration-300',
+              '[&>option]:bg-slate-900 [&>option]:text-white'
             )}
             aria-label={filter.label}
           >
@@ -127,17 +131,23 @@ export function FilterBar({
           </select>
         ))}
 
-      {/* Clear Filters */}
+      {/* Clear Filters - Enhanced button */}
       {hasActiveFilters && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleClearFilters}
-          className="gap-1 text-muted-foreground hover:text-foreground"
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
         >
-          <X className="h-4 w-4" />
-          Clear
-        </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClearFilters}
+            className="gap-1.5 text-slate-400 hover:text-white hover:bg-red-500/20 border border-transparent hover:border-red-500/30 transition-all duration-300"
+          >
+            <X className="h-4 w-4" />
+            Clear
+          </Button>
+        </motion.div>
       )}
     </motion.div>
   );

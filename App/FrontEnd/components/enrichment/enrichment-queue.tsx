@@ -25,10 +25,10 @@ export function EnrichmentQueue({
   const pendingBusinesses = businesses.filter((b) => b.enrichment_status === 'pending');
 
   return (
-    <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
-      <CardHeader>
+    <Card className={cn('glass-card rounded-2xl', className)}>
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <Clock className="h-5 w-5 text-amber-400" />
             <span>Enrichment Queue</span>
           </div>
@@ -37,17 +37,17 @@ export function EnrichmentQueue({
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0">
         {pendingBusinesses.length === 0 ? (
-          <div className="text-center py-8">
-            <Building2 className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-            <p className="text-muted-foreground">No pending businesses to enrich</p>
-            <p className="text-sm text-muted-foreground/70 mt-1">
+          <div className="text-center py-12">
+            <Building2 className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+            <p className="text-muted-foreground font-medium">No pending businesses to enrich</p>
+            <p className="text-sm text-muted-foreground/70 mt-2">
               All leads have been processed
             </p>
           </div>
         ) : (
-          <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+          <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 -mr-2">
             <AnimatePresence>
               {pendingBusinesses.map((business, index) => (
                 <motion.div

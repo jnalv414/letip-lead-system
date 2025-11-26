@@ -1,16 +1,16 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { motion } from 'framer-motion';
 import { Sidebar } from './sidebar';
 import { Header } from './header';
 
 interface AppShellProps {
   children: ReactNode;
   title?: string;
+  isConnected?: boolean;
 }
 
-export function AppShell({ children, title }: AppShellProps) {
+export function AppShell({ children, title, isConnected }: AppShellProps) {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] relative overflow-hidden">
       {/* Left Gradient Glow Strip */}
@@ -21,32 +21,21 @@ export function AppShell({ children, title }: AppShellProps) {
         }}
       />
 
-      {/* Left Animated Orb */}
-      <motion.div
-        className="fixed left-[-20px] top-[20%] w-[250px] h-[350px] pointer-events-none z-0"
-        animate={{
-          opacity: [0.4, 0.7, 0.4],
-          scale: [1, 1.15, 1],
-          y: [0, 30, 0]
-        }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      {/* Left Primary Orb - Purple - Fast */}
+      <div
+        className="fixed left-[-30px] top-[15%] w-[280px] h-[380px] pointer-events-none z-0 orb-animated-fast"
         style={{
           background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.5) 0%, transparent 70%)',
-          filter: 'blur(40px)',
+          filter: 'blur(45px)',
         }}
       />
 
-      {/* Left Secondary Orb */}
-      <motion.div
-        className="fixed left-[-10px] bottom-[25%] w-[200px] h-[280px] pointer-events-none z-0"
-        animate={{
-          opacity: [0.35, 0.6, 0.35],
-          scale: [1, 1.2, 1],
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      {/* Left Secondary Orb - Cyan/Teal - Slow */}
+      <div
+        className="fixed left-[-15px] bottom-[20%] w-[220px] h-[300px] pointer-events-none z-0 orb-animated-slow"
         style={{
           background: 'radial-gradient(ellipse at center, rgba(6, 182, 212, 0.45) 0%, transparent 70%)',
-          filter: 'blur(35px)',
+          filter: 'blur(38px)',
         }}
       />
 
@@ -58,38 +47,37 @@ export function AppShell({ children, title }: AppShellProps) {
         }}
       />
 
-      {/* Right Animated Orb */}
-      <motion.div
-        className="fixed right-[-20px] bottom-[20%] w-[250px] h-[350px] pointer-events-none z-0"
-        animate={{
-          opacity: [0.4, 0.7, 0.4],
-          scale: [1, 1.15, 1],
-          y: [0, -30, 0]
-        }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+      {/* Right Primary Orb - Blue - Normal */}
+      <div
+        className="fixed right-[-25px] bottom-[18%] w-[300px] h-[400px] pointer-events-none z-0 orb-animated"
         style={{
           background: 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.5) 0%, transparent 70%)',
-          filter: 'blur(40px)',
+          filter: 'blur(42px)',
         }}
       />
 
-      {/* Right Secondary Orb */}
-      <motion.div
-        className="fixed right-[-10px] top-[30%] w-[200px] h-[280px] pointer-events-none z-0"
-        animate={{
-          opacity: [0.35, 0.55, 0.35],
-          scale: [1, 1.18, 1],
-        }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+      {/* Right Secondary Orb - Purple - Slow */}
+      <div
+        className="fixed right-[-12px] top-[25%] w-[240px] h-[320px] pointer-events-none z-0 orb-animated-slow"
         style={{
           background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.4) 0%, transparent 70%)',
-          filter: 'blur(35px)',
+          filter: 'blur(36px)',
+        }}
+      />
+
+      {/* Center Floating Orb - Cyan/Teal - Fast (4th orb) */}
+      <div
+        className="fixed left-[50%] top-[40%] w-[180px] h-[240px] pointer-events-none z-0 orb-animated-fast"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(6, 214, 244, 0.35) 0%, transparent 70%)',
+          filter: 'blur(32px)',
+          transform: 'translateX(-50%)',
         }}
       />
 
       <Sidebar />
       <div className="relative z-10">
-        <Header title={title} />
+        <Header title={title} isConnected={isConnected} />
         <main className="p-10 pt-6 max-w-[1680px] mx-auto">
           {children}
         </main>

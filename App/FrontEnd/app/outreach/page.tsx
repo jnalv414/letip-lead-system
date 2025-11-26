@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
+import { AppShell } from '@/components/layout';
 import { useBusinesses } from '@/hooks/queries';
 import { useGenerateMessage } from '@/hooks/mutations';
 import { useOutreachMessages } from '@/hooks/queries/use-outreach-messages';
@@ -81,41 +82,24 @@ export default function OutreachPage() {
   }, [messages, selectedMessage]);
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex items-center gap-4"
-      >
-        <div className="p-3 rounded-xl bg-primary/20">
-          <Mail className="h-6 w-6 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Outreach</h1>
-          <p className="text-muted-foreground">
-            Generate personalized outreach messages for enriched businesses
-          </p>
-        </div>
-      </motion.div>
+    <AppShell title="Outreach">
 
       {/* Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="pt-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-blue-500/20">
-                  <MessageSquare className="h-4 w-4 text-blue-400" />
+          <Card className="glass-card rounded-2xl h-full">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-xl bg-blue-500/20 shrink-0">
+                  <MessageSquare className="h-5 w-5 text-blue-400" />
                 </div>
-                <div>
-                  <p className="font-medium text-foreground">Template-Based</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                <div className="space-y-1">
+                  <p className="font-semibold text-foreground">Template-Based</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     Messages are personalized with business data
                   </p>
                 </div>
@@ -129,15 +113,15 @@ export default function OutreachPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
         >
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="pt-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-green-500/20">
-                  <Sparkles className="h-4 w-4 text-green-400" />
+          <Card className="glass-card rounded-2xl h-full">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-xl bg-green-500/20 shrink-0">
+                  <Sparkles className="h-5 w-5 text-green-400" />
                 </div>
-                <div>
-                  <p className="font-medium text-foreground">Le Tip Focused</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                <div className="space-y-1">
+                  <p className="font-semibold text-foreground">Le Tip Focused</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     Crafted for networking invitations
                   </p>
                 </div>
@@ -151,15 +135,15 @@ export default function OutreachPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="pt-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-amber-500/20">
-                  <Info className="h-4 w-4 text-amber-400" />
+          <Card className="glass-card rounded-2xl h-full">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-xl bg-amber-500/20 shrink-0">
+                  <Info className="h-5 w-5 text-amber-400" />
                 </div>
-                <div>
-                  <p className="font-medium text-foreground">Copy & Send</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                <div className="space-y-1">
+                  <p className="font-semibold text-foreground">Copy & Send</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     Copy message to clipboard and send via email
                   </p>
                 </div>
@@ -208,14 +192,16 @@ export default function OutreachPage() {
               />
             </>
           ) : (
-            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-              <CardContent className="py-12">
-                <div className="text-center">
-                  <AlertTriangle className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-                  <p className="text-muted-foreground">
+            <Card className="glass-card rounded-2xl">
+              <CardContent className="p-8">
+                <div className="text-center py-6">
+                  <div className="p-4 rounded-2xl bg-amber-500/10 w-fit mx-auto mb-5">
+                    <AlertTriangle className="h-10 w-10 text-amber-400" />
+                  </div>
+                  <p className="text-foreground font-medium mb-2">
                     Select a business to generate messages
                   </p>
-                  <p className="text-sm text-muted-foreground/70 mt-1">
+                  <p className="text-sm text-muted-foreground">
                     Only enriched businesses are shown
                   </p>
                 </div>
@@ -237,6 +223,6 @@ export default function OutreachPage() {
           />
         </motion.div>
       </div>
-    </div>
+    </AppShell>
   );
 }

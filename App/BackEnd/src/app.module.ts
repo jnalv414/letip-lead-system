@@ -43,7 +43,7 @@ function getDashboardPath(): string {
     ServeStaticModule.forRoot({
       rootPath: getDashboardPath(),
       serveRoot: '/dashboard',
-      exclude: ['/api(.*)'],
+      exclude: ['/api/{*path}'],
     }),
     ConfigModule,
     PrismaModule,

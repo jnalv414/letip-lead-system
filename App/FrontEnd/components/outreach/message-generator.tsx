@@ -40,7 +40,7 @@ export function MessageGenerator({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className={cn('bg-card/50 backdrop-blur-sm border-border/50', className)}>
+      <Card className={cn('glass-card rounded-2xl', className)}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />

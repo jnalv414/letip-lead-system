@@ -2,14 +2,15 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Bell, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Bell, ChevronDown, ChevronLeft, ChevronRight, Wifi, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
   title?: string;
+  isConnected?: boolean;
 }
 
-export function Header({ title = 'Dashboard' }: HeaderProps) {
+export function Header({ title = 'Dashboard', isConnected }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const today = new Date();
   const formattedDate = today.toLocaleDateString('en-US', {
@@ -18,15 +19,36 @@ export function Header({ title = 'Dashboard' }: HeaderProps) {
   });
 
   return (
-    <header className="h-20 glass-elevated border-b border-[var(--border-default)] px-8 flex items-center justify-between">
-      {/* Title with dropdown */}
-      <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">{title}</h1>
-        <ChevronDown size={18} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors cursor-pointer" />
+    <header className="h-20 glass-elevated border-b border-[var(--border-default)] pl-24 pr-8 flex items-center justify-between gap-8">
+      {/* Left section: Title + Connection Status */}
+      <div className="flex items-center gap-6 shrink-0">
+        {/* Title with dropdown */}
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">{title}</h1>
+          <ChevronDown size={18} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors cursor-pointer" />
+        </div>
+
+        {/* Connection Status Badge */}
+        {isConnected !== undefined && (
+          <div
+            className={cn(
+              'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all',
+              isConnected
+                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+            )}
+          >
+            <span className={cn(
+              'w-1.5 h-1.5 rounded-full',
+              isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+            )} />
+            {isConnected ? 'Live' : 'Connecting...'}
+          </div>
+        )}
       </div>
 
       {/* Center: Search */}
-      <div className="flex-1 max-w-lg mx-12">
+      <div className="flex-1 max-w-xl mx-8">
         <div className="relative">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
           <input
