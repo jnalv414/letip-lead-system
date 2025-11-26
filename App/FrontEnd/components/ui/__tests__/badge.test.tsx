@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { render, screen, validateColorDistribution, ColorScheme } from '@/__tests__/setup/test-utils';
-import { Badge, BadgeVariant, BadgeSize } from '../badge';
+import { Badge } from '../badge';
 import userEvent from '@testing-library/user-event';
 
 describe('Badge Component', () => {
@@ -433,7 +433,7 @@ describe('Badge Component', () => {
       const badges = Array.from({ length: 100 }, (_, i) => ({
         id: i,
         text: `Badge ${i}`,
-        variant: i % 2 === 0 ? 'orange' : 'teal' as BadgeVariant,
+        variant: i % 2 === 0 ? 'orange' as const : 'teal' as const,
       }));
 
       const { container } = render(

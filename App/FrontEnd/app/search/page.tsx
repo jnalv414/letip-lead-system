@@ -30,9 +30,9 @@ export default function SearchPage() {
     (data: ScrapingFormData) => {
       startScrape({
         location: data.location,
-        businessType: data.businessType,
+        business_type: data.businessType,
         radius: data.radius,
-        maxResults: data.maxResults,
+        max_results: data.maxResults,
       });
     },
     [startScrape]

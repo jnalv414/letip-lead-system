@@ -21,7 +21,7 @@ interface FilterConfig {
 }
 
 interface FilterValues {
-  [key: string]: string;
+  [key: string]: string | undefined;
 }
 
 interface FilterBarProps {

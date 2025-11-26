@@ -19,6 +19,7 @@ import type { Business, QueryBusinessesDto } from '@/types/api';
 type ViewMode = 'grid' | 'table';
 
 interface FilterValues {
+  [key: string]: string | undefined;
   search?: string;
   city?: string;
   enrichment_status?: string;

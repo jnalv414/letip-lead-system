@@ -37,11 +37,6 @@ function createTestQueryClient() {
         gcTime: 0,    // Don't cache between tests
       },
     },
-    logger: {
-      log: () => {},
-      warn: () => {},
-      error: () => {},
-    },
   });
 }
 
@@ -62,7 +57,7 @@ export function renderWithProviders(
   function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <QueryClientProvider client={queryClient}>
-        <SocketContext.Provider value={{ socket: mockSocket as any, isConnected: true }}>
+        <SocketContext.Provider value={{ socket: mockSocket as any, isConnected: true, connectionError: null }}>
           {children}
         </SocketContext.Provider>
       </QueryClientProvider>

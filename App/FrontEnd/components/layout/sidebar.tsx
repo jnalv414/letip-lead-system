@@ -23,7 +23,7 @@ const sidebarVariants = {
   closed: {
     x: '-100%',
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 400,
       damping: 40,
     },
@@ -31,7 +31,7 @@ const sidebarVariants = {
   open: {
     x: 0,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 400,
       damping: 40,
     },
@@ -62,7 +62,7 @@ const menuItemVariants = {
     transition: {
       delay: 0.1 + i * 0.05,
       duration: 0.3,
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
     },
   }),
 };
@@ -77,7 +77,7 @@ const iconVariants = {
     scale: 1,
     rotate: 0,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 260,
       damping: 20,
       delay: 0.2 + i * 0.05,

@@ -158,12 +158,12 @@ export function ScrapeProgress({ progress, onReset, className }: ScrapeProgressP
                   New Search
                 </Button>
                 {isComplete && progress.found > 0 && (
-                  <Button asChild className="flex-1 gap-2">
-                    <Link href="/leads">
+                  <Link href="/leads" className="flex-1">
+                    <Button className="w-full gap-2">
                       View Leads
                       <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
+                    </Button>
+                  </Link>
                 )}
               </motion.div>
             )}
