@@ -28,7 +28,7 @@ export function TimelineChart({ data, isLoading }: TimelineChartProps) {
           <Skeleton className="h-5 w-40" />
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-72 w-full rounded-lg" />
+          <Skeleton className="h-64 w-full rounded-lg" />
         </CardContent>
       </Card>
     )
@@ -41,7 +41,7 @@ export function TimelineChart({ data, isLoading }: TimelineChartProps) {
           <CardTitle className="text-lg">Activity Timeline</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-72 flex items-center justify-center text-muted-foreground">
+          <div className="h-64 flex items-center justify-center text-muted-foreground">
             No timeline data available
           </div>
         </CardContent>
@@ -59,13 +59,14 @@ export function TimelineChart({ data, isLoading }: TimelineChartProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
+      className="h-full"
     >
-      <Card variant="glass">
+      <Card variant="glass" className="h-full flex flex-col">
         <CardHeader>
           <CardTitle className="text-lg">Activity Timeline</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="h-72">
+        <CardContent className="flex-1">
+          <div className="h-full min-h-[16rem]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
                 <defs>

@@ -81,11 +81,15 @@ export default function DashboardPage() {
             {/* Stats Grid */}
             <StatsGrid stats={stats} isLoading={statsLoading} />
 
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              <PipelineChart data={pipeline} isLoading={pipelineLoading} />
-              <LocationChart data={locations} isLoading={locationsLoading} />
-              <div className="lg:col-span-2 xl:col-span-1">
+            {/* Charts Row - Equal height cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr">
+              <div className="h-full">
+                <PipelineChart data={pipeline} isLoading={pipelineLoading} />
+              </div>
+              <div className="h-full">
+                <LocationChart data={locations} isLoading={locationsLoading} />
+              </div>
+              <div className="h-full lg:col-span-2 xl:col-span-1">
                 <TimelineChart data={timeline} isLoading={timelineLoading} />
               </div>
             </div>
@@ -98,21 +102,29 @@ export default function DashboardPage() {
         {/* Analytics Tab */}
         {activeTab === 'analytics' && (
           <div className="space-y-6">
-            {/* Row 1: Funnel and Heatmap */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <FunnelChart data={funnelData} isLoading={funnelLoading} />
-              <HeatmapChart data={heatmapData} isLoading={heatmapLoading} />
+            {/* Row 1: Funnel and Heatmap - Equal height cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
+              <div className="h-full">
+                <FunnelChart data={funnelData} isLoading={funnelLoading} />
+              </div>
+              <div className="h-full">
+                <HeatmapChart data={heatmapData} isLoading={heatmapLoading} />
+              </div>
             </div>
 
-            {/* Row 2: Top Performers and Cost Analysis */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <TopPerformers
-                data={topPerformersData}
-                isLoading={topPerformersLoading}
-                onDimensionChange={setTopPerformersDimension}
-                onMetricChange={setTopPerformersMetric}
-              />
-              <CostAnalysis data={costData} isLoading={costLoading} />
+            {/* Row 2: Top Performers and Cost Analysis - Equal height cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
+              <div className="h-full">
+                <TopPerformers
+                  data={topPerformersData}
+                  isLoading={topPerformersLoading}
+                  onDimensionChange={setTopPerformersDimension}
+                  onMetricChange={setTopPerformersMetric}
+                />
+              </div>
+              <div className="h-full">
+                <CostAnalysis data={costData} isLoading={costLoading} />
+              </div>
             </div>
           </div>
         )}

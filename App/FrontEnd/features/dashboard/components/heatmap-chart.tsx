@@ -60,16 +60,17 @@ export function HeatmapChart({ data, isLoading }: HeatmapChartProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
+      className="h-full"
     >
-      <Card variant="glass">
+      <Card variant="glass" className="h-full flex flex-col">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Activity Heatmap</CardTitle>
           <div className="text-sm text-muted-foreground">
             Peak: {data.peakDay} at {data.peakHour}:00
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
+        <CardContent className="flex-1 flex flex-col">
+          <div className="overflow-x-auto flex-1">
             <div className="min-w-[600px]">
               {/* Hour labels */}
               <div className="flex mb-1 ml-12">

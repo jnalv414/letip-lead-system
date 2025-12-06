@@ -60,8 +60,9 @@ export function CostAnalysis({ data, isLoading }: CostAnalysisProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
+      className="h-full"
     >
-      <Card variant="glass">
+      <Card variant="glass" className="h-full flex flex-col">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Cost Analysis</CardTitle>
           <span className="text-2xl font-bold text-primary">
@@ -69,9 +70,9 @@ export function CostAnalysis({ data, isLoading }: CostAnalysisProps) {
           </span>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="flex-1 space-y-6">
           {/* Cost Chart */}
-          <div className="h-48">
+          <div className="h-48 flex-shrink-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie

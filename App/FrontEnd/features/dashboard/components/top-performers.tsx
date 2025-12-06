@@ -61,8 +61,9 @@ export function TopPerformers({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
+      className="h-full"
     >
-      <Card variant="glass">
+      <Card variant="glass" className="h-full flex flex-col">
         <CardHeader className="space-y-4">
           <CardTitle className="text-lg">Top Performers</CardTitle>
 
@@ -105,7 +106,7 @@ export function TopPerformers({
           </div>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="flex-1 flex flex-col">
           {!data || data.performers.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">
               No data available

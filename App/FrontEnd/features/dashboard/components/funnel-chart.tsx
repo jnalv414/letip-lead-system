@@ -53,15 +53,16 @@ export function FunnelChart({ data, isLoading }: FunnelChartProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
+      className="h-full"
     >
-      <Card variant="glass">
+      <Card variant="glass" className="h-full flex flex-col">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Conversion Funnel</CardTitle>
           <span className="text-sm text-muted-foreground">
             Overall: {(data.overallConversionRate * 100).toFixed(1)}%
           </span>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           <div className="space-y-4">
             {data.stages.map((stage, index) => (
               <FunnelStageRow
