@@ -65,7 +65,7 @@ export function HeatmapChart({ data, isLoading }: HeatmapChartProps) {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Activity Heatmap</CardTitle>
           <div className="text-sm text-muted-foreground">
-            Peak: {data.peakDay} at {data.peakHour}:00
+            Peak: {data.peakDay ?? 'N/A'} at {data.peakHour ?? 0}:00
           </div>
         </CardHeader>
         <CardContent>
@@ -139,11 +139,11 @@ export function HeatmapChart({ data, isLoading }: HeatmapChartProps) {
           <div className="mt-4 pt-4 border-t border-border flex justify-between text-sm">
             <div>
               <span className="text-muted-foreground">Total Activity: </span>
-              <span className="font-medium">{data.totalActivity.toLocaleString()}</span>
+              <span className="font-medium">{(data.totalActivity ?? 0).toLocaleString()}</span>
             </div>
             <div>
               <span className="text-muted-foreground">Max Value: </span>
-              <span className="font-medium">{data.maxValue.toLocaleString()}</span>
+              <span className="font-medium">{(data.maxValue ?? 0).toLocaleString()}</span>
             </div>
           </div>
         </CardContent>

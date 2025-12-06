@@ -9,7 +9,7 @@ export async function fetchLeads(
 ): Promise<PaginatedResponse<Business>> {
   const params = new URLSearchParams({
     page: String(page),
-    pageSize: String(pageSize),
+    limit: String(pageSize),
   })
 
   if (filters?.search) params.set('search', filters.search)
@@ -17,8 +17,7 @@ export async function fetchLeads(
     params.set('enrichment_status', filters.enrichment_status)
   }
   if (filters?.industry) params.set('industry', filters.industry)
-  if (filters?.sortBy) params.set('sortBy', filters.sortBy)
-  if (filters?.sortOrder) params.set('sortOrder', filters.sortOrder)
+  // Note: Backend doesn't support sorting yet - sortBy/sortOrder ignored
 
   return api<PaginatedResponse<Business>>(`/api/businesses?${params.toString()}`)
 }

@@ -58,47 +58,110 @@ export interface CsvImportJob {
   failed?: number
 }
 
+// Backend response type for dashboard
+interface BackendMetric {
+  name: string
+  value: number
+  change: number
+  sparkline: number[]
+  color: string
+}
+
+interface BackendDashboardResponse {
+  metrics: BackendMetric[]
+  dateRange: { start: string; end: string }
+}
+
 /**
  * Fetch dashboard overview stats
+ * Transforms backend metrics array to frontend expected format
  */
 export async function fetchDashboardStats(): Promise<DashboardStats> {
-  return api<DashboardStats>('/api/analytics/dashboard')
+  const response = await api<BackendDashboardResponse>('/api/analytics/dashboard')
+
+  // Create a lookup map for metrics by name
+  const metricsMap = new Map<string, number>()
+  for (const metric of response.metrics || []) {
+    metricsMap.set(metric.name, metric.value)
+  }
+
+  // Map backend metrics to frontend expected format
+  const totalBusinesses = metricsMap.get('Businesses Found') || 0
+  const enrichedCount = metricsMap.get('Enriched Leads') || 0
+  const enrichmentRate = metricsMap.get('Enrichment Rate') || 0
+
+  // Calculate pending and failed from total and enriched
+  // These are approximations since backend doesn't provide exact counts
+  const pendingCount = Math.max(0, totalBusinesses - enrichedCount)
+
+  return {
+    totalBusinesses,
+    enrichedCount,
+    pendingCount,
+    failedCount: 0, // Not available from current backend
+    totalContacts: 0, // Not available from current backend
+    messagesGenerated: 0, // Not available from current backend
+    enrichmentRate,
+    avgContactsPerBusiness: 0, // Not available from current backend
+  }
 }
 
 /**
  * Fetch location breakdown
  */
 export async function fetchLocationStats(): Promise<LocationStat[]> {
-  return api<LocationStat[]>('/api/analytics/locations')
+  const response = await api<{ locations: LocationStat[]; total: number }>('/api/analytics/locations')
+  return response.locations || []
 }
 
 /**
  * Fetch source breakdown
  */
 export async function fetchSourceStats(): Promise<SourceStat[]> {
-  return api<SourceStat[]>('/api/analytics/sources')
+  const response = await api<{ sources: SourceStat[]; total: number }>('/api/analytics/sources')
+  return response.sources || []
 }
 
 /**
  * Fetch pipeline breakdown (enrichment status)
  */
 export async function fetchPipelineStats(): Promise<PipelineStat[]> {
-  return api<PipelineStat[]>('/api/analytics/pipeline')
+  const response = await api<{ stages: Array<{ stage: string; count: number; percentage: number }>; total: number }>('/api/analytics/pipeline')
+  // Map backend stage names to frontend status values
+  const stageToStatus: Record<string, PipelineStat['status']> = {
+    'New Leads': 'pending',
+    'Qualified': 'enriched',
+    'Needs Review': 'failed',
+  }
+  return (response.stages || []).map(item => ({
+    status: stageToStatus[item.stage] || 'pending',
+    count: item.count,
+    percentage: item.percentage,
+  }))
 }
 
 /**
  * Fetch timeline data for charts
+ * Note: Backend timeline endpoint doesn't accept 'days' param - uses default range
  */
-export async function fetchTimelineStats(days: number = 30): Promise<TimelineStat[]> {
-  return api<TimelineStat[]>(`/api/analytics/timeline?days=${days}`)
+export async function fetchTimelineStats(_days: number = 30): Promise<TimelineStat[]> {
+  const response = await api<{ data: Array<{ date: string; searches: number; businessesFound: number; enriched: number; cost: number }>; dateRange: { start: string; end: string } }>('/api/analytics/timeline')
+  // Map backend field names to frontend field names
+  return (response.data || []).map(item => ({
+    date: item.date,
+    businesses: item.businessesFound,
+    enriched: item.enriched,
+    contacts: 0, // Not available from timeline endpoint
+  }))
 }
 
 /**
  * Fetch recent businesses
+ * Note: Backend doesn't support sorting params - returns default order
  */
 export async function fetchRecentBusinesses(limit: number = 10): Promise<RecentBusiness[]> {
   const response = await api<{ data: RecentBusiness[] }>(
-    `/api/businesses?limit=${limit}&orderBy=created_at&order=desc`
+    `/api/businesses?limit=${limit}`
   )
   return response.data || []
 }

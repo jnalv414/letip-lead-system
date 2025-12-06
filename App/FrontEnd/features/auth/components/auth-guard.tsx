@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../hooks/use-auth'
 
@@ -16,15 +16,21 @@ interface AuthGuardProps {
 export function AuthGuard({ children, fallback }: AuthGuardProps) {
   const router = useRouter()
   const { isAuthenticated, isLoading } = useAuth()
+  const [mounted, setMounted] = useState(false)
+
+  // Track when component is mounted (client-side)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (mounted && !isLoading && !isAuthenticated) {
       router.push('/login')
     }
-  }, [isLoading, isAuthenticated, router])
+  }, [mounted, isLoading, isAuthenticated, router])
 
-  // Show loading state
-  if (isLoading) {
+  // During SSR and initial hydration, render a consistent loading state
+  if (!mounted || isLoading) {
     return (
       fallback || (
         <div className="min-h-screen flex items-center justify-center bg-background">
