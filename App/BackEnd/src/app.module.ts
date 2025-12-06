@@ -42,11 +42,12 @@ function getDashboardPath(): string {
 
 @Module({
   imports: [
-    ServeStaticModule.forRoot({
-      rootPath: getDashboardPath(),
-      serveRoot: '/dashboard',
-      exclude: ['/api/(.*)', '/health', '/socket.io/(.*)'],
-    }),
+    // ServeStaticModule temporarily disabled - FrontEnd not built
+    // ServeStaticModule.forRoot({
+    //   rootPath: getDashboardPath(),
+    //   serveRoot: '/dashboard',
+    //   exclude: ['/api/*rest', '/health', '/socket.io/*rest'],
+    // }),
     ConfigModule,
     PrismaModule,
     CachingModule, // Global Redis caching (DB 0)

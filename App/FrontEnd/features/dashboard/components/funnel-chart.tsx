@@ -59,7 +59,7 @@ export function FunnelChart({ data, isLoading }: FunnelChartProps) {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Conversion Funnel</CardTitle>
           <span className="text-sm text-muted-foreground">
-            Overall: {(data.overallConversionRate * 100).toFixed(1)}%
+            Overall: {((data.overallConversionRate ?? 0) * 100).toFixed(1)}%
           </span>
         </CardHeader>
         <CardContent className="flex-1">
@@ -88,8 +88,11 @@ interface FunnelStageRowProps {
 }
 
 function FunnelStageRow({ stage, index, maxCount, isLast }: FunnelStageRowProps) {
-  const widthPercent = maxCount > 0 ? (stage.count / maxCount) * 100 : 0
-  const color = STAGE_COLORS[stage.stage.toLowerCase()] || '#6b7280'
+  const widthPercent = maxCount > 0 ? ((stage.count || 0) / maxCount) * 100 : 0
+  const color = STAGE_COLORS[stage.stage?.toLowerCase()] || '#6b7280'
+  const percentage = stage.percentage ?? 0
+  const conversionRate = stage.conversionRate ?? 0
+  const dropOffRate = stage.dropOffRate ?? 0
 
   return (
     <motion.div
@@ -101,7 +104,7 @@ function FunnelStageRow({ stage, index, maxCount, isLast }: FunnelStageRowProps)
       <div className="flex justify-between text-sm">
         <span className="font-medium capitalize">{stage.stage}</span>
         <span className="text-muted-foreground">
-          {stage.count.toLocaleString()} ({stage.percentage.toFixed(1)}%)
+          {(stage.count || 0).toLocaleString()} ({percentage.toFixed(1)}%)
         </span>
       </div>
       <div className="relative h-8">
@@ -129,10 +132,10 @@ function FunnelStageRow({ stage, index, maxCount, isLast }: FunnelStageRowProps)
             />
           </svg>
           <span>
-            {(stage.conversionRate * 100).toFixed(1)}% conversion
+            {(conversionRate * 100).toFixed(1)}% conversion
           </span>
           <span className="text-destructive">
-            ({(stage.dropOffRate * 100).toFixed(1)}% drop-off)
+            ({(dropOffRate * 100).toFixed(1)}% drop-off)
           </span>
         </div>
       )}
