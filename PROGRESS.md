@@ -1,8 +1,129 @@
 # Le Tip Lead System - Development Progress
 
-**Last Updated:** 2025-12-05 (Session 8 - Completed)
-**Current Phase:** Frontend Integration - Complete
-**Project Status:** 🟢 Complete | Full-Stack Analytics Ready
+**Last Updated:** 2025-12-05 (Session 9 - Completed)
+**Current Phase:** Backend API Integration - Complete
+**Project Status:** 🟢 Complete | Full-Stack with Authentication
+
+---
+
+## 🔐 Session 9: Backend API Integration & Authentication (2025-12-05)
+
+### Overview
+Integrated the Next.js frontend with the NestJS backend API. Added JWT authentication with automatic token refresh, protected routes with auth guards, and updated all feature APIs to match backend endpoints.
+
+### Completed Work
+
+**1. API Client Enhancement (`shared/lib/api.ts`)**
+- Added JWT token management (`setAccessToken`, `getAccessToken`, `clearAccessToken`)
+- Implemented automatic token refresh on 401 responses
+- Added `ApiError` class for structured error handling
+- Added `uploadFile` function for multipart/form-data uploads
+- Credentials included for HTTP-only refresh token cookies
+
+**2. Authentication Feature (`features/auth/`)**
+
+| Layer | Files | Description |
+|-------|-------|-------------|
+| Types | `types/index.ts` | User, UserRole, LoginRequest, RegisterRequest, AuthResponse |
+| API | `api/auth-api.ts` | login, register, logout, logoutAll, getCurrentUser, updateProfile |
+| Hooks | `hooks/use-auth.ts` | useAuth, useCurrentUser, useLogin, useRegister, useLogout |
+| Components | `components/` | LoginForm, RegisterForm, AuthGuard |
+
+**3. Auth Pages Created**
+- `/login` - Login page with email/password form
+- `/register` - Registration page with validation
+- Both redirect authenticated users to home
+
+**4. Protected Routes**
+- `AuthGuard` component wraps `AppShell` layout
+- Unauthenticated users redirected to `/login`
+- Loading state while checking authentication
+
+**5. Feature API Updates**
+
+| Feature | Endpoint Changes |
+|---------|-----------------|
+| Dashboard | Uses `/api/analytics/*` (already correct) |
+| Leads | Uses `/api/businesses/*` (already correct) |
+| Search | Changed `/api/scraper/*` → `/api/scrape/*`, added status normalization |
+| Enrichment | Changed `/api/enrichment/*` → `/api/enrich/*` |
+| Outreach | Changed to `/api/outreach/:id` for message generation |
+
+**6. WebSocket Client (`shared/lib/socket.ts`)**
+- Added typed events matching backend gateway
+- Events: `business:created`, `business:enriched`, `scraping:*`, `enrichment:*`, `csv:*`
+- Helper functions: `onSocketEvent()`, `emitSocketEvent()`
+
+### Files Created
+
+```
+features/auth/
+├── types/index.ts (33 lines)
+├── api/auth-api.ts (56 lines)
+├── hooks/use-auth.ts (113 lines)
+├── components/
+│   ├── login-form.tsx (96 lines)
+│   ├── register-form.tsx (118 lines)
+│   ├── auth-guard.tsx (43 lines)
+│   └── index.ts (3 lines)
+└── index.ts (17 lines)
+
+app/login/page.tsx (45 lines)
+app/register/page.tsx (45 lines)
+```
+
+### Files Modified
+
+```
+shared/lib/api.ts (+100 lines - auth token handling)
+shared/lib/socket.ts (+65 lines - typed WebSocket events)
+shared/components/layout/app-shell.tsx (+10 lines - AuthGuard integration)
+features/search/api/search-api.ts (rewritten - correct endpoints)
+features/search/types/index.ts (+15 lines - ScrapeStatus type)
+features/enrichment/api/enrichment-api.ts (rewritten - correct endpoints)
+features/enrichment/hooks/use-enrichment.ts (-20 lines - removed unused hooks)
+features/enrichment/index.ts (-2 exports)
+features/outreach/api/outreach-api.ts (rewritten - correct endpoints)
+features/outreach/types/index.ts (+40 lines - restored types)
+app/enrichment/page.tsx (-4 lines - removed pause/resume)
+```
+
+### Build Status
+- ✅ TypeScript type check passes
+- ✅ Production build successful (11 pages)
+- ✅ All feature APIs aligned with backend
+
+### Authentication Flow
+```
+1. User visits protected page → AuthGuard checks token
+2. No token → Redirect to /login
+3. Login form → POST /api/auth/login → Receive JWT + set cookie
+4. Token stored in localStorage + memory
+5. API calls include Authorization: Bearer <token>
+6. 401 response → Auto-refresh via POST /api/auth/refresh (uses HTTP-only cookie)
+7. Logout → Clear token + redirect to /login
+```
+
+### API Endpoint Mapping
+
+| Frontend Call | Backend Endpoint | Method |
+|--------------|------------------|--------|
+| `login()` | `/api/auth/login` | POST |
+| `register()` | `/api/auth/register` | POST |
+| `logout()` | `/api/auth/logout` | POST |
+| `getCurrentUser()` | `/api/auth/me` | GET |
+| `startScrape()` | `/api/scrape` | POST |
+| `getScrapeStatus()` | `/api/scrape/status/:runId` | GET |
+| `enrichBusiness()` | `/api/enrich/:id` | POST |
+| `batchEnrich()` | `/api/enrich/batch/process` | POST |
+| `generateMessage()` | `/api/outreach/:id` | POST |
+| `getBusinessMessages()` | `/api/outreach/:id` | GET |
+
+### Next Steps (Optional)
+1. Add password reset functionality
+2. Implement role-based access control (ADMIN, MEMBER, VIEWER)
+3. Add user profile page
+4. Implement session management UI
 
 ---
 
