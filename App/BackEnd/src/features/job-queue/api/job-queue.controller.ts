@@ -8,14 +8,26 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { randomUUID } from 'crypto';
 import { JobQueueService } from '../domain/job-queue.service';
 import { JobStatusTrackerService } from '../domain/job-status-tracker.service';
 import { CreateScrapingJobDto } from './dto/create-scraping-job.dto';
 import { CreateEnrichmentJobDto } from './dto/create-enrichment-job.dto';
 import { JobStatusResponseDto, JobListResponseDto } from './dto/job-status-response.dto';
-import { QueueName, JobStatus } from '../config/queue.config';
+import {
+  CreateCsvImportJobDto,
+  CsvValidationResultDto,
+  CsvImportResultDto,
+} from './dto/csv-import.dto';
+import { QueueName, JobStatus, JobType } from '../config/queue.config';
 
 /**
  * Job Queue Controller
@@ -335,6 +347,206 @@ export class JobQueueController {
       jobId,
       cancelled,
       message: cancelled ? 'Job cancelled successfully' : 'Job could not be cancelled',
+    };
+  }
+
+  // ==========================================
+  // CSV Import Endpoints
+  // ==========================================
+
+  /**
+   * Upload and validate a CSV file for import.
+   */
+  @Post('csv/validate')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: '/tmp/letip-uploads',
+        filename: (_req, file, callback) => {
+          const uniqueName = `${randomUUID()}${extname(file.originalname)}`;
+          callback(null, uniqueName);
+        },
+      }),
+      fileFilter: (_req, file, callback) => {
+        if (file.mimetype !== 'text/csv' && !file.originalname.endsWith('.csv')) {
+          callback(new BadRequestException('Only CSV files are allowed'), false);
+        } else {
+          callback(null, true);
+        }
+      },
+      limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB max
+      },
+    }),
+  )
+  @ApiOperation({
+    summary: 'Validate CSV file for import',
+    description:
+      'Uploads and validates a CSV file, returning detected columns, sample data, and any validation errors.',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'CSV file to validate',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Validation result',
+    type: CsvValidationResultDto,
+  })
+  @ApiResponse({ status: 400, description: 'Invalid file format' })
+  async validateCsvFile(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<CsvValidationResultDto> {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    // Validate CSV and return preview
+    return await this.jobQueueService.validateCsvFile(file.path, file.originalname);
+  }
+
+  /**
+   * Create a CSV import job.
+   */
+  @Post('csv/import')
+  @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: '/tmp/letip-uploads',
+        filename: (_req, file, callback) => {
+          const uniqueName = `${randomUUID()}${extname(file.originalname)}`;
+          callback(null, uniqueName);
+        },
+      }),
+      fileFilter: (_req, file, callback) => {
+        if (file.mimetype !== 'text/csv' && !file.originalname.endsWith('.csv')) {
+          callback(new BadRequestException('Only CSV files are allowed'), false);
+        } else {
+          callback(null, true);
+        }
+      },
+      limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB max
+      },
+    }),
+  )
+  @ApiOperation({
+    summary: 'Create CSV import job',
+    description:
+      'Uploads a CSV file and enqueues an import job. Returns job ID for progress tracking.',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'CSV file to import',
+        },
+        columnMappings: {
+          type: 'string',
+          description: 'JSON string of column mappings array',
+          example: '[{"csvColumn":"Name","dbField":"name"}]',
+        },
+        skipHeader: {
+          type: 'boolean',
+          description: 'Skip first row as header',
+          default: true,
+        },
+        duplicateHandling: {
+          type: 'string',
+          enum: ['skip', 'update', 'create_new'],
+          default: 'skip',
+        },
+        defaultCity: {
+          type: 'string',
+          description: 'Default city for imported businesses',
+        },
+        defaultState: {
+          type: 'string',
+          description: 'Default state for imported businesses',
+        },
+        defaultIndustry: {
+          type: 'string',
+          description: 'Default industry for imported businesses',
+        },
+        sourceTag: {
+          type: 'string',
+          description: 'Source tag for imported businesses',
+        },
+      },
+      required: ['file', 'columnMappings'],
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Import job created',
+    schema: {
+      properties: {
+        jobId: { type: 'string', example: 'csv-import-12345' },
+        queueName: { type: 'string', example: 'csv-import-jobs' },
+        status: { type: 'string', example: 'pending' },
+        filename: { type: 'string', example: 'my_leads.csv' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Invalid file or mapping' })
+  async createCsvImportJob(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('columnMappings') columnMappingsJson: string,
+    @Body('skipHeader') skipHeader: string = 'true',
+    @Body('duplicateHandling') duplicateHandling: string = 'skip',
+    @Body('defaultCity') defaultCity?: string,
+    @Body('defaultState') defaultState?: string,
+    @Body('defaultIndustry') defaultIndustry?: string,
+    @Body('sourceTag') sourceTag?: string,
+    @Body('userId') userId: string = 'anonymous',
+  ) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    // Parse column mappings from JSON string
+    let columnMappings;
+    try {
+      columnMappings = JSON.parse(columnMappingsJson);
+    } catch {
+      throw new BadRequestException('Invalid columnMappings JSON format');
+    }
+
+    // Create import job
+    const job = await this.jobQueueService.createCsvImportJob({
+      filePath: file.path,
+      originalFilename: file.originalname,
+      columnMappings,
+      skipHeader: skipHeader === 'true',
+      duplicateHandling: duplicateHandling as 'skip' | 'update' | 'create_new',
+      defaultCity,
+      defaultState,
+      defaultIndustry,
+      sourceTag,
+      userId,
+    });
+
+    return {
+      jobId: job.id,
+      queueName: QueueName.CSV_IMPORT,
+      status: 'pending',
+      filename: file.originalname,
+      message: 'CSV import job created successfully',
     };
   }
 }

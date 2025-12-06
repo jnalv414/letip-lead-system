@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { ApifyScraper } from './apify-scraper';
 import { ScrapeResultRepository } from '../data/scrape-result.repository';
 import { ScrapeRequestDto } from '../api/dto/scrape-request.dto';
@@ -23,6 +24,7 @@ export class ScraperService {
     private apifyScraper: ApifyScraper,
     private scrapeResultRepository: ScrapeResultRepository,
     private eventEmitter: EventEmitter2,
+    private prisma: PrismaService,
   ) {}
 
   /**
@@ -165,6 +167,54 @@ export class ScraperService {
           this.logger.error(`Error saving business ${place.title}:`, error.message);
           errors.push({ business: place.title, error: error.message });
         }
+      }
+
+      // Track scraping job and costs for analytics
+      try {
+        const apifyCost = results.length * 0.01; // $0.01 per result
+
+        // Save job metadata
+        await this.prisma.scraping_job.create({
+          data: {
+            job_id: runId,
+            location: scrapeRequest.location,
+            radius: scrapeRequest.radius || 1,
+            business_type: scrapeRequest.business_type,
+            max_results: scrapeRequest.max_results || 50,
+            status: 'completed',
+            businesses_found: results.length,
+            businesses_saved: savedCount,
+            apify_cost: apifyCost,
+            completed_at: new Date(),
+          },
+        });
+
+        // Log API cost
+        await this.prisma.api_cost_log.create({
+          data: {
+            operation_type: 'scrape',
+            service: 'apify',
+            cost_usd: apifyCost,
+            metadata: {
+              runId,
+              location: scrapeRequest.location,
+              businesses_found: results.length,
+            },
+          },
+        });
+
+        this.logger.log(
+          `Cost tracking saved: $${apifyCost.toFixed(2)} for ${results.length} results`
+        );
+
+        // Emit analytics updated event
+        this.eventEmitter.emit('analytics:updated', {
+          type: 'scraping:completed',
+          timestamp: new Date().toISOString(),
+        });
+      } catch (costError) {
+        this.logger.error('Failed to track scraping costs:', costError);
+        // Don't fail the entire operation if cost tracking fails
       }
 
       // Emit scraping completed event

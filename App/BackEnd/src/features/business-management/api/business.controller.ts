@@ -10,7 +10,9 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
+import { Roles } from '../../auth/decorators/roles.decorator';
 import { BusinessService } from '../domain/business.service';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { QueryBusinessesDto } from './dto/query-businesses.dto';
@@ -33,38 +35,55 @@ export class BusinessController {
   constructor(private readonly businessService: BusinessService) {}
 
   @Post()
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new business' })
   @ApiResponse({ status: 201, description: 'Business created successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient role' })
   create(@Body() createBusinessDto: CreateBusinessDto) {
     return this.businessService.create(createBusinessDto);
   }
 
   @Get()
+  @Roles(Role.ADMIN, Role.MEMBER, Role.VIEWER)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all businesses with filters and pagination' })
   @ApiResponse({ status: 200, description: 'List of businesses' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   findAll(@Query() query: QueryBusinessesDto) {
     return this.businessService.findAll(query);
   }
 
   @Get('stats')
+  @Roles(Role.ADMIN, Role.MEMBER, Role.VIEWER)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get business statistics' })
   @ApiResponse({ status: 200, description: 'Statistics' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   getStats() {
     return this.businessService.getStats();
   }
 
   @Get(':id')
+  @Roles(Role.ADMIN, Role.MEMBER, Role.VIEWER)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get a single business by ID' })
   @ApiResponse({ status: 200, description: 'Business details' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Business not found' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.businessService.findOne(id);
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a business' })
   @ApiResponse({ status: 204, description: 'Business deleted successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   @ApiResponse({ status: 404, description: 'Business not found' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.businessService.remove(id);

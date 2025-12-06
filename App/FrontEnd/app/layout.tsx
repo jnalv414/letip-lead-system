@@ -1,43 +1,25 @@
-import type { Metadata } from 'next';
-import { Inter, Space_Grotesk } from 'next/font/google';
-import { AppProviders } from '@/core/providers/app-providers';
-import { Toaster } from 'sonner';
-import './globals.css';
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import { QueryProvider } from '@/shared/providers'
+import './globals.css'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'LeTip Lead System Dashboard',
-  description: 'Real-time business lead generation and enrichment dashboard',
-};
+  title: 'Le Tip Lead System',
+  description: 'Automated business lead generation and outreach platform',
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-[var(--bg-primary)] text-[var(--text-primary)]`}>
-        <AppProviders>
-          {children}
-          <Toaster
-            position="top-right"
-            richColors
-            closeButton
-            duration={4000}
-            toastOptions={{
-              className: 'sonner-toast',
-              style: {
-                background: '#1e293b',
-                border: '1px solid rgba(51, 65, 85, 0.5)',
-                color: '#f1f5f9',
-              },
-            }}
-          />
-        </AppProviders>
+      <body className={`${inter.variable} font-sans antialiased`}>
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
-  );
+  )
 }

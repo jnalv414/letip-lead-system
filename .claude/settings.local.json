@@ -15,7 +15,8 @@
       "mcp__chrome-devtools__*",
       "mcp__firecrawl__firecrawl_search",
       "mcp__firecrawl__firecrawl_scrape",
-      "SlashCommand(/piv:prime)"
+      "SlashCommand(/piv:prime)",
+      "mcp__firecrawl-mcp__firecrawl_search"
     ],
     "deny": [],
     "ask": []

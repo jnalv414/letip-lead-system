@@ -57,6 +57,34 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log('Emitted enrichment:progress event');
   }
 
+  /**
+   * Generic event emitter for any event type.
+   * Used by job workers for dynamic event emission.
+   *
+   * @param eventName - Name of the event to emit
+   * @param payload - Event payload
+   */
+  emitEvent(eventName: string, payload: any) {
+    this.server.emit(eventName, payload);
+    this.logger.log(`Emitted ${eventName} event`);
+  }
+
+  // CSV Import specific event methods
+  emitCsvProgress(progress: any) {
+    this.server.emit('csv:progress', progress);
+    this.logger.log('Emitted csv:progress event');
+  }
+
+  emitCsvCompleted(result: any) {
+    this.server.emit('csv:completed', result);
+    this.logger.log('Emitted csv:completed event');
+  }
+
+  emitCsvFailed(error: any) {
+    this.server.emit('csv:failed', error);
+    this.logger.log('Emitted csv:failed event');
+  }
+
   @SubscribeMessage('ping')
   handlePing(@MessageBody() data: any): string {
     this.logger.log('Received ping');
@@ -92,5 +120,30 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleBusinessEnrichedEvent(payload: any) {
     this.server.emit('business:enriched', payload);
     this.logger.log('Emitted business:enriched event from EventEmitter');
+  }
+
+  @OnEvent('analytics:updated')
+  handleAnalyticsUpdatedEvent(payload: any) {
+    this.server.emit('analytics:updated', payload);
+    this.logger.log('Emitted analytics:updated event from EventEmitter');
+  }
+
+  // CSV Import event listeners
+  @OnEvent('csv:progress')
+  handleCsvProgressEvent(payload: any) {
+    this.server.emit('csv:progress', payload);
+    this.logger.log('Emitted csv:progress event from EventEmitter');
+  }
+
+  @OnEvent('csv:completed')
+  handleCsvCompletedEvent(payload: any) {
+    this.server.emit('csv:completed', payload);
+    this.logger.log('Emitted csv:completed event from EventEmitter');
+  }
+
+  @OnEvent('csv:failed')
+  handleCsvFailedEvent(payload: any) {
+    this.server.emit('csv:failed', payload);
+    this.logger.log('Emitted csv:failed event from EventEmitter');
   }
 }

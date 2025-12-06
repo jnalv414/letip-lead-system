@@ -60,6 +60,7 @@ export enum QueueName {
   SCRAPING = 'scraping-jobs',
   ENRICHMENT = 'enrichment-jobs',
   OUTREACH = 'outreach-jobs',
+  CSV_IMPORT = 'csv-import-jobs',
   DEAD_LETTER = 'dead-letter-queue',
 }
 
@@ -81,6 +82,10 @@ export enum JobType {
   GENERATE_MESSAGE = 'outreach:generate-message',
   SEND_MESSAGE = 'outreach:send-message',
   SCHEDULE_CAMPAIGN = 'outreach:schedule-campaign',
+
+  // CSV Import jobs
+  CSV_IMPORT = 'csv:import',
+  CSV_VALIDATE = 'csv:validate',
 }
 
 /**
@@ -119,6 +124,18 @@ export const QUEUE_CONFIGS: Record<QueueName, QueueOptions> = {
       backoff: {
         type: 'exponential',
         delay: 1000,
+      },
+    },
+  },
+
+  [QueueName.CSV_IMPORT]: {
+    ...DEFAULT_QUEUE_OPTIONS,
+    defaultJobOptions: {
+      ...DEFAULT_QUEUE_OPTIONS.defaultJobOptions,
+      attempts: 1, // CSV imports don't retry - user can re-upload
+      removeOnComplete: {
+        age: 86400, // Keep completed imports for 24 hours
+        count: 50,
       },
     },
   },
@@ -165,6 +182,15 @@ export const WORKER_CONFIGS: Record<QueueName, Partial<WorkerOptions>> = {
     limiter: {
       max: 100,
       duration: 60000,
+    },
+  },
+
+  [QueueName.CSV_IMPORT]: {
+    ...DEFAULT_WORKER_OPTIONS,
+    concurrency: 1, // Process CSV imports sequentially to prevent conflicts
+    limiter: {
+      max: 5, // Max 5 imports per interval
+      duration: 60000, // Per 1 minute
     },
   },
 

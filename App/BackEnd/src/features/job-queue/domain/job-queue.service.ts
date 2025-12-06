@@ -1,8 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { createReadStream } from 'fs';
+import { parse } from 'csv-parse';
 import { QueueManagerService } from './queue-manager.service';
 import { QueueName, JobType, JobPriority } from '../config/queue.config';
 import { CreateScrapingJobDto } from '../api/dto/create-scraping-job.dto';
 import { CreateEnrichmentJobDto } from '../api/dto/create-enrichment-job.dto';
+import {
+  CsvValidationResultDto,
+  CsvRowErrorDto,
+  CsvColumnMappingDto,
+} from '../api/dto/csv-import.dto';
 
 /**
  * Job Queue Service
@@ -205,6 +212,169 @@ export class JobQueueService {
       return job;
     } catch (error) {
       this.logger.error(`Failed to schedule job: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  // ==========================================
+  // CSV Import Methods
+  // ==========================================
+
+  /**
+   * Validate a CSV file for import.
+   *
+   * Parses the CSV file and returns:
+   * - Detected column headers
+   * - Sample rows for preview
+   * - Validation errors
+   * - Duplicate detection info
+   *
+   * @param filePath - Path to uploaded CSV file
+   * @param filename - Original filename
+   * @returns Validation result with preview data
+   */
+  async validateCsvFile(
+    filePath: string,
+    filename: string,
+  ): Promise<CsvValidationResultDto> {
+    try {
+      this.logger.log(`Validating CSV file: ${filename}`);
+
+      const result: CsvValidationResultDto = {
+        valid: true,
+        totalRows: 0,
+        validRows: 0,
+        errorRows: 0,
+        duplicatesDetected: 0,
+        errors: [],
+        detectedColumns: [],
+        sampleRows: [],
+      };
+
+      return new Promise((resolve, reject) => {
+        const rows: Record<string, string>[] = [];
+        let headerRow: string[] = [];
+        let rowCount = 0;
+
+        const parser = createReadStream(filePath).pipe(
+          parse({
+            relax_column_count: true,
+            skip_empty_lines: true,
+            trim: true,
+          }),
+        );
+
+        parser.on('data', (row: string[]) => {
+          if (rowCount === 0) {
+            // First row is header
+            headerRow = row.map((h) => h.trim());
+            result.detectedColumns = headerRow;
+          } else {
+            // Build row object for preview
+            const rowObj: Record<string, string> = {};
+            for (let i = 0; i < headerRow.length && i < row.length; i++) {
+              rowObj[headerRow[i]] = row[i]?.trim() || '';
+            }
+
+            // Keep first 5 rows as sample
+            if (rows.length < 5) {
+              rows.push(rowObj);
+            }
+
+            // Basic validation
+            const hasName = row.some((v) => v && v.trim().length > 0);
+            if (!hasName) {
+              result.errors.push({
+                row: rowCount + 1,
+                column: 'name',
+                message: 'Row appears to be empty',
+              });
+              result.errorRows++;
+            } else {
+              result.validRows++;
+            }
+          }
+          rowCount++;
+        });
+
+        parser.on('end', () => {
+          result.totalRows = rowCount - 1; // Exclude header
+          result.sampleRows = rows;
+          result.valid = result.errorRows === 0;
+
+          this.logger.log(
+            `CSV validation complete: ${result.totalRows} rows, ${result.validRows} valid, ${result.errorRows} errors`,
+          );
+
+          resolve(result);
+        });
+
+        parser.on('error', (error) => {
+          this.logger.error(`CSV validation failed: ${error.message}`);
+          result.valid = false;
+          result.errors.push({
+            row: 0,
+            column: 'file',
+            message: `Failed to parse CSV: ${error.message}`,
+          });
+          resolve(result);
+        });
+      });
+    } catch (error: any) {
+      this.logger.error(`Failed to validate CSV: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a CSV import job.
+   *
+   * Enqueues the CSV file for background processing.
+   *
+   * @param params - CSV import parameters
+   * @returns Created job instance
+   */
+  async createCsvImportJob(params: {
+    filePath: string;
+    originalFilename: string;
+    columnMappings: CsvColumnMappingDto[];
+    skipHeader: boolean;
+    duplicateHandling: 'skip' | 'update' | 'create_new';
+    defaultCity?: string;
+    defaultState?: string;
+    defaultIndustry?: string;
+    sourceTag?: string;
+    userId?: string;
+  }): Promise<any> {
+    try {
+      this.logger.log(`Creating CSV import job for: ${params.originalFilename}`);
+
+      const job = await this.queueManager.addJob(
+        QueueName.CSV_IMPORT,
+        JobType.CSV_IMPORT,
+        {
+          filePath: params.filePath,
+          originalFilename: params.originalFilename,
+          columnMappings: params.columnMappings,
+          skipHeader: params.skipHeader,
+          duplicateHandling: params.duplicateHandling,
+          defaultCity: params.defaultCity,
+          defaultState: params.defaultState,
+          defaultIndustry: params.defaultIndustry,
+          sourceTag: params.sourceTag,
+          userId: params.userId || 'anonymous',
+          jobType: JobType.CSV_IMPORT,
+        },
+        {
+          priority: JobPriority.NORMAL,
+          timeout: 600000, // 10 minutes for large CSV files
+        },
+      );
+
+      this.logger.log(`Created CSV import job ${job.id}`);
+      return job;
+    } catch (error: any) {
+      this.logger.error(`Failed to create CSV import job: ${error.message}`, error.stack);
       throw error;
     }
   }

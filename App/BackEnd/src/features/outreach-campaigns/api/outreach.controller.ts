@@ -12,7 +12,10 @@ import {
   ApiResponse,
   ApiQuery,
   ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
+import { Roles } from '../../auth/decorators/roles.decorator';
 import { OutreachService } from '../domain/outreach.service';
 import {
   OutreachMessageDto,
@@ -25,6 +28,8 @@ export class OutreachController {
   constructor(private readonly outreachService: OutreachService) {}
 
   @Post(':id')
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Generate outreach message for a business',
     description:
@@ -49,6 +54,14 @@ export class OutreachController {
     type: OutreachMessageDto,
   })
   @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient role',
+  })
+  @ApiResponse({
     status: 404,
     description: 'Business not found',
   })
@@ -63,6 +76,8 @@ export class OutreachController {
   }
 
   @Get(':id')
+  @Roles(Role.ADMIN, Role.MEMBER, Role.VIEWER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get outreach messages for a business',
     description:
@@ -78,6 +93,10 @@ export class OutreachController {
     status: 200,
     description: 'List of outreach messages with business info',
     type: BusinessOutreachResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
   })
   @ApiResponse({
     status: 404,

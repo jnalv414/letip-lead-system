@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { existsSync } from 'fs';
@@ -7,6 +8,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CachingModule } from './caching/caching.module';
+import { AuthModule, JwtAuthGuard, RolesGuard } from './features/auth';
 import { BusinessManagementModule } from './features/business-management';
 import { MapScrapingModule } from './features/map-scraping';
 import { LeadEnrichmentModule } from './features/lead-enrichment';
@@ -48,6 +50,7 @@ function getDashboardPath(): string {
     ConfigModule,
     PrismaModule,
     CachingModule, // Global Redis caching (DB 0)
+    AuthModule, // Authentication & authorization (must be before feature modules)
     JobQueueModule, // BullMQ job queues (DB 1)
     BusinessManagementModule,
     MapScrapingModule,
@@ -57,6 +60,17 @@ function getDashboardPath(): string {
     WebsocketModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // Global guards - apply to all routes
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

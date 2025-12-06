@@ -20,6 +20,7 @@ import { WorkerManagerService } from './workers/worker-manager.service';
 import { ScrapingWorker } from './workers/scraping.worker';
 import { EnrichmentWorker } from './workers/enrichment.worker';
 import { OutreachWorker } from './workers/outreach.worker';
+import { CsvImportWorker } from './workers/csv-import.worker';
 
 // External Dependencies
 import { PrismaModule } from '../../prisma/prisma.module';
@@ -75,6 +76,7 @@ import { OutreachCampaignsModule } from '../outreach-campaigns/outreach-campaign
       { name: QueueName.SCRAPING, ...QUEUE_CONFIGS[QueueName.SCRAPING] },
       { name: QueueName.ENRICHMENT, ...QUEUE_CONFIGS[QueueName.ENRICHMENT] },
       { name: QueueName.OUTREACH, ...QUEUE_CONFIGS[QueueName.OUTREACH] },
+      { name: QueueName.CSV_IMPORT, ...QUEUE_CONFIGS[QueueName.CSV_IMPORT] },
       { name: QueueName.DEAD_LETTER, ...QUEUE_CONFIGS[QueueName.DEAD_LETTER] },
     ),
 
@@ -103,6 +105,7 @@ import { OutreachCampaignsModule } from '../outreach-campaigns/outreach-campaign
     ScrapingWorker,
     EnrichmentWorker,
     OutreachWorker,
+    CsvImportWorker,
   ],
   exports: [
     // Export services for use in other modules
@@ -116,6 +119,7 @@ import { OutreachCampaignsModule } from '../outreach-campaigns/outreach-campaign
     ScrapingWorker,
     EnrichmentWorker,
     OutreachWorker,
+    CsvImportWorker,
   ],
 })
 export class JobQueueModule {}

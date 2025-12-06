@@ -106,6 +106,20 @@ export class EnrichmentService {
           response_data: JSON.stringify(companyData),
         });
 
+        // Track API cost for analytics
+        await this.prisma.api_cost_log.create({
+          data: {
+            operation_type: 'enrich_abstract',
+            service: 'abstract',
+            business_id: businessId,
+            cost_usd: 0.10, // $0.10 per lookup
+            metadata: {
+              domain,
+              name: companyData.name,
+            },
+          },
+        });
+
         results.abstract = companyData;
         this.logger.log(`AbstractAPI enrichment successful for ${business.name}`);
       } catch (error) {
@@ -177,6 +191,21 @@ export class EnrichmentService {
           }),
         });
 
+        // Track API cost for analytics
+        await this.prisma.api_cost_log.create({
+          data: {
+            operation_type: 'enrich_hunter',
+            service: 'hunter',
+            business_id: businessId,
+            cost_usd: 0.50, // $0.50 per search
+            metadata: {
+              domain,
+              emailsFound: emailData.emails.length,
+              contactsCreated,
+            },
+          },
+        });
+
         results.hunter = emailData;
         this.logger.log(`Hunter.io enrichment successful for ${business.name}. Found ${emailData.emails?.length || 0} contacts`);
       } catch (error) {
@@ -209,7 +238,7 @@ export class EnrichmentService {
       },
     });
 
-    // Emit event
+    // Emit events
     this.eventEmitter.emit('business:enriched', {
       timestamp: new Date().toISOString(),
       type: 'business:enriched',
@@ -222,6 +251,14 @@ export class EnrichmentService {
         errors: results.errors.length,
       },
     });
+
+    // Emit analytics updated event if enrichment was successful
+    if (results.abstract || results.hunter) {
+      this.eventEmitter.emit('analytics:updated', {
+        type: 'enrichment:completed',
+        timestamp: new Date().toISOString(),
+      });
+    }
 
     this.logger.log(`Enrichment completed for business ID: ${businessId} with status: ${status}`);
 

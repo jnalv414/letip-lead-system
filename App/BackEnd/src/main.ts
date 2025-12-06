@@ -1,14 +1,20 @@
-
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS
-  app.enableCors();
+  // Cookie parser middleware (for refresh tokens)
+  app.use(cookieParser());
+
+  // Enable CORS with credentials for cookie-based auth
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+    credentials: true,
+  });
 
   // Global validation pipe
   app.useGlobalPipes(
@@ -24,10 +30,26 @@ async function bootstrap() {
     .setTitle('Le Tip Lead System API')
     .setDescription('Business lead scraping, enrichment, and management system for Le Tip of Western Monmouth')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Enter your JWT access token',
+      },
+      'JWT-auth',
+    )
+    .addCookieAuth('refreshToken', {
+      type: 'apiKey',
+      in: 'cookie',
+      name: 'refreshToken',
+    })
+    .addTag('Authentication', 'User authentication endpoints')
     .addTag('Businesses', 'Business management endpoints')
     .addTag('Scraper', 'Google Maps scraping endpoints')
     .addTag('Enrichment', 'Lead enrichment endpoints')
     .addTag('Outreach', 'Outreach message generation endpoints')
+    .addTag('Analytics', 'Analytics and reporting endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

@@ -1,8 +1,365 @@
 # Le Tip Lead System - Development Progress
 
-**Last Updated:** 2025-11-25 (Session 6)
-**Current Phase:** ✅ FRONTEND COMPLETE - All 12 Checkpoints Done + Design Polish
-**Project Status:** 🟢 Complete | Ready for Production
+**Last Updated:** 2025-12-05 (Session 8 - Completed)
+**Current Phase:** Frontend Integration - Complete
+**Project Status:** 🟢 Complete | Full-Stack Analytics Ready
+
+---
+
+## 📊 Session 8: Frontend Analytics Integration (2025-12-05)
+
+### Overview
+Integrated the new Tableau-like analytics backend endpoints with the Next.js frontend. Created visualization components for funnel, heatmap, top performers, cost analysis, and CSV import.
+
+### Completed Work
+
+**1. Dashboard Types Extended**
+- Added FilterOptions, AnalyticsFilter, FunnelStats, HeatmapStats types
+- Added ComparisonStats, TopPerformersData, CostAnalysisData types
+- Full TypeScript typing for all analytics endpoints
+
+**2. Dashboard API Extended**
+- Added buildFilterQuery() utility for filter parameters
+- Added fetchFilterOptions(), fetchFunnelStats(), fetchHeatmapStats()
+- Added fetchComparisonStats(), fetchTopPerformers(), fetchCostAnalysis()
+- Added CSV import functions: validateCsvFile(), importCsvFile(), getCsvImportStatus()
+
+**3. Dashboard Hooks Extended**
+- Added useFilterOptions(), useFunnelStats(), useHeatmapStats()
+- Added useComparisonStats(), useTopPerformers(), useCostAnalysis()
+- Added useValidateCsv(), useImportCsv(), useCsvImportStatus() mutations
+- Smart polling for CSV import status with auto-stop on completion
+
+**4. Visualization Components Created**
+
+| Component | Lines | Features |
+|-----------|-------|----------|
+| FunnelChart | 130 | Conversion funnel with drop-off rates, animated bars |
+| HeatmapChart | 140 | Day/hour activity grid, intensity legend, peak detection |
+| TopPerformers | 200 | Dimension/metric selectors, rank badges, trend indicators |
+| CostAnalysis | 230 | Pie chart breakdown, budget status, cost-per-lead |
+| CsvImport | 500 | Multi-step wizard: upload, mapping, options, progress, complete |
+
+**5. Dashboard Page Updated**
+- Added tab navigation: Overview, Analytics, Import Data
+- Overview tab: existing stats, charts, recent businesses
+- Analytics tab: funnel, heatmap, top performers, cost analysis
+- Import tab: CSV import wizard component
+
+### Files Created/Modified
+
+**New Files:**
+```
+App/FrontEnd/features/dashboard/components/
+├── funnel-chart.tsx (130 lines)
+├── heatmap-chart.tsx (140 lines)
+├── top-performers.tsx (200 lines)
+├── cost-analysis.tsx (230 lines)
+└── csv-import.tsx (500 lines)
+```
+
+**Modified Files:**
+```
+App/FrontEnd/features/dashboard/
+├── types/index.ts (+120 lines - analytics types)
+├── api/dashboard-api.ts (+180 lines - new API functions)
+├── hooks/use-dashboard.ts (+140 lines - new hooks)
+├── components/index.ts (+5 exports)
+└── index.ts (+25 exports)
+
+App/FrontEnd/app/page.tsx (rewritten - tabbed dashboard)
+```
+
+### Build Status
+- ✅ Backend builds successfully
+- ✅ Dashboard components have no TypeScript errors
+- ⚠️ Other features (outreach, search, enrichment) have pre-existing errors
+
+### Session Summary
+Successfully integrated all Tableau-like analytics endpoints from Session 7 with the frontend:
+- Full TypeScript typing throughout
+- React Query hooks for data fetching and mutations
+- Animated visualization components with Framer Motion
+- CSV import wizard with real-time progress tracking
+- Tabbed dashboard for organizing content
+
+---
+
+## 📊 Session 7: Tableau-Like Analytics Enhancement (2025-12-05)
+
+### Overview
+Implementing comprehensive analytics backend with multi-select filtering, new visualization endpoints, and CSV import capabilities. Following the approved implementation plan.
+
+### Completed Work
+
+**1. Frontend Nuke & Rebuild**
+- Deleted entire old frontend (~28,303 files)
+- Created fresh Next.js 15 frontend with VSA structure
+- New frontend running on port 3002
+
+**2. Multi-Select Filtering System (Phase 1)**
+
+*New DTOs Created:*
+- `analytics-filter.dto.ts` - Multi-select filters for cities, industries, enrichment status, sources
+- `filter-options.dto.ts` - Response DTO for dropdown population
+- `funnel-stats.dto.ts` - Conversion funnel metrics
+- `heatmap-stats.dto.ts` - Activity heatmap data
+- `comparison-stats.dto.ts` - Segment comparison metrics
+
+*Repository Methods Added:*
+- `buildFilterWhereClause()` - Converts filter DTO to Prisma where clause
+- `getFilterOptions()` - Returns unique values for all filter dimensions
+- `getFilteredLocationStats()` - Location stats with filters
+- `getFilteredSourceStats()` - Source stats with filters
+- `getFilteredPipelineStats()` - Pipeline stats with filters
+- `getFilteredTotalBusinesses()` - Count with filters
+- `getFilteredEnrichedCount()` - Enriched count with filters
+- `getFilteredTotalWithCity()` - City count with filters
+
+*Service Methods Added:*
+- `getFilterOptions()` - Returns filter dropdown options
+- `getFilteredLocationStats()` - Filtered location breakdown
+- `getFilteredSourceStats()` - Filtered source breakdown
+- `getFilteredPipelineStats()` - Filtered pipeline breakdown
+
+*Controller Updates:*
+- `GET /api/analytics/filter-options` - New public endpoint
+- `GET /api/analytics/locations` - Updated with filter support
+- `GET /api/analytics/sources` - Updated with filter support
+- `GET /api/analytics/pipeline` - Updated with filter support
+
+### Backend Compilation Status
+- ✅ Backend compiles successfully (0 errors)
+- ✅ All new routes registered correctly
+- ⚠️ Database connection required for runtime testing
+
+### Files Created/Modified
+
+**New Files:**
+```
+App/BackEnd/src/features/analytics/api/dto/
+├── analytics-filter.dto.ts (72 lines)
+├── filter-options.dto.ts (67 lines)
+├── funnel-stats.dto.ts (49 lines)
+├── heatmap-stats.dto.ts (71 lines)
+└── comparison-stats.dto.ts (77 lines)
+```
+
+**Modified Files:**
+```
+App/BackEnd/src/features/analytics/
+├── data/analytics.repository.ts (+120 lines - filter methods)
+├── domain/analytics.service.ts (+100 lines - filtered service methods)
+└── api/analytics.controller.ts (+90 lines - new endpoints + filter params)
+```
+
+### Todo Progress
+
+| Step | Task | Status |
+|------|------|--------|
+| 1 | Create AnalyticsFilterDto with multi-select fields | ✅ Complete |
+| 2 | Create FilterOptionsDto for dropdown values | ✅ Complete |
+| 3 | Add buildFilterWhereClause() to repository | ✅ Complete |
+| 4 | Add getFilterOptions() to repository and service | ✅ Complete |
+| 5 | Add GET /filter-options endpoint | ✅ Complete |
+| 6 | Update locations/sources/pipeline with filters | ✅ Complete |
+| 7 | Update dashboard/source-breakdown/timeline with filters | ✅ Complete |
+| 8 | Create funnel endpoint + DTO | ✅ Complete |
+| 9 | Create heatmap endpoint + DTO | ✅ Complete |
+| 10 | Create comparison endpoint + DTO | ✅ Complete |
+| 11 | Create top-performers endpoint + DTO | ✅ Complete |
+| 12 | Create cost-analysis endpoint + DTO | ✅ Complete |
+| 13 | Create CSV import service | ✅ Complete |
+| 14 | Add CSV_IMPORT queue | ✅ Complete |
+| 15 | Add CSV upload endpoints | ✅ Complete |
+| 16 | Add WebSocket events for CSV import | ✅ Complete |
+
+### Session 7 Completed Work (Additional)
+
+**New Analytics Endpoints:**
+- `GET /api/analytics/funnel` - Conversion funnel stats
+- `GET /api/analytics/heatmap` - Activity heatmap data
+- `GET /api/analytics/comparison` - Segment comparison metrics
+- `GET /api/analytics/top-performers` - Ranked top performing segments
+- `GET /api/analytics/cost-analysis` - API cost breakdown & budget tracking
+
+**CSV Import Infrastructure:**
+- `POST /api/jobs/csv/validate` - Validate CSV file before import
+- `POST /api/jobs/csv/import` - Upload and import CSV file as background job
+- CSV_IMPORT queue added to BullMQ
+- CsvImportWorker with progress tracking
+- Column mapping and duplicate handling
+- WebSocket events: csv:progress, csv:completed, csv:failed
+
+**Files Created:**
+```
+App/BackEnd/src/features/analytics/api/dto/
+├── top-performers.dto.ts (124 lines)
+└── cost-analysis.dto.ts (173 lines)
+
+App/BackEnd/src/features/job-queue/
+├── api/dto/csv-import.dto.ts (265 lines)
+├── workers/csv-import.worker.ts (400 lines)
+└── config/queue.config.ts (CSV_IMPORT queue added)
+```
+
+**Modified Files:**
+```
+App/BackEnd/src/features/analytics/
+├── api/analytics.controller.ts (+150 lines - new endpoints)
+└── domain/analytics.service.ts (+200 lines - new methods)
+
+App/BackEnd/src/features/job-queue/
+├── api/job-queue.controller.ts (+200 lines - CSV endpoints)
+├── domain/job-queue.service.ts (+180 lines - CSV methods)
+└── job-queue.module.ts (CSV_IMPORT queue + worker)
+
+App/BackEnd/src/websocket/websocket.gateway.ts (+30 lines - CSV events)
+```
+
+### Next Steps
+1. Frontend integration with new analytics endpoints
+2. CSV import UI component
+3. Real-time progress tracking in dashboard
+
+---
+
+## 📋 Session 7b: Global Rule Sections & Project Standards (2025-12-05)
+
+### Overview
+Established comprehensive project standards for future development. Created `GlobalRuleSections.md` capturing core principles, tech-stack decisions, architecture patterns, and quality standards.
+
+### Project Parameters Defined
+
+| Parameter | Decision | Rationale |
+|-----------|----------|-----------|
+| **Data Size** | 100K rows | No pagination needed; full dataset fits in memory |
+| **Tenancy** | Multi-tenant | Tenant isolation at query level |
+| **Export Formats** | CSV, PDF, Excel | All three required |
+| **Architecture** | Vertical Slice (VSA) | Self-contained feature slices |
+| **Data Engine** | Polars | 10-100x faster than Pandas |
+
+### Deliverables
+
+**GlobalRuleSections.md** (706 lines)
+- **Location:** `App/FrontEnd/GlobalRuleSections.md`
+- **Sections:**
+  1. Project Parameters (100K rows, multi-tenant, CSV/PDF/Excel)
+  2. Core Principles (data-first, performance, progressive enhancement)
+  3. Tech-Stack Decisions (Polars, Flask, React, TanStack Query)
+  4. Architecture Patterns (VSA mandatory, anti-patterns documented)
+  5. Multi-Tenancy Pattern (middleware, query isolation, cache prefixing)
+  6. Export Formats (libraries: Polars write_csv, ReportLab, openpyxl)
+  7. Documentation Standards (file headers, component props, API docs)
+  8. Logging Rules (structured logging, what to log/never log)
+  9. Testing Patterns (backend pytest, frontend Vitest, coverage targets)
+  10. Quick Reference Checklists (PR, performance, exports)
+
+### Key Standards Established
+
+**VSA Principles:**
+- Feature isolation - each folder contains ALL its code
+- No cross-feature imports
+- Shared only after 3+ features need it
+- PR checklist includes VSA compliance
+
+**Multi-Tenancy Pattern:**
+```python
+@app.before_request
+def inject_tenant():
+    g.tenant_id = get_tenant_from_token(request.headers.get('Authorization'))
+
+# All queries scoped to tenant
+df.filter(pl.col("tenant_id") == g.tenant_id)
+```
+
+**Export Libraries:**
+| Format | Library |
+|--------|---------|
+| CSV | Polars `write_csv()` |
+| PDF | ReportLab + WeasyPrint |
+| Excel | openpyxl / xlsxwriter |
+
+### Files Created
+```
+App/FrontEnd/GlobalRuleSections.md (706 lines)
+App/BackEnd/GlobalRuleSections.md (706 lines) - copy for backend reference
+App/FrontEnd/CLAUDE.md (200+ lines) - frontend development guide
+```
+
+---
+
+## 📂 Session 7c: Frontend Exploration & Documentation (2025-12-05)
+
+### Overview
+Explored the fresh Next.js 15 frontend scaffold and created comprehensive CLAUDE.md documentation for AI agents.
+
+### Frontend Current State
+
+**Tech Stack:**
+| Layer | Technology | Version |
+|-------|------------|---------|
+| Framework | Next.js | 15.1.0 |
+| React | React | 19.0.0 |
+| Language | TypeScript | 5.7.2 (strict) |
+| Styling | Tailwind CSS | 3.4.16 |
+| Animations | Framer Motion | 11.15.0 |
+| WebSocket | Socket.io-client | 4.8.1 |
+
+**VSA Structure (Already Scaffolded):**
+```
+features/
+├── dashboard/   (types, components, hooks, api)
+├── leads/       (types, components, hooks, api)
+├── search/      (types, components, hooks, api)
+├── enrichment/  (types, components, hooks, api)
+└── outreach/    (types, components, hooks, api)
+
+shared/
+├── components/ui/  (empty - pending)
+├── hooks/          (empty - pending)
+├── lib/
+│   ├── api.ts      (typed fetch → localhost:3000)
+│   ├── socket.ts   (Socket.io singleton)
+│   └── utils.ts    (cn() for Tailwind)
+└── types/index.ts  (Business, Contact, etc.)
+```
+
+**Implemented:**
+- [x] Next.js 15 with App Router
+- [x] TypeScript strict mode
+- [x] VSA directory structure
+- [x] Tailwind with CSS variables
+- [x] API client with typed fetch
+- [x] WebSocket singleton
+- [x] Shared type definitions
+- [x] Path aliases (@/, @/features/*, @/shared/*)
+
+**Pending:**
+- [ ] UI components (Button, Card, Input)
+- [ ] Feature implementations
+- [ ] TanStack Query integration
+- [ ] Layout components (Sidebar, Header)
+- [ ] Page implementations
+
+### CLAUDE.md Created
+
+Comprehensive frontend guide including:
+- Quick start commands
+- Tech stack table
+- VSA architecture with code examples
+- Path aliases usage
+- Backend connection (API + WebSocket)
+- Shared types documentation
+- Styling guide (CSS variables, Tailwind, dark mode)
+- Current status checklist
+- Development workflow for adding features
+
+### Files Created/Copied
+```
+App/BackEnd/GlobalRuleSections.md (copied from frontend)
+App/FrontEnd/CLAUDE.md (new - frontend development guide)
+```
 
 ---
 
