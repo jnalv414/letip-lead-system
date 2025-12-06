@@ -19,9 +19,15 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   /**
    * Determine if request can proceed
    *
-   * Checks for @Public() decorator first, then validates JWT.
+   * Skips OPTIONS requests (CORS preflight), checks for @Public() decorator, then validates JWT.
    */
   canActivate(context: ExecutionContext) {
+    // Skip OPTIONS requests (CORS preflight)
+    const request = context.switchToHttp().getRequest();
+    if (request.method === 'OPTIONS') {
+      return true;
+    }
+
     // Check for @Public() decorator on handler or class
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
