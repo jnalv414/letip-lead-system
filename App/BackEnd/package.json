@@ -33,6 +33,7 @@
     "@nestjs/swagger": "^11.2.3",
     "@nestjs/websockets": "^11.1.9",
     "@prisma/client": "5.22.0",
+    "@sendgrid/mail": "^8.1.6",
     "@types/ioredis": "^4.28.10",
     "@types/multer": "^2.0.0",
     "axios": "^1.13.2",

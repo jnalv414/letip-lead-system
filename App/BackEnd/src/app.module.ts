@@ -15,6 +15,7 @@ import { LeadEnrichmentModule } from './features/lead-enrichment';
 import { OutreachCampaignsModule } from './features/outreach-campaigns';
 import { JobQueueModule } from './features/job-queue';
 import { AnalyticsModule } from './features/analytics';
+import { EmailModule } from './features/email';
 import { WebsocketModule } from './websocket/websocket.module';
 
 // Determine the correct path for FrontEnd files
@@ -58,6 +59,7 @@ function getDashboardPath(): string {
     LeadEnrichmentModule,
     OutreachCampaignsModule,
     AnalyticsModule,
+    EmailModule, // SendGrid email integration
     WebsocketModule,
   ],
   controllers: [AppController],
