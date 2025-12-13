@@ -1,7 +1,7 @@
 'use client'
 
 import { formatDistanceToNow } from 'date-fns'
-import { Mail, Linkedin, MessageSquare, CheckCircle, XCircle, Clock, Send } from 'lucide-react'
+import { Mail, Linkedin, MessageSquare, CheckCircle, XCircle, Clock, Send, Eye, MousePointer, AlertTriangle, Inbox } from 'lucide-react'
 import { Card } from '@/shared/components/ui/card'
 import { Button } from '@/shared/components/ui/button'
 import { Badge } from '@/shared/components/ui/badge'
@@ -59,13 +59,28 @@ export function MessageHistory({
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'sent':
-        return { icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-500/20' }
+        return { icon: Send, color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Sent' }
+      case 'delivered':
+        return { icon: Inbox, color: 'text-emerald-400', bg: 'bg-emerald-500/20', label: 'Delivered' }
+      case 'opened':
+        return { icon: Eye, color: 'text-amber-400', bg: 'bg-amber-500/20', label: 'Opened' }
+      case 'clicked':
+        return { icon: MousePointer, color: 'text-purple-400', bg: 'bg-purple-500/20', label: 'Clicked' }
+      case 'bounced':
+        return { icon: AlertTriangle, color: 'text-orange-400', bg: 'bg-orange-500/20', label: 'Bounced' }
       case 'failed':
-        return { icon: XCircle, color: 'text-red-400', bg: 'bg-red-500/20' }
+        return { icon: XCircle, color: 'text-red-400', bg: 'bg-red-500/20', label: 'Failed' }
+      case 'spam':
+        return { icon: XCircle, color: 'text-red-400', bg: 'bg-red-500/20', label: 'Spam' }
+      case 'unsubscribed':
+        return { icon: XCircle, color: 'text-gray-400', bg: 'bg-gray-500/20', label: 'Unsubscribed' }
+      case 'generated':
       case 'draft':
-        return { icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/20' }
+        return { icon: Clock, color: 'text-gray-400', bg: 'bg-gray-500/20', label: 'Draft' }
+      case 'pending':
+        return { icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/20', label: 'Pending' }
       default:
-        return { icon: Send, color: 'text-blue-400', bg: 'bg-blue-500/20' }
+        return { icon: Send, color: 'text-blue-400', bg: 'bg-blue-500/20', label: status }
     }
   }
 
@@ -111,8 +126,14 @@ export function MessageHistory({
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant={item.status === 'sent' ? 'enriched' : item.status === 'failed' ? 'failed' : 'pending'}>
-                        {item.status}
+                      <StatusIcon className={`h-4 w-4 ${statusConfig.color}`} />
+                      <Badge variant={
+                        ['delivered', 'opened', 'clicked'].includes(item.status) ? 'enriched' :
+                        ['failed', 'bounced', 'spam'].includes(item.status) ? 'failed' :
+                        item.status === 'sent' ? 'default' :
+                        'pending'
+                      }>
+                        {statusConfig.label}
                       </Badge>
                     </div>
                   </div>

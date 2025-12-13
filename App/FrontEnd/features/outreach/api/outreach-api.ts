@@ -43,16 +43,29 @@ export async function generateMessage(
 }
 
 /**
- * Send a message (placeholder - actual sending handled separately)
+ * Send an outreach message via job queue
+ * POST /api/jobs/outreach
+ *
+ * @param businessId - Business to send message to
+ * @param contactId - Contact to send message to
+ * @param message - Generated message to send
+ * @param type - Channel: email, linkedin, sms
  */
 export async function sendMessage(
   businessId: string,
   contactId: string,
   message: GeneratedMessage,
   type: 'email' | 'linkedin' | 'sms'
-): Promise<void> {
-  // For now, just mark as sent
-  console.log('Sending message:', { businessId, contactId, message, type })
+): Promise<{ jobId: string }> {
+  return api<{ jobId: string }>('/api/jobs/outreach', {
+    method: 'POST',
+    body: {
+      businessId: parseInt(businessId, 10),
+      contactId: contactId ? parseInt(contactId, 10) : undefined,
+      messageId: message.id,
+      channel: type,
+    },
+  })
 }
 
 /**
@@ -66,17 +79,50 @@ export async function getBusinessMessages(
 }
 
 /**
- * Fetch campaign stats (placeholder)
+ * Email statistics from backend
+ */
+interface EmailStatsResponse {
+  total: number
+  sent: number
+  delivered: number
+  opened: number
+  clicked: number
+  bounced: number
+  failed: number
+}
+
+/**
+ * Fetch email/campaign stats from backend
+ * GET /api/email/stats
  */
 export async function fetchCampaignStats(): Promise<CampaignStats> {
-  return {
-    total_sent: 0,
-    total_delivered: 0,
-    total_opened: 0,
-    total_replied: 0,
-    total_failed: 0,
-    open_rate: 0,
-    reply_rate: 0,
+  try {
+    const stats = await api<EmailStatsResponse>('/api/email/stats')
+
+    // Calculate rates
+    const openRate = stats.delivered > 0 ? (stats.opened / stats.delivered) * 100 : 0
+    const replyRate = stats.delivered > 0 ? (stats.clicked / stats.delivered) * 100 : 0
+
+    return {
+      total_sent: stats.sent,
+      total_delivered: stats.delivered,
+      total_opened: stats.opened,
+      total_replied: stats.clicked, // Using clicked as reply proxy
+      total_failed: stats.failed + stats.bounced,
+      open_rate: openRate,
+      reply_rate: replyRate,
+    }
+  } catch {
+    // Return zeros if stats endpoint fails
+    return {
+      total_sent: 0,
+      total_delivered: 0,
+      total_opened: 0,
+      total_replied: 0,
+      total_failed: 0,
+      open_rate: 0,
+      reply_rate: 0,
+    }
   }
 }
 
