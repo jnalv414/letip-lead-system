@@ -4,6 +4,8 @@ import { BaseWorker } from './base-worker';
 import { JobHistoryRepository } from '../data/repositories/job-history.repository';
 import { EventsGateway as WebsocketGateway } from '../../../websocket/websocket.gateway';
 import { OutreachService } from '../../outreach-campaigns/domain/outreach.service';
+import { EmailService } from '../../email/email.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { JobType } from '../config/queue.config';
 
 interface OutreachJobData {
@@ -25,6 +27,9 @@ interface OutreachJobResult {
   channel: string;
   messagePreview: string;
   personalizationScore?: number;
+  emailSent?: boolean;
+  emailError?: string;
+  recipientEmail?: string;
 }
 
 @Injectable()
@@ -35,6 +40,8 @@ export class OutreachWorker extends BaseWorker {
     jobHistoryRepository: JobHistoryRepository,
     websocketGateway: WebsocketGateway,
     private readonly outreachService: OutreachService,
+    private readonly emailService: EmailService,
+    private readonly prisma: PrismaService,
   ) {
     super('outreach-jobs', jobHistoryRepository, websocketGateway);
   }
@@ -119,12 +126,69 @@ export class OutreachWorker extends BaseWorker {
 
       // Update progress: Scheduling
       if (campaignId) {
-        await this.updateProgress(job, 85, 'Adding to campaign queue');
+        await this.updateProgress(job, 80, 'Adding to campaign queue');
         // Would add to campaign here
       }
 
+      // Send email if channel includes email
+      let emailSent = false;
+      let emailError: string | undefined;
+      let recipientEmail: string | undefined;
+
+      if (channel === 'email' || channel === 'both') {
+        await this.updateProgress(job, 90, 'Sending email via SendGrid');
+
+        // Fetch business with contact to get email address
+        const businessWithContact = await this.prisma.business.findUnique({
+          where: { id: businessId },
+          include: {
+            contacts: {
+              where: { is_primary: true },
+              take: 1,
+            },
+          },
+        });
+
+        const contact = businessWithContact?.contacts[0];
+
+        if (contact?.email) {
+          recipientEmail = contact.email;
+
+          // Extract subject from message or use default
+          const subjectMatch = message.message_text.match(/^Subject:\s*(.+)$/m);
+          const subject = subjectMatch?.[1] || `Networking Opportunity - Le Tip of Western Monmouth`;
+
+          // Remove subject line from body if present
+          const bodyText = message.message_text.replace(/^Subject:\s*.+\n+/m, '').trim();
+
+          // Send the email
+          const emailResult = await this.emailService.send({
+            to: {
+              email: contact.email,
+              name: contact.name || businessWithContact?.name || 'Business Owner',
+            },
+            subject,
+            text: bodyText,
+            html: this.textToHtml(bodyText),
+            businessId,
+            messageId,
+          });
+
+          emailSent = emailResult.success;
+          if (!emailResult.success) {
+            emailError = emailResult.error;
+            this.logger.warn(`Email send failed for business ${businessId}: ${emailError}`);
+          } else {
+            this.logger.log(`Email sent successfully to ${contact.email} for business ${businessId}`);
+          }
+        } else {
+          emailError = 'No email address found for business contact';
+          this.logger.warn(`Cannot send email for business ${businessId}: ${emailError}`);
+        }
+      }
+
       // Update progress: Complete
-      await this.updateProgress(job, 100, 'Message generated successfully');
+      await this.updateProgress(job, 100, emailSent ? 'Message sent successfully' : 'Message generated successfully');
 
       const result: OutreachJobResult = {
         businessId,
@@ -134,12 +198,16 @@ export class OutreachWorker extends BaseWorker {
         channel,
         messagePreview: message.message_text.substring(0, 200) + '...',
         personalizationScore,
+        emailSent,
+        emailError,
+        recipientEmail,
       };
 
       this.logger.log(
         `Outreach job ${job.id} completed: ` +
         `Message ID ${messageId} (${message.message_text.length} chars) ` +
-        `for business ${businessId} via ${channel}`
+        `for business ${businessId} via ${channel}` +
+        (emailSent ? ` - email sent to ${recipientEmail}` : '')
       );
 
       return result;
@@ -301,6 +369,44 @@ Looking forward to connecting!
    */
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Convert plain text message to HTML format
+   */
+  private textToHtml(text: string): string {
+    // Escape HTML entities
+    const escaped = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // Convert newlines to <br> and wrap in paragraphs
+    const paragraphs = escaped
+      .split(/\n\n+/)
+      .map(para => `<p>${para.replace(/\n/g, '<br>')}</p>`)
+      .join('');
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+    p { margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  ${paragraphs}
+  <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+  <p style="font-size: 12px; color: #888;">
+    Sent by Le Tip of Western Monmouth County<br>
+    <a href="https://www.letip.com">www.letip.com</a>
+  </p>
+</body>
+</html>
+    `.trim();
   }
 
   /**

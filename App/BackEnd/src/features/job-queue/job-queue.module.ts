@@ -29,6 +29,7 @@ import { WebsocketModule } from '../../websocket/websocket.module';
 // Feature modules for worker dependencies
 import { MapScrapingModule } from '../map-scraping/map-scraping.module';
 import { OutreachCampaignsModule } from '../outreach-campaigns/outreach-campaigns.module';
+import { EmailModule } from '../email/email.module';
 
 /**
  * Job Queue Module
@@ -87,6 +88,7 @@ import { OutreachCampaignsModule } from '../outreach-campaigns/outreach-campaign
     // Feature modules for workers
     MapScrapingModule,       // For ApifyScraper
     OutreachCampaignsModule, // For OutreachService
+    EmailModule,             // For EmailService (SendGrid integration)
   ],
   controllers: [JobQueueController],
   providers: [
