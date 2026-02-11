@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { Search, Bell, User } from 'lucide-react'
 import { SidebarTrigger } from './sidebar'
+import { ThemeToggle } from '@/shared/components/theme-toggle'
 import { cn } from '@/shared/lib/utils'
 
 interface HeaderProps {
@@ -37,6 +38,9 @@ export function Header({ onMenuClick, title }: HeaderProps) {
           )}
         />
       </div>
+
+      {/* Theme toggle */}
+      <ThemeToggle />
 
       {/* Notifications */}
       <button

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Building2, Phone, Globe, Mail, MapPin, MoreVertical, Sparkles, Trash2, Eye } from 'lucide-react'
+import { Building2, Phone, Globe, Sparkles, Trash2, Eye } from 'lucide-react'
 import { Card } from '@/shared/components/ui/card'
 import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
@@ -24,6 +24,10 @@ export function BusinessCard({
   onEnrich,
   onDelete,
 }: BusinessCardProps) {
+  const handleCardClick = () => {
+    onView?.(business)
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -32,9 +36,12 @@ export function BusinessCard({
     >
       <Card
         variant="glass"
-        className={`p-4 transition-all duration-200 ${
+        className={`p-4 transition-all duration-200 cursor-pointer hover:scale-[1.01] hover:-translate-y-0.5 ${
           isSelected ? 'ring-2 ring-primary' : ''
         }`}
+        onClick={handleCardClick}
+        role="button"
+        tabIndex={0}
       >
         <div className="flex items-start gap-3">
           {/* Selection checkbox */}
@@ -43,6 +50,7 @@ export function BusinessCard({
               type="checkbox"
               checked={isSelected}
               onChange={(e) => onSelect(business.id, e.target.checked)}
+              onClick={(e) => e.stopPropagation()}
               className="mt-1 h-4 w-4 rounded border-border bg-background"
             />
           )}
@@ -68,14 +76,8 @@ export function BusinessCard({
               </Badge>
             </div>
 
-            {/* Contact details */}
-            <div className="mt-3 space-y-1.5">
-              {business.address && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
-                  <span className="truncate">{business.address}</span>
-                </div>
-              )}
+            {/* Contact details - fixed height for uniformity */}
+            <div className="mt-3 space-y-1.5 min-h-[52px]">
               {business.phone && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Phone className="h-3.5 w-3.5 flex-shrink-0" />
@@ -90,19 +92,9 @@ export function BusinessCard({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="truncate hover:text-primary transition-colors"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     {business.website.replace(/^https?:\/\//, '')}
-                  </a>
-                </div>
-              )}
-              {business.email && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Mail className="h-3.5 w-3.5 flex-shrink-0" />
-                  <a
-                    href={`mailto:${business.email}`}
-                    className="truncate hover:text-primary transition-colors"
-                  >
-                    {business.email}
                   </a>
                 </div>
               )}
@@ -114,7 +106,10 @@ export function BusinessCard({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onView?.(business)}
+              onClick={(e) => {
+                e.stopPropagation()
+                onView?.(business)
+              }}
               className="h-8 w-8 p-0"
             >
               <Eye className="h-4 w-4" />
@@ -123,7 +118,10 @@ export function BusinessCard({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onEnrich?.(business)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onEnrich?.(business)
+                }}
                 className="h-8 w-8 p-0"
               >
                 <Sparkles className="h-4 w-4" />
@@ -132,7 +130,10 @@ export function BusinessCard({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onDelete?.(business)}
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete?.(business)
+              }}
               className="h-8 w-8 p-0 text-destructive hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" />

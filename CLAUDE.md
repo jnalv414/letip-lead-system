@@ -1,0 +1,1 @@
+- ports 3030 and 3031 are to be used for frontend and backend. NOT PORT 3000!

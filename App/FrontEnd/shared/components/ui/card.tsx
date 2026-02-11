@@ -9,7 +9,7 @@ const cardVariants = cva('rounded-xl border transition-all duration-200', {
     variant: {
       default: 'bg-card text-card-foreground border-border',
       glass:
-        'bg-white/5 backdrop-blur-md border-white/10 shadow-xl shadow-black/5',
+        'bg-black/5 dark:bg-white/5 backdrop-blur-md border-black/10 dark:border-white/10 shadow-xl shadow-black/5',
       elevated: 'bg-card text-card-foreground border-border shadow-lg',
     },
   },

@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { Building2, Users, CheckCircle, Clock, XCircle, MessageSquare } from 'lucide-react'
 import { Card, CardContent, Skeleton } from '@/shared/components/ui'
 import { cn } from '@/shared/lib/utils'
@@ -19,6 +20,7 @@ interface StatCardProps {
   trend?: number
   color: 'violet' | 'blue' | 'emerald' | 'amber' | 'red'
   delay?: number
+  href?: string
 }
 
 const colorVariants = {
@@ -29,22 +31,38 @@ const colorVariants = {
   red: 'from-red-500/20 to-red-500/5 text-red-400',
 }
 
-function StatCard({ title, value, subtitle, icon: Icon, trend, color, delay = 0 }: StatCardProps) {
+function StatCard({ title, value, subtitle, icon: Icon, trend, color, delay = 0, href }: StatCardProps) {
+  const router = useRouter()
+
+  const handleClick = () => {
+    if (href) {
+      router.push(href)
+    }
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.3 }}
+      className="h-full"
     >
-      <Card variant="glass" className="overflow-hidden">
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between">
-            <div className="space-y-2">
+      <Card
+        variant="glass"
+        className={cn(
+          "overflow-hidden h-full transition-transform",
+          href && "cursor-pointer hover:scale-[1.02] hover:-translate-y-1"
+        )}
+        onClick={handleClick}
+      >
+        <CardContent className="p-6 h-full">
+          <div className="flex items-start justify-between h-full">
+            <div className="space-y-2 min-h-[72px]">
               <p className="text-sm text-muted-foreground">{title}</p>
               <p className="text-3xl font-bold tracking-tight">{value}</p>
-              {subtitle && (
-                <p className="text-xs text-muted-foreground">{subtitle}</p>
-              )}
+              <p className="text-xs text-muted-foreground h-4">
+                {subtitle || '\u00A0'}
+              </p>
               {trend !== undefined && (
                 <p className={cn(
                   'text-xs font-medium',
@@ -105,6 +123,7 @@ export function StatsGrid({ stats, isLoading }: StatsGridProps) {
         icon={Building2}
         color="violet"
         delay={0}
+        href="/leads"
       />
       <StatCard
         title="Enriched"
@@ -113,6 +132,7 @@ export function StatsGrid({ stats, isLoading }: StatsGridProps) {
         icon={CheckCircle}
         color="emerald"
         delay={0.05}
+        href="/leads?status=enriched"
       />
       <StatCard
         title="Pending"
@@ -120,6 +140,7 @@ export function StatsGrid({ stats, isLoading }: StatsGridProps) {
         icon={Clock}
         color="amber"
         delay={0.1}
+        href="/leads?status=pending"
       />
       <StatCard
         title="Failed"
@@ -127,6 +148,7 @@ export function StatsGrid({ stats, isLoading }: StatsGridProps) {
         icon={XCircle}
         color="red"
         delay={0.15}
+        href="/leads?status=failed"
       />
       <StatCard
         title="Total Contacts"
@@ -135,6 +157,7 @@ export function StatsGrid({ stats, isLoading }: StatsGridProps) {
         icon={Users}
         color="blue"
         delay={0.2}
+        href="/leads"
       />
       <StatCard
         title="Messages"
@@ -142,6 +165,7 @@ export function StatsGrid({ stats, isLoading }: StatsGridProps) {
         icon={MessageSquare}
         color="violet"
         delay={0.25}
+        href="/outreach"
       />
     </div>
   )
