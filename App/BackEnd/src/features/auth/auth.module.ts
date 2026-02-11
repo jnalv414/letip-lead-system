@@ -34,6 +34,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 // Guards
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { WsAuthGuard } from './guards/ws-auth.guard';
 
 // Core modules
 import { PrismaModule } from '../../prisma/prisma.module';
@@ -64,6 +65,7 @@ import { ConfigModule } from '../../config/config.module';
     // Guards (provided but not used globally here - use APP_GUARD in app.module)
     JwtAuthGuard,
     RolesGuard,
+    WsAuthGuard,
   ],
   exports: [
     // Export for use in other modules
@@ -71,6 +73,7 @@ import { ConfigModule } from '../../config/config.module';
     TokenService,
     JwtAuthGuard,
     RolesGuard,
+    WsAuthGuard,
     JwtModule,
     PassportModule,
   ],

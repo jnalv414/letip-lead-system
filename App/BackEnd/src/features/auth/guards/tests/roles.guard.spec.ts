@@ -11,6 +11,11 @@
  * - Access denied scenarios
  * - Missing user authentication
  * - Role hierarchy validation (ADMIN > MEMBER > VIEWER)
+ *
+ * NOTE: The RolesGuard.canActivate() calls reflector.getAllAndOverride TWICE:
+ * 1st call: IS_PUBLIC_KEY (returns boolean - if true, skip role check)
+ * 2nd call: ROLES_KEY (returns Role[] - the required roles)
+ * Tests must mock both calls using mockReturnValueOnce.
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
@@ -19,6 +24,7 @@ import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
 import { RolesGuard } from '../roles.guard';
 import { ROLES_KEY } from '../../decorators/roles.decorator';
+import { IS_PUBLIC_KEY } from '../../decorators/public.decorator';
 
 describe('RolesGuard', () => {
   let guard: RolesGuard;
@@ -47,6 +53,22 @@ describe('RolesGuard', () => {
       switchToWs: () => ({} as any),
       getType: () => 'http' as const,
     } as ExecutionContext;
+  };
+
+  /**
+   * Helper to mock both getAllAndOverride calls for a single canActivate invocation.
+   * @param isPublic - value for IS_PUBLIC_KEY check (1st call)
+   * @param roles - value for ROLES_KEY check (2nd call), omit if isPublic is true
+   */
+  const mockGuardCalls = (isPublic: boolean | null | undefined, roles?: Role[] | null | undefined) => {
+    if (isPublic) {
+      // If public, only the first call happens (guard returns true immediately)
+      reflector.getAllAndOverride.mockReturnValueOnce(isPublic as any);
+    } else {
+      reflector.getAllAndOverride
+        .mockReturnValueOnce(isPublic as any)  // IS_PUBLIC_KEY
+        .mockReturnValueOnce(roles as any);    // ROLES_KEY
+    }
   };
 
   beforeEach(async () => {
@@ -84,20 +106,16 @@ describe('RolesGuard', () => {
   // ============================================================
   describe('No roles required (no @Roles decorator)', () => {
     it('should return true when no roles are required (null)', () => {
-      reflector.getAllAndOverride.mockReturnValue(null);
+      mockGuardCalls(false, null);
       const context = createMockExecutionContext({ role: Role.VIEWER });
 
       const result = guard.canActivate(context);
 
       expect(result).toBe(true);
-      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(ROLES_KEY, [
-        context.getHandler(),
-        context.getClass(),
-      ]);
     });
 
     it('should return true when no roles are required (undefined)', () => {
-      reflector.getAllAndOverride.mockReturnValue(undefined);
+      mockGuardCalls(false, undefined);
       const context = createMockExecutionContext({ role: Role.MEMBER });
 
       const result = guard.canActivate(context);
@@ -106,7 +124,7 @@ describe('RolesGuard', () => {
     });
 
     it('should return true when roles array is empty', () => {
-      reflector.getAllAndOverride.mockReturnValue([]);
+      mockGuardCalls(false, []);
       const context = createMockExecutionContext({ role: Role.ADMIN });
 
       const result = guard.canActivate(context);
@@ -115,7 +133,7 @@ describe('RolesGuard', () => {
     });
 
     it('should allow access even without user when no roles required', () => {
-      reflector.getAllAndOverride.mockReturnValue(null);
+      mockGuardCalls(false, null);
       const context = createMockExecutionContext(null);
 
       const result = guard.canActivate(context);
@@ -130,7 +148,7 @@ describe('RolesGuard', () => {
   describe('Single role authorization', () => {
     describe('ADMIN role', () => {
       it('should allow ADMIN user to access ADMIN route', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
+        mockGuardCalls(false, [Role.ADMIN]);
         const context = createMockExecutionContext({ role: Role.ADMIN });
 
         const result = guard.canActivate(context);
@@ -139,20 +157,24 @@ describe('RolesGuard', () => {
       });
 
       it('should deny MEMBER user access to ADMIN route', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
         const context = createMockExecutionContext({ role: Role.MEMBER });
 
+        mockGuardCalls(false, [Role.ADMIN]);
         expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+
+        mockGuardCalls(false, [Role.ADMIN]);
         expect(() => guard.canActivate(context)).toThrow(
           'Access denied. Required role: ADMIN. Your role: MEMBER',
         );
       });
 
       it('should deny VIEWER user access to ADMIN route', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
         const context = createMockExecutionContext({ role: Role.VIEWER });
 
+        mockGuardCalls(false, [Role.ADMIN]);
         expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+
+        mockGuardCalls(false, [Role.ADMIN]);
         expect(() => guard.canActivate(context)).toThrow(
           'Access denied. Required role: ADMIN. Your role: VIEWER',
         );
@@ -161,7 +183,7 @@ describe('RolesGuard', () => {
 
     describe('MEMBER role', () => {
       it('should allow MEMBER user to access MEMBER route', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.MEMBER]);
+        mockGuardCalls(false, [Role.MEMBER]);
         const context = createMockExecutionContext({ role: Role.MEMBER });
 
         const result = guard.canActivate(context);
@@ -170,20 +192,24 @@ describe('RolesGuard', () => {
       });
 
       it('should deny ADMIN user access to MEMBER-only route', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.MEMBER]);
         const context = createMockExecutionContext({ role: Role.ADMIN });
 
+        mockGuardCalls(false, [Role.MEMBER]);
         expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+
+        mockGuardCalls(false, [Role.MEMBER]);
         expect(() => guard.canActivate(context)).toThrow(
           'Access denied. Required role: MEMBER. Your role: ADMIN',
         );
       });
 
       it('should deny VIEWER user access to MEMBER route', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.MEMBER]);
         const context = createMockExecutionContext({ role: Role.VIEWER });
 
+        mockGuardCalls(false, [Role.MEMBER]);
         expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+
+        mockGuardCalls(false, [Role.MEMBER]);
         expect(() => guard.canActivate(context)).toThrow(
           'Access denied. Required role: MEMBER. Your role: VIEWER',
         );
@@ -192,7 +218,7 @@ describe('RolesGuard', () => {
 
     describe('VIEWER role', () => {
       it('should allow VIEWER user to access VIEWER route', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.VIEWER]);
+        mockGuardCalls(false, [Role.VIEWER]);
         const context = createMockExecutionContext({ role: Role.VIEWER });
 
         const result = guard.canActivate(context);
@@ -201,20 +227,24 @@ describe('RolesGuard', () => {
       });
 
       it('should deny ADMIN user access to VIEWER-only route', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.VIEWER]);
         const context = createMockExecutionContext({ role: Role.ADMIN });
 
+        mockGuardCalls(false, [Role.VIEWER]);
         expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+
+        mockGuardCalls(false, [Role.VIEWER]);
         expect(() => guard.canActivate(context)).toThrow(
           'Access denied. Required role: VIEWER. Your role: ADMIN',
         );
       });
 
       it('should deny MEMBER user access to VIEWER-only route', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.VIEWER]);
         const context = createMockExecutionContext({ role: Role.MEMBER });
 
+        mockGuardCalls(false, [Role.VIEWER]);
         expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+
+        mockGuardCalls(false, [Role.VIEWER]);
         expect(() => guard.canActivate(context)).toThrow(
           'Access denied. Required role: VIEWER. Your role: MEMBER',
         );
@@ -228,7 +258,7 @@ describe('RolesGuard', () => {
   describe('Multiple allowed roles', () => {
     describe('ADMIN or MEMBER allowed', () => {
       it('should allow ADMIN user when ADMIN or MEMBER required', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER]);
+        mockGuardCalls(false, [Role.ADMIN, Role.MEMBER]);
         const context = createMockExecutionContext({ role: Role.ADMIN });
 
         const result = guard.canActivate(context);
@@ -237,7 +267,7 @@ describe('RolesGuard', () => {
       });
 
       it('should allow MEMBER user when ADMIN or MEMBER required', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER]);
+        mockGuardCalls(false, [Role.ADMIN, Role.MEMBER]);
         const context = createMockExecutionContext({ role: Role.MEMBER });
 
         const result = guard.canActivate(context);
@@ -246,10 +276,12 @@ describe('RolesGuard', () => {
       });
 
       it('should deny VIEWER user when only ADMIN or MEMBER allowed', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER]);
         const context = createMockExecutionContext({ role: Role.VIEWER });
 
+        mockGuardCalls(false, [Role.ADMIN, Role.MEMBER]);
         expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+
+        mockGuardCalls(false, [Role.ADMIN, Role.MEMBER]);
         expect(() => guard.canActivate(context)).toThrow(
           'Access denied. Required role: ADMIN or MEMBER. Your role: VIEWER',
         );
@@ -258,7 +290,7 @@ describe('RolesGuard', () => {
 
     describe('MEMBER or VIEWER allowed', () => {
       it('should allow MEMBER user when MEMBER or VIEWER required', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.MEMBER, Role.VIEWER]);
+        mockGuardCalls(false, [Role.MEMBER, Role.VIEWER]);
         const context = createMockExecutionContext({ role: Role.MEMBER });
 
         const result = guard.canActivate(context);
@@ -267,7 +299,7 @@ describe('RolesGuard', () => {
       });
 
       it('should allow VIEWER user when MEMBER or VIEWER required', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.MEMBER, Role.VIEWER]);
+        mockGuardCalls(false, [Role.MEMBER, Role.VIEWER]);
         const context = createMockExecutionContext({ role: Role.VIEWER });
 
         const result = guard.canActivate(context);
@@ -276,10 +308,12 @@ describe('RolesGuard', () => {
       });
 
       it('should deny ADMIN user when only MEMBER or VIEWER allowed', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.MEMBER, Role.VIEWER]);
         const context = createMockExecutionContext({ role: Role.ADMIN });
 
+        mockGuardCalls(false, [Role.MEMBER, Role.VIEWER]);
         expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+
+        mockGuardCalls(false, [Role.MEMBER, Role.VIEWER]);
         expect(() => guard.canActivate(context)).toThrow(
           'Access denied. Required role: MEMBER or VIEWER. Your role: ADMIN',
         );
@@ -288,7 +322,7 @@ describe('RolesGuard', () => {
 
     describe('All roles allowed', () => {
       it('should allow ADMIN user when all roles are permitted', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER, Role.VIEWER]);
+        mockGuardCalls(false, [Role.ADMIN, Role.MEMBER, Role.VIEWER]);
         const context = createMockExecutionContext({ role: Role.ADMIN });
 
         const result = guard.canActivate(context);
@@ -297,7 +331,7 @@ describe('RolesGuard', () => {
       });
 
       it('should allow MEMBER user when all roles are permitted', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER, Role.VIEWER]);
+        mockGuardCalls(false, [Role.ADMIN, Role.MEMBER, Role.VIEWER]);
         const context = createMockExecutionContext({ role: Role.MEMBER });
 
         const result = guard.canActivate(context);
@@ -306,7 +340,7 @@ describe('RolesGuard', () => {
       });
 
       it('should allow VIEWER user when all roles are permitted', () => {
-        reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER, Role.VIEWER]);
+        mockGuardCalls(false, [Role.ADMIN, Role.MEMBER, Role.VIEWER]);
         const context = createMockExecutionContext({ role: Role.VIEWER });
 
         const result = guard.canActivate(context);
@@ -321,16 +355,16 @@ describe('RolesGuard', () => {
   // ============================================================
   describe('No user on request (unauthenticated)', () => {
     it('should throw ForbiddenException when user is null and roles required', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
       const context = createMockExecutionContext(null);
 
+      mockGuardCalls(false, [Role.ADMIN]);
       expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+
+      mockGuardCalls(false, [Role.ADMIN]);
       expect(() => guard.canActivate(context)).toThrow('User not authenticated');
     });
 
     it('should throw ForbiddenException when user is undefined and roles required', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.MEMBER]);
-
       const mockRequest = {
         user: undefined,
       };
@@ -342,7 +376,10 @@ describe('RolesGuard', () => {
         getClass: () => jest.fn(),
       } as unknown as ExecutionContext;
 
+      mockGuardCalls(false, [Role.MEMBER]);
       expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+
+      mockGuardCalls(false, [Role.MEMBER]);
       expect(() => guard.canActivate(context)).toThrow('User not authenticated');
     });
 
@@ -350,19 +387,19 @@ describe('RolesGuard', () => {
       const context = createMockExecutionContext(null);
 
       // Test ADMIN
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
+      mockGuardCalls(false, [Role.ADMIN]);
       expect(() => guard.canActivate(context)).toThrow('User not authenticated');
 
       // Test MEMBER
-      reflector.getAllAndOverride.mockReturnValue([Role.MEMBER]);
+      mockGuardCalls(false, [Role.MEMBER]);
       expect(() => guard.canActivate(context)).toThrow('User not authenticated');
 
       // Test VIEWER
-      reflector.getAllAndOverride.mockReturnValue([Role.VIEWER]);
+      mockGuardCalls(false, [Role.VIEWER]);
       expect(() => guard.canActivate(context)).toThrow('User not authenticated');
 
       // Test multiple roles
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER, Role.VIEWER]);
+      mockGuardCalls(false, [Role.ADMIN, Role.MEMBER, Role.VIEWER]);
       expect(() => guard.canActivate(context)).toThrow('User not authenticated');
     });
   });
@@ -372,7 +409,7 @@ describe('RolesGuard', () => {
   // ============================================================
   describe('Error message formatting', () => {
     it('should format single role in error message', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
+      mockGuardCalls(false, [Role.ADMIN]);
       const context = createMockExecutionContext({ role: Role.VIEWER });
 
       try {
@@ -385,7 +422,7 @@ describe('RolesGuard', () => {
     });
 
     it('should format two roles with "or" in error message', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER]);
+      mockGuardCalls(false, [Role.ADMIN, Role.MEMBER]);
       const context = createMockExecutionContext({ role: Role.VIEWER });
 
       try {
@@ -400,7 +437,7 @@ describe('RolesGuard', () => {
     });
 
     it('should format three roles with "or" separators in error message', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER, Role.VIEWER]);
+      mockGuardCalls(false, [Role.ADMIN, Role.MEMBER, Role.VIEWER]);
 
       // Create context with a role that's not in the allowed list
       // Since all roles are allowed, we need to mock a non-existent role scenario
@@ -431,22 +468,25 @@ describe('RolesGuard', () => {
   // Reflector Integration Tests
   // ============================================================
   describe('Reflector integration', () => {
-    it('should call getAllAndOverride with ROLES_KEY', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
+    it('should call getAllAndOverride with IS_PUBLIC_KEY and ROLES_KEY', () => {
+      mockGuardCalls(false, [Role.ADMIN]);
       const context = createMockExecutionContext({ role: Role.ADMIN });
 
       guard.canActivate(context);
 
-      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(ROLES_KEY, expect.any(Array));
+      // First call is IS_PUBLIC_KEY, second is ROLES_KEY
+      expect(reflector.getAllAndOverride).toHaveBeenCalledTimes(2);
+      expect(reflector.getAllAndOverride).toHaveBeenNthCalledWith(1, IS_PUBLIC_KEY, expect.any(Array));
+      expect(reflector.getAllAndOverride).toHaveBeenNthCalledWith(2, ROLES_KEY, expect.any(Array));
     });
 
     it('should pass handler and class to getAllAndOverride', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
+      mockGuardCalls(false, [Role.ADMIN]);
       const context = createMockExecutionContext({ role: Role.ADMIN });
 
       guard.canActivate(context);
 
-      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(ROLES_KEY, [
+      expect(reflector.getAllAndOverride).toHaveBeenNthCalledWith(2, ROLES_KEY, [
         context.getHandler(),
         context.getClass(),
       ]);
@@ -454,13 +494,14 @@ describe('RolesGuard', () => {
 
     it('should prioritize handler metadata over class metadata', () => {
       // getAllAndOverride automatically handles this - just verify it's called correctly
-      reflector.getAllAndOverride.mockReturnValue([Role.MEMBER]);
+      mockGuardCalls(false, [Role.MEMBER]);
       const context = createMockExecutionContext({ role: Role.MEMBER });
 
       const result = guard.canActivate(context);
 
       expect(result).toBe(true);
-      expect(reflector.getAllAndOverride).toHaveBeenCalledTimes(1);
+      // 2 calls: IS_PUBLIC_KEY + ROLES_KEY
+      expect(reflector.getAllAndOverride).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -469,7 +510,7 @@ describe('RolesGuard', () => {
   // ============================================================
   describe('Edge cases', () => {
     it('should handle user with additional properties', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
+      mockGuardCalls(false, [Role.ADMIN]);
 
       const mockRequest = {
         user: {
@@ -494,7 +535,7 @@ describe('RolesGuard', () => {
     });
 
     it('should handle request with empty user object (missing role)', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
+      mockGuardCalls(false, [Role.ADMIN]);
 
       const mockRequest = {
         user: {}, // User exists but has no role
@@ -512,7 +553,7 @@ describe('RolesGuard', () => {
     });
 
     it('should be case-sensitive with role matching', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
+      mockGuardCalls(false, [Role.ADMIN]);
 
       const mockRequest = {
         user: { role: 'admin' }, // lowercase - should not match
@@ -529,7 +570,7 @@ describe('RolesGuard', () => {
     });
 
     it('should handle duplicate roles in required roles array', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.ADMIN, Role.ADMIN]);
+      mockGuardCalls(false, [Role.ADMIN, Role.ADMIN, Role.ADMIN]);
       const context = createMockExecutionContext({ role: Role.ADMIN });
 
       const result = guard.canActivate(context);
@@ -538,7 +579,7 @@ describe('RolesGuard', () => {
     });
 
     it('should not modify the request object', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.MEMBER]);
+      mockGuardCalls(false, [Role.MEMBER]);
 
       const originalUser = { role: Role.MEMBER, id: '123' };
       const mockRequest = { user: originalUser };
@@ -562,49 +603,49 @@ describe('RolesGuard', () => {
   // ============================================================
   describe('Role hierarchy scenarios (realistic use cases)', () => {
     it('ADMIN accessing admin-only endpoint: SUCCESS', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
+      mockGuardCalls(false, [Role.ADMIN]);
       const context = createMockExecutionContext({ role: Role.ADMIN });
 
       expect(guard.canActivate(context)).toBe(true);
     });
 
     it('MEMBER accessing admin-only endpoint: FAILURE', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
+      mockGuardCalls(false, [Role.ADMIN]);
       const context = createMockExecutionContext({ role: Role.MEMBER });
 
       expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
     });
 
     it('VIEWER accessing admin-only endpoint: FAILURE', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
+      mockGuardCalls(false, [Role.ADMIN]);
       const context = createMockExecutionContext({ role: Role.VIEWER });
 
       expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
     });
 
     it('ADMIN accessing member endpoint (admin + member allowed): SUCCESS', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER]);
+      mockGuardCalls(false, [Role.ADMIN, Role.MEMBER]);
       const context = createMockExecutionContext({ role: Role.ADMIN });
 
       expect(guard.canActivate(context)).toBe(true);
     });
 
     it('MEMBER accessing member endpoint (admin + member allowed): SUCCESS', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER]);
+      mockGuardCalls(false, [Role.ADMIN, Role.MEMBER]);
       const context = createMockExecutionContext({ role: Role.MEMBER });
 
       expect(guard.canActivate(context)).toBe(true);
     });
 
     it('VIEWER accessing member endpoint (admin + member allowed): FAILURE', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER]);
+      mockGuardCalls(false, [Role.ADMIN, Role.MEMBER]);
       const context = createMockExecutionContext({ role: Role.VIEWER });
 
       expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
     });
 
     it('VIEWER accessing viewer-only endpoint: SUCCESS', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.VIEWER]);
+      mockGuardCalls(false, [Role.VIEWER]);
       const context = createMockExecutionContext({ role: Role.VIEWER });
 
       expect(guard.canActivate(context)).toBe(true);
@@ -616,16 +657,20 @@ describe('RolesGuard', () => {
   // ============================================================
   describe('Performance considerations', () => {
     it('should handle rapid successive calls', () => {
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
       const context = createMockExecutionContext({ role: Role.ADMIN });
 
-      // Simulate rapid calls
+      // Simulate rapid calls - each canActivate makes 2 calls to getAllAndOverride
+      for (let i = 0; i < 100; i++) {
+        mockGuardCalls(false, [Role.ADMIN]);
+      }
+
       for (let i = 0; i < 100; i++) {
         const result = guard.canActivate(context);
         expect(result).toBe(true);
       }
 
-      expect(reflector.getAllAndOverride).toHaveBeenCalledTimes(100);
+      // 2 calls per canActivate (IS_PUBLIC_KEY + ROLES_KEY) x 100 = 200
+      expect(reflector.getAllAndOverride).toHaveBeenCalledTimes(200);
     });
 
     it('should handle different contexts in sequence', () => {
@@ -633,10 +678,16 @@ describe('RolesGuard', () => {
       const memberContext = createMockExecutionContext({ role: Role.MEMBER });
       const viewerContext = createMockExecutionContext({ role: Role.VIEWER });
 
-      reflector.getAllAndOverride.mockReturnValue([Role.ADMIN, Role.MEMBER]);
-
+      // Mock for admin call
+      mockGuardCalls(false, [Role.ADMIN, Role.MEMBER]);
       expect(guard.canActivate(adminContext)).toBe(true);
+
+      // Mock for member call
+      mockGuardCalls(false, [Role.ADMIN, Role.MEMBER]);
       expect(guard.canActivate(memberContext)).toBe(true);
+
+      // Mock for viewer call
+      mockGuardCalls(false, [Role.ADMIN, Role.MEMBER]);
       expect(() => guard.canActivate(viewerContext)).toThrow(ForbiddenException);
     });
   });

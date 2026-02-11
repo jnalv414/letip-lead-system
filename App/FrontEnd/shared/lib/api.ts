@@ -34,8 +34,19 @@ export function clearAccessToken() {
   }
 }
 
+// Listeners notified after a successful token refresh
+const tokenRefreshListeners: Array<(token: string) => void> = []
+
+export function onTokenRefresh(listener: (token: string) => void): () => void {
+  tokenRefreshListeners.push(listener)
+  return () => {
+    const idx = tokenRefreshListeners.indexOf(listener)
+    if (idx >= 0) tokenRefreshListeners.splice(idx, 1)
+  }
+}
+
 // Refresh token handler
-async function refreshAccessToken(): Promise<string | null> {
+export async function refreshAccessToken(): Promise<string | null> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
       method: 'POST',
@@ -45,6 +56,8 @@ async function refreshAccessToken(): Promise<string | null> {
     if (response.ok) {
       const data = await response.json()
       setAccessToken(data.accessToken)
+      // Notify listeners (e.g. WebSocket reconnect)
+      tokenRefreshListeners.forEach((fn) => fn(data.accessToken))
       return data.accessToken
     }
     return null

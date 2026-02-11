@@ -13,9 +13,11 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 import { EmailService } from './email.service';
 import { SendGridEventDto } from './dto/email-event.dto';
 import { Public } from '../auth/decorators/public.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('api/email')
 @ApiTags('Email')
@@ -70,7 +72,8 @@ export class EmailController {
    * Get email sending statistics
    */
   @Get('stats')
-  @ApiBearerAuth('JWT-auth')
+  @Roles(Role.ADMIN, Role.MEMBER, Role.VIEWER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get email statistics',
     description:
@@ -100,7 +103,8 @@ export class EmailController {
    * Check if email service is configured
    */
   @Get('status')
-  @ApiBearerAuth('JWT-auth')
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Check email service status',
     description:

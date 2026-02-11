@@ -13,7 +13,9 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiConsumes, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
+import { Roles } from '../../auth/decorators/roles.decorator';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
@@ -53,6 +55,8 @@ export class JobQueueController {
    * Create a Google Maps scraping job.
    */
   @Post('scraping')
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a Google Maps scraping job',
@@ -85,6 +89,8 @@ export class JobQueueController {
    * Create a business enrichment job.
    */
   @Post('enrichment')
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a business enrichment job',
@@ -117,6 +123,8 @@ export class JobQueueController {
    * Create an outreach message generation job.
    */
   @Post('outreach')
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create an outreach message generation job',
@@ -154,6 +162,8 @@ export class JobQueueController {
    * Get job status by ID.
    */
   @Get(':jobId')
+  @Roles(Role.ADMIN, Role.MEMBER, Role.VIEWER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get job status by ID',
     description:
@@ -170,6 +180,8 @@ export class JobQueueController {
    * List user's jobs with pagination.
    */
   @Get()
+  @Roles(Role.ADMIN, Role.MEMBER, Role.VIEWER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: "List user's jobs",
     description: 'Returns paginated list of jobs created by a specific user, ordered by creation date.',
@@ -191,6 +203,8 @@ export class JobQueueController {
    * List jobs by queue and status.
    */
   @Get('queue/:queueName')
+  @Roles(Role.ADMIN, Role.MEMBER, Role.VIEWER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'List jobs by queue',
     description: 'Returns paginated list of jobs in a specific queue, optionally filtered by status.',
@@ -229,6 +243,8 @@ export class JobQueueController {
    * Get queue metrics.
    */
   @Get('metrics/:queueName')
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get queue metrics',
     description: 'Returns job counts by status for a specific queue (waiting, active, completed, failed, etc.).',
@@ -261,6 +277,8 @@ export class JobQueueController {
    * Get all queues metrics.
    */
   @Get('metrics')
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get metrics for all queues',
     description: 'Returns job counts by status for all queues.',
@@ -292,6 +310,8 @@ export class JobQueueController {
    * Get health status.
    */
   @Get('health')
+  @Roles(Role.ADMIN, Role.MEMBER, Role.VIEWER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get job queue system health',
     description: 'Returns health status of Redis connection and all queues.',
@@ -322,6 +342,8 @@ export class JobQueueController {
    * Cancel a job.
    */
   @Delete(':jobId')
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Cancel a job',
@@ -358,6 +380,8 @@ export class JobQueueController {
    * Upload and validate a CSV file for import.
    */
   @Post('csv/validate')
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(
     FileInterceptor('file', {
@@ -419,6 +443,8 @@ export class JobQueueController {
    * Create a CSV import job.
    */
   @Post('csv/import')
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
     FileInterceptor('file', {

@@ -7,13 +7,14 @@ import {
   SubscribeMessage,
   MessageBody,
 } from '@nestjs/websockets';
-import { Logger, Injectable } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { OnEvent } from '@nestjs/event-emitter';
+import { WsAuthGuard } from '../features/auth/guards/ws-auth.guard';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+    origin: process.env.FRONTEND_URL || 'http://localhost:3031',
     credentials: true,
   },
 })
@@ -23,15 +24,40 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private readonly logger = new Logger(EventsGateway.name);
 
-  handleConnection(client: Socket) {
-    this.logger.log(`Client connected: ${client.id}`);
+  constructor(private readonly wsAuthGuard: WsAuthGuard) {}
+
+  /**
+   * Authenticate WebSocket connections during handshake.
+   *
+   * Validates the JWT token and attaches user data to the socket.
+   * Unauthenticated clients are disconnected immediately.
+   */
+  async handleConnection(client: Socket) {
+    const user = await this.wsAuthGuard.validateClient(client);
+
+    if (!user) {
+      this.logger.warn(`Rejecting unauthenticated WebSocket connection: ${client.id}`);
+      client.emit('auth:error', { message: 'Authentication required' });
+      client.disconnect(true);
+      return;
+    }
+
+    this.logger.log(
+      `Client connected: ${client.id} (user: ${user.email}, role: ${user.role})`,
+    );
+
+    // Join a user-specific room for targeted events
+    client.join(`user:${user.id}`);
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client.id}`);
+    const user = client.data?.user;
+    this.logger.log(
+      `Client disconnected: ${client.id}${user ? ` (user: ${user.email})` : ''}`,
+    );
   }
 
-  // Emit events to all connected clients
+  // Emit events to all connected (authenticated) clients
   emitBusinessCreated(business: any) {
     this.server.emit('business:created', business);
     this.logger.log('Emitted business:created event');
