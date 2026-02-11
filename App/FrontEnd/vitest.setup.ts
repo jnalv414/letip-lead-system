@@ -1,5 +1,25 @@
 import '@testing-library/jest-dom'
-import { vi } from 'vitest'
+import { vi, beforeAll, afterAll, afterEach } from 'vitest'
+import { server } from './__tests__/setup/mock-server'
+import { resetIdCounter } from './__tests__/setup/mock-data'
+import { resetMockSocket } from './__tests__/setup/websocket-mock'
+
+// Start MSW server before all tests
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+})
+
+// Reset handlers and test state after each test
+afterEach(() => {
+  server.resetHandlers()
+  resetIdCounter()
+  resetMockSocket()
+})
+
+// Clean up after all tests
+afterAll(() => {
+  server.close()
+})
 
 // Mock Next.js router
 const mockPush = vi.fn()

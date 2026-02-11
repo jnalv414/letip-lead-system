@@ -1449,4 +1449,514 @@ describe('Auth Module Integration Tests', () => {
       }
     });
   });
+
+  // ============================================================
+  // Extended: Duplicate Email Registration
+  // ============================================================
+  describe('Duplicate Email Registration (Extended)', () => {
+    /**
+     * TC-INT-051: Register with exact duplicate email returns ConflictException
+     *
+     * Priority: Critical
+     * Category: Security
+     */
+    it('should return ConflictException when registering with duplicate email', async () => {
+      await authService.register(
+        { email: 'duplicate@test.com', password: VALID_PASSWORD, name: 'First User' },
+        undefined,
+      );
+
+      await expect(
+        authService.register(
+          { email: 'duplicate@test.com', password: VALID_PASSWORD, name: 'Second User' },
+          undefined,
+        ),
+      ).rejects.toThrow(ConflictException);
+    });
+
+    /**
+     * TC-INT-052: Duplicate email error message is descriptive
+     *
+     * Priority: High
+     * Category: Functional
+     */
+    it('should return "Email already registered" message for duplicate email', async () => {
+      await authService.register(
+        { email: 'dup-message@test.com', password: VALID_PASSWORD, name: 'First' },
+        undefined,
+      );
+
+      try {
+        await authService.register(
+          { email: 'dup-message@test.com', password: VALID_PASSWORD, name: 'Second' },
+          undefined,
+        );
+        fail('Should have thrown ConflictException');
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConflictException);
+        expect(error.message).toBe('Email already registered');
+      }
+    });
+
+    /**
+     * TC-INT-053: Duplicate email check is case-insensitive
+     *
+     * Priority: Critical
+     * Category: Security
+     */
+    it('should reject registration when email differs only in case', async () => {
+      await authService.register(
+        { email: 'CaseDup@Test.com', password: VALID_PASSWORD, name: 'First' },
+        undefined,
+      );
+
+      await expect(
+        authService.register(
+          { email: 'casedup@test.com', password: VALID_PASSWORD, name: 'Second' },
+          undefined,
+        ),
+      ).rejects.toThrow(ConflictException);
+    });
+
+    /**
+     * TC-INT-054: First user's data is preserved when second registration fails
+     *
+     * Priority: High
+     * Category: Integration
+     */
+    it('should not modify existing user when duplicate registration is rejected', async () => {
+      const firstResult = await authService.register(
+        { email: 'preserve@test.com', password: VALID_PASSWORD, name: 'Original Name' },
+        undefined,
+      );
+
+      try {
+        await authService.register(
+          { email: 'preserve@test.com', password: VALID_PASSWORD, name: 'Different Name' },
+          undefined,
+        );
+      } catch {
+        // Expected
+      }
+
+      const profile = await authService.getProfile(firstResult.user.id);
+      expect(profile.name).toBe('Original Name');
+    });
+  });
+
+  // ============================================================
+  // Extended: Refresh with Expired Token
+  // ============================================================
+  describe('Refresh with Expired Token (Extended)', () => {
+    /**
+     * TC-INT-055: Expired refresh token throws UnauthorizedException
+     *
+     * Priority: Critical
+     * Category: Security
+     */
+    it('should throw UnauthorizedException for expired refresh token', async () => {
+      const registerResult = await authService.register(
+        { email: 'exp-refresh@test.com', password: VALID_PASSWORD, name: 'Expired Refresh' },
+        undefined,
+      );
+
+      // Expire the session
+      for (const session of sessionStore.values()) {
+        if (session.refresh_token === registerResult.refreshToken) {
+          session.expires_at = new Date(Date.now() - 60000); // 1 minute in the past
+          break;
+        }
+      }
+
+      await expect(
+        authService.refresh(registerResult.refreshToken, 'Browser', '127.0.0.1'),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
+    /**
+     * TC-INT-056: Expired token error message indicates expiration
+     *
+     * Priority: High
+     * Category: Functional
+     */
+    it('should return appropriate error for expired token', async () => {
+      const registerResult = await authService.register(
+        { email: 'exp-msg@test.com', password: VALID_PASSWORD, name: 'Expired Msg' },
+        undefined,
+      );
+
+      // Expire the session
+      for (const session of sessionStore.values()) {
+        if (session.refresh_token === registerResult.refreshToken) {
+          session.expires_at = new Date(Date.now() - 1000);
+          break;
+        }
+      }
+
+      try {
+        await authService.refresh(registerResult.refreshToken);
+        fail('Should have thrown UnauthorizedException');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        expect(error.message).toMatch(/expired|invalid/i);
+      }
+    });
+
+    /**
+     * TC-INT-057: Valid sessions unaffected by expired sibling session
+     *
+     * Priority: High
+     * Category: Security
+     */
+    it('should not affect valid sessions when one session expires', async () => {
+      // Register user
+      await authService.register(
+        { email: 'multi-session-exp@test.com', password: VALID_PASSWORD, name: 'Multi' },
+        undefined,
+        'Browser 1',
+      );
+
+      // Create a second session via login
+      const loginResult = await authService.login(
+        { email: 'multi-session-exp@test.com', password: VALID_PASSWORD },
+        'Browser 2',
+      );
+
+      // Create a third session
+      const loginResult2 = await authService.login(
+        { email: 'multi-session-exp@test.com', password: VALID_PASSWORD },
+        'Browser 3',
+      );
+
+      // Expire only the second session
+      for (const session of sessionStore.values()) {
+        if (session.refresh_token === loginResult.refreshToken) {
+          session.expires_at = new Date(Date.now() - 1000);
+          break;
+        }
+      }
+
+      // Second session should fail
+      await expect(authService.refresh(loginResult.refreshToken)).rejects.toThrow(
+        UnauthorizedException,
+      );
+
+      // Third session should still work
+      const refreshResult = await authService.refresh(loginResult2.refreshToken);
+      expect(refreshResult.accessToken).toBeDefined();
+    });
+  });
+
+  // ============================================================
+  // Extended: Logout Invalidates Session
+  // ============================================================
+  describe('Logout Invalidates Session (Extended)', () => {
+    /**
+     * TC-INT-058: Logout makes refresh token unusable
+     *
+     * Priority: Critical
+     * Category: Security
+     */
+    it('should make refresh token unusable after logout', async () => {
+      const registerResult = await authService.register(
+        { email: 'logout-inv@test.com', password: VALID_PASSWORD, name: 'Logout Invalidate' },
+        undefined,
+      );
+
+      // Logout
+      await authService.logout(registerResult.refreshToken);
+
+      // Attempt to refresh should fail
+      await expect(
+        authService.refresh(registerResult.refreshToken, 'Browser', '127.0.0.1'),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
+    /**
+     * TC-INT-059: Multiple logouts from same token are idempotent
+     *
+     * Priority: Medium
+     * Category: Edge Case
+     */
+    it('should handle multiple logout calls for same token gracefully', async () => {
+      const registerResult = await authService.register(
+        { email: 'multi-logout@test.com', password: VALID_PASSWORD, name: 'Multi Logout' },
+        undefined,
+      );
+
+      await authService.logout(registerResult.refreshToken);
+      // Second logout should not throw
+      await expect(
+        authService.logout(registerResult.refreshToken),
+      ).resolves.not.toThrow();
+    });
+
+    /**
+     * TC-INT-060: Logout preserves ability to login again
+     *
+     * Priority: Critical
+     * Category: Functional
+     */
+    it('should allow user to login again after logout', async () => {
+      await authService.register(
+        { email: 'relogin@test.com', password: VALID_PASSWORD, name: 'Re-Login' },
+        undefined,
+      );
+
+      const loginResult = await authService.login(
+        { email: 'relogin@test.com', password: VALID_PASSWORD },
+        'Browser',
+      );
+
+      // Logout
+      await authService.logout(loginResult.refreshToken);
+
+      // Login again should work
+      const newLoginResult = await authService.login(
+        { email: 'relogin@test.com', password: VALID_PASSWORD },
+        'Browser',
+      );
+
+      expect(newLoginResult.accessToken).toBeDefined();
+      expect(newLoginResult.refreshToken).toBeDefined();
+      expect(newLoginResult.refreshToken).not.toBe(loginResult.refreshToken);
+    });
+
+    /**
+     * TC-INT-061: LogoutAll then login creates fresh session
+     *
+     * Priority: High
+     * Category: Integration
+     */
+    it('should create fresh session on login after logoutAll', async () => {
+      const registerResult = await authService.register(
+        { email: 'fresh-session@test.com', password: VALID_PASSWORD, name: 'Fresh' },
+        undefined,
+      );
+
+      // Create multiple sessions
+      await authService.login(
+        { email: 'fresh-session@test.com', password: VALID_PASSWORD },
+        'Browser 2',
+      );
+
+      // Logout all
+      await authService.logoutAll(registerResult.user.id);
+
+      // New login should work with fresh session
+      const freshLogin = await authService.login(
+        { email: 'fresh-session@test.com', password: VALID_PASSWORD },
+        'Browser Fresh',
+      );
+
+      expect(freshLogin.accessToken).toBeDefined();
+      expect(freshLogin.refreshToken).toBeDefined();
+
+      // Old tokens should be invalid
+      await expect(
+        authService.refresh(registerResult.refreshToken),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  // ============================================================
+  // Extended: Role-Based Access Control
+  // ============================================================
+  describe('Role-Based Access: VIEWER Restrictions', () => {
+    /**
+     * TC-INT-062: VIEWER cannot create user with any role
+     *
+     * Priority: Critical
+     * Category: Security
+     */
+    it('should prevent VIEWER from assigning roles during registration', async () => {
+      // Register admin first
+      await authService.register(
+        { email: 'admin@test.com', password: VALID_PASSWORD, name: 'Admin' },
+        undefined,
+      );
+
+      // VIEWER attempts to create user with MEMBER role
+      await expect(
+        authService.register(
+          {
+            email: 'newuser@test.com',
+            password: VALID_PASSWORD,
+            name: 'New User',
+            role: Role.MEMBER,
+          },
+          Role.VIEWER,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    /**
+     * TC-INT-063: VIEWER cannot create admin
+     *
+     * Priority: Critical
+     * Category: Security
+     */
+    it('should prevent VIEWER from creating admin users', async () => {
+      await authService.register(
+        { email: 'admin@test.com', password: VALID_PASSWORD, name: 'Admin' },
+        undefined,
+      );
+
+      await expect(
+        authService.register(
+          {
+            email: 'rogue-admin@test.com',
+            password: VALID_PASSWORD,
+            name: 'Rogue Admin',
+            role: Role.ADMIN,
+          },
+          Role.VIEWER,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    /**
+     * TC-INT-064: MEMBER cannot create user with ADMIN role
+     *
+     * Priority: Critical
+     * Category: Security
+     */
+    it('should prevent MEMBER from creating admin users', async () => {
+      await authService.register(
+        { email: 'admin@test.com', password: VALID_PASSWORD, name: 'Admin' },
+        undefined,
+      );
+
+      await expect(
+        authService.register(
+          {
+            email: 'escalate@test.com',
+            password: VALID_PASSWORD,
+            name: 'Escalation Attempt',
+            role: Role.ADMIN,
+          },
+          Role.MEMBER,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    /**
+     * TC-INT-065: ForbiddenException message is descriptive
+     *
+     * Priority: High
+     * Category: Functional
+     */
+    it('should return "Only admins can assign roles" for role escalation attempts', async () => {
+      await authService.register(
+        { email: 'admin@test.com', password: VALID_PASSWORD, name: 'Admin' },
+        undefined,
+      );
+
+      try {
+        await authService.register(
+          {
+            email: 'escalate@test.com',
+            password: VALID_PASSWORD,
+            name: 'Escalation',
+            role: Role.ADMIN,
+          },
+          Role.VIEWER,
+        );
+        fail('Should have thrown ForbiddenException');
+      } catch (error) {
+        expect(error).toBeInstanceOf(ForbiddenException);
+        expect(error.message).toBe('Only admins can assign roles');
+      }
+    });
+
+    /**
+     * TC-INT-066: VIEWER can self-register without role specification
+     *
+     * Priority: High
+     * Category: Functional
+     */
+    it('should allow registration without role spec (defaults to MEMBER)', async () => {
+      // Register admin first
+      await authService.register(
+        { email: 'admin@test.com', password: VALID_PASSWORD, name: 'Admin' },
+        undefined,
+      );
+
+      // Register without role specification (no creatorRole context)
+      const result = await authService.register(
+        { email: 'self-reg@test.com', password: VALID_PASSWORD, name: 'Self Registered' },
+        undefined,
+      );
+
+      expect(result.user.role).toBe(Role.MEMBER);
+    });
+
+    /**
+     * TC-INT-067: Admin-created VIEWER gets correct role
+     *
+     * Priority: High
+     * Category: Functional
+     */
+    it('should allow ADMIN to create VIEWER and verify correct role in profile', async () => {
+      await authService.register(
+        { email: 'admin@test.com', password: VALID_PASSWORD, name: 'Admin' },
+        undefined,
+      );
+
+      const viewerResult = await authService.register(
+        {
+          email: 'viewer@test.com',
+          password: VALID_PASSWORD,
+          name: 'Viewer User',
+          role: Role.VIEWER,
+        },
+        Role.ADMIN,
+      );
+
+      expect(viewerResult.user.role).toBe(Role.VIEWER);
+
+      // Verify via getProfile
+      const profile = await authService.getProfile(viewerResult.user.id);
+      expect(profile.role).toBe(Role.VIEWER);
+    });
+
+    /**
+     * TC-INT-068: VIEWER can login and get valid tokens
+     *
+     * Priority: High
+     * Category: Functional
+     */
+    it('should allow VIEWER to login and receive valid tokens', async () => {
+      // Create admin first
+      await authService.register(
+        { email: 'admin@test.com', password: VALID_PASSWORD, name: 'Admin' },
+        undefined,
+      );
+
+      // Admin creates viewer
+      await authService.register(
+        {
+          email: 'viewer-login@test.com',
+          password: VALID_PASSWORD,
+          name: 'Viewer Login',
+          role: Role.VIEWER,
+        },
+        Role.ADMIN,
+      );
+
+      // Viewer logs in
+      const loginResult = await authService.login(
+        { email: 'viewer-login@test.com', password: VALID_PASSWORD },
+        'Viewer Browser',
+      );
+
+      expect(loginResult.accessToken).toBeDefined();
+      expect(loginResult.refreshToken).toBeDefined();
+      expect(loginResult.user.role).toBe(Role.VIEWER);
+
+      // Verify token contains correct role
+      const decoded = tokenService.verifyAccessToken(loginResult.accessToken);
+      expect(decoded.role).toBe(Role.VIEWER);
+    });
+  });
 });
