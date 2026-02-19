@@ -42,7 +42,8 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 
       // ioredis v5 natively handles rediss:// URLs with automatic TLS.
-      // Pass the URL directly — no manual parsing needed.
+      // Render managed Redis requires rejectUnauthorized: false for TLS.
+      const isTLS = redisUrl.startsWith('rediss://');
       this.client = new Redis(redisUrl, {
         retryStrategy: (times) => {
           const delay = Math.min(times * 50, 2000);
@@ -52,6 +53,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         maxRetriesPerRequest: 3,
         enableReadyCheck: true,
         lazyConnect: false,
+        ...(isTLS && { tls: { rejectUnauthorized: false } }),
       });
 
       this.client.on('connect', () => {
