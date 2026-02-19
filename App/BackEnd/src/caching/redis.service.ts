@@ -40,6 +40,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     try {
       const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+      const isTLS = redisUrl.startsWith('rediss://');
 
       this.client = new Redis(redisUrl, {
         retryStrategy: (times) => {
@@ -50,6 +51,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         maxRetriesPerRequest: 3,
         enableReadyCheck: true,
         lazyConnect: false,
+        ...(isTLS && { tls: { rejectUnauthorized: false } }),
       });
 
       this.client.on('connect', () => {

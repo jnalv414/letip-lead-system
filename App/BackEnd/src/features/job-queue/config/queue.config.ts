@@ -11,16 +11,43 @@
 import { QueueOptions, WorkerOptions } from 'bullmq';
 
 /**
+ * Parse REDIS_URL into a BullMQ-compatible connection object.
+ * Handles both redis:// and rediss:// (TLS) schemes.
+ * Render managed Redis uses rediss:// and requires TLS.
+ */
+function buildBullMQConnection() {
+  const redisUrl = process.env.REDIS_URL;
+
+  if (redisUrl) {
+    const url = new URL(redisUrl);
+    const isTLS = url.protocol === 'rediss:';
+    return {
+      host: url.hostname,
+      port: parseInt(url.port || '6379', 10),
+      username: url.username || undefined,
+      password: url.password ? decodeURIComponent(url.password) : undefined,
+      db: 1, // Separate database from caching (DB 0)
+      maxRetriesPerRequest: null, // Required for BullMQ
+      enableReadyCheck: false, // BullMQ handles this internally
+      ...(isTLS && { tls: { rejectUnauthorized: false } }),
+    };
+  }
+
+  // Local fallback using individual env vars or defaults
+  return {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    db: 1,
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+  };
+}
+
+/**
  * Redis connection configuration for BullMQ.
  * Uses DB 1 to separate from caching layer (DB 0).
  */
-export const BULLMQ_REDIS_CONNECTION = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379', 10),
-  db: 1, // Separate database from caching (DB 0)
-  maxRetriesPerRequest: null, // Required for BullMQ
-  enableReadyCheck: false, // BullMQ handles this internally
-};
+export const BULLMQ_REDIS_CONNECTION = buildBullMQConnection();
 
 /**
  * Default queue options applied to all queues.
