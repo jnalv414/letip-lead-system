@@ -74,6 +74,7 @@ describe('CurrentUser Decorator', () => {
     email: 'admin@letip.com',
     name: 'Admin User',
     role: Role.ADMIN,
+    mustChangePassword: false,
   };
 
   const mockMemberUser: RequestUser = {
@@ -81,6 +82,7 @@ describe('CurrentUser Decorator', () => {
     email: 'member@letip.com',
     name: 'Member User',
     role: Role.MEMBER,
+    mustChangePassword: false,
   };
 
   const mockViewerUser: RequestUser = {
@@ -88,6 +90,7 @@ describe('CurrentUser Decorator', () => {
     email: 'viewer@letip.com',
     name: 'Viewer User',
     role: Role.VIEWER,
+    mustChangePassword: false,
   };
 
   describe('Full User Object Extraction', () => {
@@ -291,6 +294,7 @@ describe('CurrentUser Decorator', () => {
         email: 'admin@test.com',
         name: 'Test Admin',
         role: Role.ADMIN,
+        mustChangePassword: false,
       };
 
       const ctx = createMockExecutionContext(adminUser);
@@ -311,6 +315,7 @@ describe('CurrentUser Decorator', () => {
         email: 'member@test.com',
         name: 'Test Member',
         role: Role.MEMBER,
+        mustChangePassword: false,
       };
 
       const ctx = createMockExecutionContext(memberUser);
@@ -331,6 +336,7 @@ describe('CurrentUser Decorator', () => {
         email: 'viewer@test.com',
         name: 'Test Viewer',
         role: Role.VIEWER,
+        mustChangePassword: false,
       };
 
       const ctx = createMockExecutionContext(viewerUser);
@@ -362,6 +368,7 @@ describe('CurrentUser Decorator', () => {
           email: `${role.toLowerCase()}@test.com`,
           name: `Test ${role}`,
           role,
+          mustChangePassword: false,
         };
 
         const ctx = createMockExecutionContext(user);
@@ -385,6 +392,7 @@ describe('CurrentUser Decorator', () => {
         email: '',
         name: '',
         role: Role.VIEWER,
+        mustChangePassword: false,
       };
 
       const ctx = createMockExecutionContext(userWithEmptyStrings);
@@ -408,6 +416,7 @@ describe('CurrentUser Decorator', () => {
         email: `${longString}@test.com`,
         name: longString,
         role: Role.MEMBER,
+        mustChangePassword: false,
       };
 
       const ctx = createMockExecutionContext(userWithLongStrings);
@@ -428,6 +437,7 @@ describe('CurrentUser Decorator', () => {
         email: 'user+tag@sub.domain.com',
         name: "O'Brien-Smith, Jr.",
         role: Role.ADMIN,
+        mustChangePassword: false,
       };
 
       const ctx = createMockExecutionContext(userWithSpecialChars);
@@ -449,6 +459,7 @@ describe('CurrentUser Decorator', () => {
         email: 'uuid-user@test.com',
         name: 'UUID User',
         role: Role.MEMBER,
+        mustChangePassword: false,
       };
 
       const ctx = createMockExecutionContext(userWithUuid);

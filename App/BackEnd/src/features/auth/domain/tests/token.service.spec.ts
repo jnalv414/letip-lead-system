@@ -263,6 +263,7 @@ describe('TokenService', () => {
           sub: testUserId,
           email: testEmail,
           role: testRole,
+          mustChangePassword: false,
         };
         jwtService.verify.mockReturnValue(mockPayload);
 
@@ -277,6 +278,7 @@ describe('TokenService', () => {
           sub: testUserId,
           email: testEmail,
           role: testRole,
+          mustChangePassword: false,
         };
         jwtService.verify.mockReturnValue(mockPayload);
 
@@ -295,6 +297,7 @@ describe('TokenService', () => {
           sub: testUserId,
           email: testEmail,
           role: 'MEMBER' as Role,
+          mustChangePassword: false,
         };
         jwtService.verify.mockReturnValue(mockPayload);
 
@@ -354,6 +357,7 @@ describe('TokenService', () => {
           sub: testUserId,
           email: testEmail,
           role: testRole,
+          mustChangePassword: false,
         };
         jwtService.decode.mockReturnValue(mockPayload);
 
@@ -368,6 +372,7 @@ describe('TokenService', () => {
           sub: testUserId,
           email: testEmail,
           role: testRole,
+          mustChangePassword: false,
         };
         jwtService.decode.mockReturnValue(expiredPayload);
 
@@ -381,6 +386,7 @@ describe('TokenService', () => {
           sub: '456e7890-e12b-34c5-d678-901234567890',
           email: 'another@example.com',
           role: 'USER' as Role,
+          mustChangePassword: false,
         };
         jwtService.decode.mockReturnValue(mockPayload);
 

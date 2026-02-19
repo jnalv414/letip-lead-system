@@ -22,9 +22,10 @@ model user {
   email          String    @unique
   password_hash  String
   name           String
-  role           Role      @default(MEMBER)
-  is_active      Boolean   @default(true)
-  created_at     DateTime  @default(now())
+  role                  Role      @default(MEMBER)
+  is_active             Boolean   @default(true)
+  must_change_password  Boolean   @default(false)
+  created_at            DateTime  @default(now())
   updated_at     DateTime  @updatedAt
   last_login     DateTime?
 

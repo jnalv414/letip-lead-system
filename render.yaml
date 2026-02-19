@@ -1,0 +1,77 @@
+# Render Blueprint - LeTIP Lead System
+# https://docs.render.com/blueprint-spec
+
+databases:
+  - name: letip-db
+    plan: basic-256mb
+    databaseName: letip_leads
+    user: letip
+    region: oregon
+
+services:
+  # ── Backend API (NestJS + WebSocket) ──
+  - type: web
+    name: letip-api
+    plan: starter
+    runtime: node
+    region: oregon
+    branch: master
+    rootDir: App/BackEnd
+    buildCommand: yarn install --frozen-lockfile && npx prisma generate && yarn build
+    startCommand: npx prisma migrate deploy && node dist/main
+    healthCheckPath: /api-docs
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: letip-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: letip-redis
+          type: redis
+          property: connectionString
+      - key: FRONTEND_URL
+        value: https://jjailabs-letip.com
+      - key: JWT_SECRET
+        generateValue: true
+      - key: HUNTER_API_KEY
+        sync: false
+      - key: ABSTRACTAPI_KEY
+        sync: false
+      - key: APIFY_API_TOKEN
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+
+  # ── Frontend (Next.js 15 Standalone) ──
+  - type: web
+    name: letip-frontend
+    plan: starter
+    runtime: node
+    region: oregon
+    branch: master
+    rootDir: App/FrontEnd
+    buildCommand: yarn install --frozen-lockfile && yarn build
+    startCommand: node .next/standalone/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          name: letip-api
+          type: web
+          property: url
+
+  # ── Redis (for BullMQ job queue) ──
+  - type: redis
+    name: letip-redis
+    plan: starter
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []

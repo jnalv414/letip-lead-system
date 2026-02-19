@@ -32,6 +32,7 @@ describe('JwtStrategy', () => {
     name: testName,
     role: 'ADMIN' as Role,
     is_active: true,
+    must_change_password: false,
   };
 
   const mockMemberUser = {
@@ -40,6 +41,7 @@ describe('JwtStrategy', () => {
     name: testName,
     role: 'MEMBER' as Role,
     is_active: true,
+    must_change_password: false,
   };
 
   const mockUserUser = {
@@ -48,6 +50,7 @@ describe('JwtStrategy', () => {
     name: 'Regular User',
     role: 'USER' as Role,
     is_active: true,
+    must_change_password: false,
   };
 
   // Mock JWT payload
@@ -55,6 +58,7 @@ describe('JwtStrategy', () => {
     sub: testUserId,
     email: testEmail,
     role: 'ADMIN' as Role,
+    mustChangePassword: false,
   };
 
   beforeEach(async () => {
@@ -111,6 +115,7 @@ describe('JwtStrategy', () => {
           email: testEmail,
           name: testName,
           role: 'ADMIN',
+          mustChangePassword: false,
         });
         expect(authService.validateUser).toHaveBeenCalledWith(testUserId);
       });
@@ -140,6 +145,7 @@ describe('JwtStrategy', () => {
           sub: testUserId,
           email: testEmail,
           role: 'MEMBER' as Role,
+          mustChangePassword: false,
         };
 
         const result = await strategy.validate(memberPayload);
@@ -153,6 +159,7 @@ describe('JwtStrategy', () => {
           sub: testUserId,
           email: 'user@example.com',
           role: 'USER' as Role,
+          mustChangePassword: false,
         };
 
         const result = await strategy.validate(userPayload);
@@ -172,6 +179,7 @@ describe('JwtStrategy', () => {
           sub: testUserId,
           email: 'test+special@sub.example.com',
           role: 'ADMIN' as Role,
+          mustChangePassword: false,
         };
 
         const result = await strategy.validate(specialPayload);
@@ -234,6 +242,7 @@ describe('JwtStrategy', () => {
           sub: 'non-existent-uuid-here',
           email: 'ghost@example.com',
           role: 'USER' as Role,
+          mustChangePassword: false,
         };
 
         await expect(strategy.validate(nonExistentPayload)).rejects.toThrow(
@@ -290,7 +299,7 @@ describe('JwtStrategy', () => {
 
         const result = await strategy.validate(mockPayload);
 
-        expect(Object.keys(result)).toEqual(['id', 'email', 'name', 'role']);
+        expect(Object.keys(result)).toEqual(['id', 'email', 'name', 'role', 'mustChangePassword']);
         expect(result).not.toHaveProperty('password_hash');
         expect(result).not.toHaveProperty('created_at');
         expect(result).not.toHaveProperty('extra_field');
@@ -318,6 +327,7 @@ describe('JwtStrategy', () => {
           sub: '',
           email: testEmail,
           role: 'USER' as Role,
+          mustChangePassword: false,
         };
 
         await expect(strategy.validate(emptySubPayload)).rejects.toThrow(
@@ -446,6 +456,7 @@ describe('JwtStrategy', () => {
         name: 'Recently Active User',
         role: 'ADMIN' as Role,
         is_active: true,
+        must_change_password: false,
       };
       authService.validateUser.mockResolvedValue(recentUser);
 
@@ -507,6 +518,7 @@ describe('JwtStrategy', () => {
         sub: testUserId,
         email: testEmail,
         role: 'MEMBER' as Role, // Old role in token
+        mustChangePassword: false,
       };
 
       const result = await strategy.validate(memberPayload);
@@ -540,6 +552,7 @@ describe('JwtStrategy', () => {
         sub: '550e8400-e29b-41d4-a716-446655440000',
         email: testEmail,
         role: 'ADMIN' as Role,
+        mustChangePassword: false,
       };
 
       const result = await strategy.validate(uuidPayload);
@@ -560,6 +573,7 @@ describe('JwtStrategy', () => {
           sub: testUserId,
           email: testEmail,
           role,
+          mustChangePassword: false,
         };
 
         const result = await strategy.validate(rolePayload);
@@ -579,6 +593,7 @@ describe('JwtStrategy', () => {
         sub: testUserId,
         email: longEmail,
         role: 'USER' as Role,
+        mustChangePassword: false,
       };
 
       const result = await strategy.validate(longEmailPayload);

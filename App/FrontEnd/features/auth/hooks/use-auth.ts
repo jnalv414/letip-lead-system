@@ -10,9 +10,10 @@ import {
   logoutAll,
   getCurrentUser,
   updateProfile,
+  changePassword,
 } from '../api/auth-api'
 import { getAccessToken, clearAccessToken } from '@/shared/lib/api'
-import type { LoginRequest, RegisterRequest, UpdateProfileRequest } from '../types'
+import type { LoginRequest, RegisterRequest, UpdateProfileRequest, ChangePasswordRequest } from '../types'
 
 export const authKeys = {
   all: ['auth'] as const,
@@ -92,11 +93,25 @@ export function useUpdateProfile() {
   })
 }
 
+export function useChangePassword() {
+  const queryClient = useQueryClient()
+  const router = useRouter()
+
+  return useMutation({
+    mutationFn: (data: ChangePasswordRequest) => changePassword(data),
+    onSuccess: (user) => {
+      queryClient.setQueryData(authKeys.user(), user)
+      router.push('/')
+    },
+  })
+}
+
 export function useAuth() {
   const { data: user, isLoading, error } = useCurrentUser()
   const logoutMutation = useLogout()
 
   const isAuthenticated = !!user && !error
+  const mustChangePassword = user?.mustChangePassword ?? false
 
   const handleLogout = useCallback(() => {
     logoutMutation.mutate()
@@ -106,6 +121,7 @@ export function useAuth() {
     user,
     isLoading,
     isAuthenticated,
+    mustChangePassword,
     logout: handleLogout,
     isLoggingOut: logoutMutation.isPending,
   }

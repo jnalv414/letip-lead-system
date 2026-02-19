@@ -16,6 +16,7 @@ export interface RequestUser {
   email: string;
   name: string;
   role: Role;
+  mustChangePassword: boolean;
 }
 
 /**

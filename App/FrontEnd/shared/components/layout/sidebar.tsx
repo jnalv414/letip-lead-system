@@ -15,13 +15,14 @@ import {
   X,
 } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
+import { useAuth } from '@/features/auth'
 
-const navItems: Array<{ href: string; label: string; icon: React.ElementType }> = [
+const allNavItems: Array<{ href: string; label: string; icon: React.ElementType; viewerHidden?: boolean }> = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/leads', label: 'Leads', icon: Users },
-  { href: '/search', label: 'Search', icon: Search },
-  { href: '/enrichment', label: 'Enrichment', icon: Sparkles },
-  { href: '/outreach', label: 'Outreach', icon: MessageSquare },
+  { href: '/search', label: 'Search', icon: Search, viewerHidden: true },
+  { href: '/enrichment', label: 'Enrichment', icon: Sparkles, viewerHidden: true },
+  { href: '/outreach', label: 'Outreach', icon: MessageSquare, viewerHidden: true },
 ]
 
 interface SidebarProps {
@@ -31,6 +32,9 @@ interface SidebarProps {
 
 export function Sidebar({ open, onOpenChange }: SidebarProps) {
   const pathname = usePathname()
+  const { user } = useAuth()
+  const isViewer = user?.role === 'VIEWER'
+  const navItems = allNavItems.filter((item) => !(isViewer && item.viewerHidden))
 
   // Close on route change
   React.useEffect(() => {
@@ -137,13 +141,15 @@ export function Sidebar({ open, onOpenChange }: SidebarProps) {
 
             {/* Footer */}
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
-              <Link
-                href={'/settings' as string}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                <Settings className="h-5 w-5" />
-                <span>Settings</span>
-              </Link>
+              {!isViewer && (
+                <Link
+                  href={'/settings' as string}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <Settings className="h-5 w-5" />
+                  <span>Settings</span>
+                </Link>
+              )}
               <p className="mt-4 text-xs text-center text-muted-foreground/60">
                 Lead System v1.0
               </p>

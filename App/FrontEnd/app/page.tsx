@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AppShell } from '@/shared/components/layout'
+import { useAuth } from '@/features/auth'
 import {
   StatsGrid,
   PipelineChart,
@@ -28,6 +29,8 @@ import type { AnalyticsFilter } from '@/features/dashboard'
 type DashboardTab = 'overview' | 'analytics' | 'import'
 
 export default function DashboardPage() {
+  const { user } = useAuth()
+  const isViewer = user?.role === 'VIEWER'
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview')
   const [analyticsFilter] = useState<AnalyticsFilter>({})
   const [topPerformersDimension, setTopPerformersDimension] = useState<'city' | 'industry' | 'source'>('city')
@@ -56,23 +59,25 @@ export default function DashboardPage() {
       <div className="space-y-6">
         {/* Tab Navigation */}
         <div className="flex gap-2 border-b border-border pb-2">
-          {(['overview', 'analytics', 'import'] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`
-                px-4 py-2 rounded-t-lg text-sm font-medium transition-colors
-                ${activeTab === tab
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }
-              `}
-            >
-              {tab === 'overview' && 'Overview'}
-              {tab === 'analytics' && 'Analytics'}
-              {tab === 'import' && 'Import Data'}
-            </button>
-          ))}
+          {(['overview', 'analytics', 'import'] as const)
+            .filter((tab) => !(isViewer && tab === 'import'))
+            .map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`
+                  px-4 py-2 rounded-t-lg text-sm font-medium transition-colors
+                  ${activeTab === tab
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }
+                `}
+              >
+                {tab === 'overview' && 'Overview'}
+                {tab === 'analytics' && 'Analytics'}
+                {tab === 'import' && 'Import Data'}
+              </button>
+            ))}
         </div>
 
         {/* Overview Tab */}
@@ -130,7 +135,7 @@ export default function DashboardPage() {
         )}
 
         {/* Import Tab */}
-        {activeTab === 'import' && (
+        {activeTab === 'import' && !isViewer && (
           <div className="max-w-2xl mx-auto">
             <CsvImport
               onComplete={() => {

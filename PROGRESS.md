@@ -1,61 +1,89 @@
 # Le Tip Lead System - Development Progress
 
-**Last Updated:** 2025-12-13 (Session 14 - Complete)
-**Current Phase:** SendGrid Email Integration ✅ COMPLETE
-**Project Status:** 🟢 Full Stack Operational + Email Ready
+**Last Updated:** 2026-02-11 (Session 17 - Deployment Planning)
+**Current Phase:** Production Deployment to Cloudflare + Render
+**Project Status:** 🟢 Full Stack Operational | Deployment IN PROGRESS
 
 ---
 
 ## 🚀 Quick Start for Next Session
 
-### What Was Just Completed (Session 14)
-**SendGrid Email Integration - ALL 6 PHASES COMPLETE:**
-- ✅ Phase 1: EmailModule structure (email.service.ts, email.controller.ts, DTOs)
-- ✅ Phase 2: EmailService with send/sendBatch methods + rate limiting
-- ✅ Phase 3: OutreachWorker integration - sends emails on job execution
-- ✅ Phase 4: Webhook endpoint at POST /api/email/webhook for delivery tracking
-- ✅ Phase 5: Frontend displays email statuses (delivered, opened, clicked, bounced)
-- ✅ Phase 6: All endpoints tested and verified working
+### What's In Progress (Session 17)
+**Production Deployment — Cloudflare Pages (Frontend) + Render (Backend)**
 
-### What's Next (Session 15)
-**Option A:** Configure SendGrid API key and test real email sending
-```bash
-# Add to ~/.config/letip_api_secrets.json
-{
-  "sendgrid": {
-    "secrets": {
-      "api_key": { "value": "SG.your_api_key_here" }
-    }
-  }
-}
+**Architecture:**
+```
+jjailabs-letip.com (Cloudflare Pages) → api.jjailabs-letip.com (Render)
 ```
 
-**Option B:** Implement new features:
-- Batch email campaigns with scheduling
-- Email templates management
-- Unsubscribe handling
-- Analytics dashboard improvements
+**Cloudflare API Token:** `a2Ege9z8nLku3HJulbggxVsXIYQponMC3JU_AE2n`
+**Domain:** `jjailabs-letip.com` (already on Cloudflare nameservers)
+**Render Account:** User has existing account
 
-**Option C:** Other improvements (scraping, enrichment, etc.)
+### Deployment Plan (8 Steps)
+
+| # | Step | Status |
+|---|------|--------|
+| 1 | Configure Next.js for static export (`output: 'export'`) | ⬜ Pending |
+| 2 | Create `.env.production` with `NEXT_PUBLIC_API_URL=https://api.jjailabs-letip.com` | ⬜ Pending |
+| 3 | Update backend CORS to accept `https://jjailabs-letip.com` | ⬜ Pending |
+| 4 | Build frontend (`npm run build` → `out/` directory) | ⬜ Pending |
+| 5 | Deploy to Cloudflare Pages via Wrangler CLI | ⬜ Pending |
+| 6 | Configure custom domain `jjailabs-letip.com` on Cloudflare Pages | ⬜ Pending |
+| 7 | Prepare backend for Render (render.yaml, build/start commands) | ⬜ Pending |
+| 8 | Verify end-to-end (frontend → backend API, CORS, auth, WebSocket) | ⬜ Pending |
+
+### Files to Modify/Create
+
+**Modify:**
+- `App/FrontEnd/next.config.ts` — Add `output: 'export'`, `images: { unoptimized: true }`
+- `App/BackEnd/src/main.ts` — CORS origin array with production domain
+- `App/FrontEnd/.gitignore` — Add `out/` directory
+
+**Create:**
+- `App/FrontEnd/.env.production` — `NEXT_PUBLIC_API_URL=https://api.jjailabs-letip.com`
+- `App/BackEnd/render.yaml` — Render Blueprint (web service + Postgres + Redis)
+
+### Key Technical Details
+
+**Frontend (Cloudflare Pages):**
+- Static export (all pages are `'use client'` — no SSR needed)
+- `NEXT_PUBLIC_API_URL` baked into build for API calls
+- Socket.io URL also reads from `NEXT_PUBLIC_API_URL`
+- Deploy via: `npx wrangler pages deploy App/FrontEnd/out --project-name jjailabs-letip`
+
+**Backend (Render):**
+- NestJS with Prisma ORM
+- Requires: PostgreSQL, Redis (BullMQ + caching)
+- Build: `npm install && npx prisma generate && npm run build`
+- Start: `node dist/main.js`
+- Env vars needed: `PORT`, `DATABASE_URL`, `REDIS_URL`, `FRONTEND_URL`, `JWT_SECRET`, `JWT_REFRESH_SECRET`
+- CORS must allow `https://jjailabs-letip.com`
+
+### What Was Completed Before This Session
+- ✅ Session 14: SendGrid email integration (all 6 phases)
+- ✅ Session 15: WebSocket JWT auth, controller RBAC protection, 150+ tests
+- ✅ Session 16: MSW infrastructure, hook tests, integration tests (+193 tests), theme/dark mode
 
 ### Current Project State
 ```bash
-# Services Running
-Frontend: http://localhost:3031 (Next.js) - ✅ OPERATIONAL
+# Local Services
+Frontend: http://localhost:3031 (Next.js 15) - ✅ OPERATIONAL
 Backend: http://localhost:3030 (NestJS) - ✅ OPERATIONAL
 Redis: localhost:6379 - ✅ OPERATIONAL
 PostgreSQL: localhost:5434 - ✅ OPERATIONAL
 
 # Git Status
 Branch: master
-Status: Changes in progress (SendGrid integration)
+Latest Commit: 265cd37 chore: Theme support, dark mode glass variants, port fix, and project docs
+Status: Clean (nothing to commit)
 
 # Login Credentials
 Email: demo@letip.com
 Password: Demo1234
 ```
 
-### Start Development
+### Start Local Development
 ```bash
 # Full Stack (requires Docker)
 # 1. Start Redis & PostgreSQL (if not running)
@@ -72,6 +100,33 @@ Frontend: http://localhost:3031
 Backend API: http://localhost:3030
 API Docs: http://localhost:3030/api-docs
 ```
+
+---
+
+## 🚀 Session 17: Production Deployment Planning (2026-02-11)
+
+### Overview
+Planning production deployment of the Le Tip Lead System. Frontend to Cloudflare Pages at `jjailabs-letip.com`, backend to Render with managed PostgreSQL and Redis.
+
+### Decisions Made
+- **Frontend hosting:** Cloudflare Pages (static export) — all pages are client-side (`'use client'`)
+- **Backend hosting:** Render — supports NestJS + PostgreSQL + Redis + WebSockets + BullMQ
+- **Domain:** `jjailabs-letip.com` already on Cloudflare nameservers
+- **Backend subdomain:** `api.jjailabs-letip.com` (on Render)
+- **Adapter:** Static export (`output: 'export'`) — NOT @opennextjs/cloudflare (overkill for client-only app)
+
+### Research Findings
+- `@cloudflare/next-on-pages` is DEPRECATED (archived Sep 2025)
+- `@opennextjs/cloudflare` is the new standard for SSR Next.js on Cloudflare Workers
+- But since ALL pages are `'use client'`, static export to Cloudflare Pages is simpler and sufficient
+- Cloudflare Workers not suitable for NestJS backend (Prisma + Redis + BullMQ needs persistent runtime)
+- Render is ideal for the backend stack
+
+### Plan Location
+Full deployment plan: `.claude/plans/cozy-leaping-hedgehog.md`
+
+### Session Status
+**Status:** Plan approved, ready for execution in next session
 
 ---
 

@@ -45,6 +45,7 @@ const mockUser = {
   email: 'test@example.com',
   name: 'Test User',
   role: 'MEMBER' as const,
+  mustChangePassword: false,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
 }

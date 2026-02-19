@@ -5,6 +5,7 @@ import type {
   RegisterRequest,
   AuthResponse,
   UpdateProfileRequest,
+  ChangePasswordRequest,
 } from '../types'
 
 export async function login(credentials: LoginRequest): Promise<AuthResponse> {
@@ -50,6 +51,13 @@ export async function getCurrentUser(): Promise<User> {
 export async function updateProfile(data: UpdateProfileRequest): Promise<User> {
   return api<User>('/api/auth/me', {
     method: 'PATCH',
+    body: data,
+  })
+}
+
+export async function changePassword(data: ChangePasswordRequest): Promise<User> {
+  return api<User>('/api/auth/change-password', {
+    method: 'POST',
     body: data,
   })
 }

@@ -5,6 +5,7 @@ import { Search, Bell, User } from 'lucide-react'
 import { SidebarTrigger } from './sidebar'
 import { ThemeToggle } from '@/shared/components/theme-toggle'
 import { cn } from '@/shared/lib/utils'
+import { useAuth } from '@/features/auth'
 
 interface HeaderProps {
   onMenuClick: () => void
@@ -12,6 +13,9 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuClick, title }: HeaderProps) {
+  const { user } = useAuth()
+  const isViewer = user?.role === 'VIEWER'
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6">
       {/* Menu trigger */}
@@ -50,6 +54,13 @@ export function Header({ onMenuClick, title }: HeaderProps) {
         <Bell className="h-5 w-5" />
         <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-violet-500" />
       </button>
+
+      {/* Read-only badge for VIEWER users */}
+      {isViewer && (
+        <span className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border">
+          Read-only access
+        </span>
+      )}
 
       {/* User menu */}
       <button

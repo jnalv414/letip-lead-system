@@ -7,8 +7,14 @@ export interface User {
   email: string
   name: string | null
   role: UserRole
+  mustChangePassword: boolean
   createdAt: string
   updatedAt: string
+}
+
+export interface ChangePasswordRequest {
+  oldPassword: string
+  newPassword: string
 }
 
 export interface LoginRequest {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '../hooks/use-auth'
 
 interface AuthGuardProps {
@@ -12,10 +12,12 @@ interface AuthGuardProps {
 /**
  * Protects routes that require authentication.
  * Redirects to /login if user is not authenticated.
+ * Redirects to /change-password if user must change their password.
  */
 export function AuthGuard({ children, fallback }: AuthGuardProps) {
   const router = useRouter()
-  const { isAuthenticated, isLoading } = useAuth()
+  const pathname = usePathname()
+  const { isAuthenticated, isLoading, mustChangePassword } = useAuth()
   const [mounted, setMounted] = useState(false)
 
   // Track when component is mounted (client-side)
@@ -24,10 +26,17 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
   }, [])
 
   useEffect(() => {
-    if (mounted && !isLoading && !isAuthenticated) {
+    if (!mounted || isLoading) return
+
+    if (!isAuthenticated) {
       router.push('/login')
+      return
     }
-  }, [mounted, isLoading, isAuthenticated, router])
+
+    if (mustChangePassword && pathname !== '/change-password') {
+      router.push('/change-password')
+    }
+  }, [mounted, isLoading, isAuthenticated, mustChangePassword, pathname, router])
 
   // During SSR and initial hydration, render a consistent loading state
   if (!mounted || isLoading) {
@@ -45,6 +54,11 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
 
   // Don't render children if not authenticated (while redirecting)
   if (!isAuthenticated) {
+    return null
+  }
+
+  // Don't render children if password change is required (while redirecting)
+  if (mustChangePassword && pathname !== '/change-password') {
     return null
   }
 

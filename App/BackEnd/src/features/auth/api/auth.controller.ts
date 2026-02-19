@@ -27,7 +27,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiCookieAuth } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { AuthService } from '../domain/auth.service';
-import { LoginDto, RegisterDto, AuthResponseDto, RefreshResponseDto, MessageResponseDto } from './dto';
+import { LoginDto, RegisterDto, AuthResponseDto, RefreshResponseDto, MessageResponseDto, ChangePasswordDto } from './dto';
 import { Public } from '../decorators/public.decorator';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import type { RequestUser } from '../decorators/current-user.decorator';
@@ -218,6 +218,27 @@ export class AuthController {
     res.cookie(REFRESH_TOKEN_COOKIE, result.refreshToken, cookieOptions);
 
     return { accessToken: result.accessToken };
+  }
+
+  /**
+   * Change password
+   *
+   * Verifies old password and sets new one.
+   * Clears must_change_password flag.
+   */
+  @Post('change-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Change current user password' })
+  @ApiResponse({ status: 200, description: 'Password changed successfully' })
+  @ApiResponse({ status: 400, description: 'Current password incorrect or new password too weak' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async changePassword(
+    @CurrentUser('id') userId: string,
+    @Body() dto: ChangePasswordDto,
+  ) {
+    const user = await this.authService.changePassword(userId, dto.oldPassword, dto.newPassword);
+    return { message: 'Password changed successfully', user };
   }
 
   /**

@@ -6,6 +6,7 @@ import { Plus, Building2 } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import { SkeletonCard } from '@/shared/components/ui/skeleton'
 import { useDebounce } from '@/shared/hooks/use-debounce'
+import { useAuth } from '@/features/auth'
 import { BusinessCard } from './business-card'
 import { FilterBar } from './filter-bar'
 import { BulkActionsBar } from './bulk-actions-bar'
@@ -19,6 +20,9 @@ interface BusinessListProps {
 }
 
 export function BusinessList({ pageSize = 12 }: BusinessListProps) {
+  const { user } = useAuth()
+  const isViewer = user?.role === 'VIEWER'
+
   // Modal state
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [viewModalOpen, setViewModalOpen] = useState(false)
@@ -126,17 +130,19 @@ export function BusinessList({ pageSize = 12 }: BusinessListProps) {
             {data?.total ?? 0} businesses in your database
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          {data?.data && data.data.length > 0 && (
-            <Button variant="outline" size="sm" onClick={handleSelectAll}>
-              Select All
+        {!isViewer && (
+          <div className="flex items-center gap-2">
+            {data?.data && data.data.length > 0 && (
+              <Button variant="outline" size="sm" onClick={handleSelectAll}>
+                Select All
+              </Button>
+            )}
+            <Button size="sm" onClick={() => setCreateModalOpen(true)}>
+              <Plus className="h-4 w-4 mr-1.5" />
+              Add Lead
             </Button>
-          )}
-          <Button size="sm" onClick={() => setCreateModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-1.5" />
-            Add Lead
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Filters */}
@@ -166,10 +172,10 @@ export function BusinessList({ pageSize = 12 }: BusinessListProps) {
                     key={business.id}
                     business={business}
                     isSelected={selectedIds.has(business.id)}
-                    onSelect={handleSelect}
+                    onSelect={isViewer ? undefined : handleSelect}
                     onView={handleView}
-                    onEnrich={handleEnrich}
-                    onDelete={handleDelete}
+                    onEnrich={isViewer ? undefined : handleEnrich}
+                    onDelete={isViewer ? undefined : handleDelete}
                   />
                 ))}
               </motion.div>
@@ -211,10 +217,12 @@ export function BusinessList({ pageSize = 12 }: BusinessListProps) {
                 ? 'Try adjusting your search or filters to find what you\'re looking for.'
                 : 'Get started by adding your first lead or running a map scrape.'}
             </p>
-            <Button onClick={() => setCreateModalOpen(true)}>
-              <Plus className="h-4 w-4 mr-1.5" />
-              Add Your First Lead
-            </Button>
+            {!isViewer && (
+              <Button onClick={() => setCreateModalOpen(true)}>
+                <Plus className="h-4 w-4 mr-1.5" />
+                Add Your First Lead
+              </Button>
+            )}
           </div>
         )}
 
@@ -227,31 +235,37 @@ export function BusinessList({ pageSize = 12 }: BusinessListProps) {
       </div>
 
       {/* Bulk Actions */}
-      <BulkActionsBar
-        selectedCount={selectedIds.size}
-        onClearSelection={handleClearSelection}
-        onBulkEnrich={handleBulkEnrich}
-        onBulkDelete={handleBulkDelete}
-        isEnriching={bulkEnrich.isPending}
-        isDeleting={bulkDelete.isPending}
-      />
+      {!isViewer && (
+        <BulkActionsBar
+          selectedCount={selectedIds.size}
+          onClearSelection={handleClearSelection}
+          onBulkEnrich={handleBulkEnrich}
+          onBulkDelete={handleBulkDelete}
+          isEnriching={bulkEnrich.isPending}
+          isDeleting={bulkDelete.isPending}
+        />
+      )}
 
-      {/* Modals */}
-      <CreateLeadModal
-        open={createModalOpen}
-        onOpenChange={setCreateModalOpen}
-      />
+      {/* Modals - hidden for VIEWER users */}
+      {!isViewer && (
+        <CreateLeadModal
+          open={createModalOpen}
+          onOpenChange={setCreateModalOpen}
+        />
+      )}
       <ViewLeadModal
         open={viewModalOpen}
         onOpenChange={setViewModalOpen}
         businessId={selectedBusinessId}
-        onEnrich={handleEnrich}
+        onEnrich={isViewer ? undefined : handleEnrich}
       />
-      <DeleteLeadModal
-        open={deleteModalOpen}
-        onOpenChange={setDeleteModalOpen}
-        business={businessToDelete}
-      />
+      {!isViewer && (
+        <DeleteLeadModal
+          open={deleteModalOpen}
+          onOpenChange={setDeleteModalOpen}
+          business={businessToDelete}
+        />
+      )}
     </div>
   )
 }

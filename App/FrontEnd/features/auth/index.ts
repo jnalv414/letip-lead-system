@@ -1,5 +1,5 @@
 // Types
-export type { User, UserRole, LoginRequest, RegisterRequest, AuthResponse, UpdateProfileRequest } from './types'
+export type { User, UserRole, LoginRequest, RegisterRequest, AuthResponse, UpdateProfileRequest, ChangePasswordRequest } from './types'
 
 // Hooks
 export {
@@ -9,6 +9,7 @@ export {
   useLogout,
   useLogoutAll,
   useUpdateProfile,
+  useChangePassword,
   useAuth,
   authKeys,
 } from './hooks/use-auth'

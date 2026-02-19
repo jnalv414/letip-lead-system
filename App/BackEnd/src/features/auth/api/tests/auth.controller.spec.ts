@@ -45,6 +45,7 @@ describe('AuthController', () => {
     email: testEmail,
     name: testName,
     role: Role.MEMBER,
+    mustChangePassword: false,
     createdAt: new Date('2025-01-01T00:00:00Z'),
     lastLogin: new Date('2025-01-15T12:00:00Z'),
   };
@@ -258,6 +259,7 @@ describe('AuthController', () => {
       email: 'admin@example.com',
       name: 'Admin User',
       role: Role.ADMIN,
+      mustChangePassword: false,
     };
 
     describe('Success Cases', () => {

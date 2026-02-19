@@ -104,7 +104,7 @@ export class AuthService {
     this.logger.log(`User registered: ${user.email} (${user.role})`);
 
     // Generate tokens
-    const accessToken = this.tokenService.generateAccessToken(user.id, user.email, user.role);
+    const accessToken = this.tokenService.generateAccessToken(user.id, user.email, user.role, user.must_change_password);
     const refreshToken = await this.sessionService.createSession({
       userId: user.id,
       userAgent,
@@ -153,7 +153,7 @@ export class AuthService {
     this.logger.log(`User logged in: ${user.email}`);
 
     // Generate tokens
-    const accessToken = this.tokenService.generateAccessToken(user.id, user.email, user.role);
+    const accessToken = this.tokenService.generateAccessToken(user.id, user.email, user.role, user.must_change_password);
     const refreshToken = await this.sessionService.createSession({
       userId: user.id,
       userAgent,
@@ -200,6 +200,7 @@ export class AuthService {
       session.user.id,
       session.user.email,
       session.user.role,
+      session.user.must_change_password,
     );
 
     const newRefreshToken = await this.sessionService.rotateRefreshToken(
@@ -299,6 +300,54 @@ export class AuthService {
   }
 
   /**
+   * Change user password
+   *
+   * Verifies old password, validates new password strength,
+   * hashes new password, and clears must_change_password flag.
+   *
+   * @param userId - User UUID
+   * @param oldPassword - Current password for verification
+   * @param newPassword - New password to set
+   * @returns Updated user response
+   */
+  async changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<UserResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const isOldPasswordValid = await this.passwordService.compare(oldPassword, user.password_hash);
+    if (!isOldPasswordValid) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    const passwordValidation = this.passwordService.validateStrength(newPassword);
+    if (!passwordValidation.isValid) {
+      throw new BadRequestException(passwordValidation.errors.join(', '));
+    }
+
+    const newHash = await this.passwordService.hash(newPassword);
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        password_hash: newHash,
+        must_change_password: false,
+      },
+    });
+
+    this.logger.log(`Password changed for user: ${user.email}`);
+    return this.mapUserToResponse(updatedUser);
+  }
+
+  /**
    * Validate user exists and is active (for JWT strategy)
    *
    * @param userId - User UUID
@@ -313,6 +362,7 @@ export class AuthService {
         name: true,
         role: true,
         is_active: true,
+        must_change_password: true,
       },
     });
 
@@ -332,6 +382,7 @@ export class AuthService {
       email: user.email,
       name: user.name,
       role: user.role,
+      mustChangePassword: user.must_change_password ?? false,
       createdAt: user.created_at,
       lastLogin: user.last_login,
     };

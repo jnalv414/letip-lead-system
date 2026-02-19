@@ -15,6 +15,7 @@ export interface JwtPayload {
   sub: string; // User ID
   email: string;
   role: Role;
+  mustChangePassword: boolean;
 }
 
 export interface TokenPair {
@@ -45,11 +46,12 @@ export class TokenService {
    * @param role - User's role
    * @returns JWT access token string
    */
-  generateAccessToken(userId: string, email: string, role: Role): string {
+  generateAccessToken(userId: string, email: string, role: Role, mustChangePassword = false): string {
     const payload: JwtPayload = {
       sub: userId,
       email,
       role,
+      mustChangePassword,
     };
 
     return this.jwtService.sign(payload, {
@@ -75,9 +77,9 @@ export class TokenService {
    * @param role - User's role
    * @returns Token pair with access and refresh tokens
    */
-  generateTokenPair(userId: string, email: string, role: Role): TokenPair {
+  generateTokenPair(userId: string, email: string, role: Role, mustChangePassword = false): TokenPair {
     return {
-      accessToken: this.generateAccessToken(userId, email, role),
+      accessToken: this.generateAccessToken(userId, email, role, mustChangePassword),
       refreshToken: this.generateRefreshToken(),
     };
   }

@@ -20,6 +20,9 @@ export class UserResponseDto {
   @ApiProperty({ description: 'User role', enum: Role })
   role: Role;
 
+  @ApiProperty({ description: 'Whether user must change their password on next login' })
+  mustChangePassword: boolean;
+
   @ApiProperty({ description: 'Account creation date' })
   createdAt: Date;
 
