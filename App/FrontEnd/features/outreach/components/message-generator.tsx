@@ -40,7 +40,7 @@ export function MessageGenerator({
 
   const contactOptions = contacts.map((c) => ({
     value: c.id,
-    label: `${c.first_name ?? ''} ${c.last_name ?? ''} - ${c.email}`.trim(),
+    label: `${c.name ?? 'Unknown'} - ${c.email ?? 'No email'}`.trim(),
   }))
 
   const templateOptions = templates
@@ -57,13 +57,11 @@ export function MessageGenerator({
   ]
 
   const handleGenerate = () => {
-    if (selectedContactId) {
-      onGenerate(selectedContactId, selectedTemplateId, messageType)
-    }
+    onGenerate(selectedContactId, selectedTemplateId, messageType)
   }
 
   const handleSend = () => {
-    if (selectedContactId && generatedMessage) {
+    if (generatedMessage) {
       onSend(selectedContactId, generatedMessage, messageType)
     }
   }
@@ -124,12 +122,12 @@ export function MessageGenerator({
             value={selectedContactId}
             onChange={(e) => setSelectedContactId(e.target.value)}
             options={contactOptions}
-            placeholder="Select a contact..."
+            placeholder={contacts.length > 0 ? 'Select a contact...' : 'No contacts available (optional)'}
             disabled={contacts.length === 0}
           />
           {contacts.length === 0 && (
             <p className="text-xs text-muted-foreground">
-              No contacts found. Enrich the business first.
+              No contacts found. You can still generate a message using business info.
             </p>
           )}
         </div>
@@ -149,7 +147,7 @@ export function MessageGenerator({
           className="w-full"
           onClick={handleGenerate}
           isLoading={isGenerating}
-          disabled={!isAdmin || !business || !selectedContactId || isGenerating}
+          disabled={!isAdmin || !business || isGenerating}
         >
           <Sparkles className="h-4 w-4 mr-2" />
           Generate Message

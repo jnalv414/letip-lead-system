@@ -52,7 +52,7 @@ export default function OutreachPage() {
       try {
         const result = await generateMessage.mutateAsync({
           business_id: selectedBusiness.id,
-          contact_id: contactId,
+          contact_id: contactId || undefined,
           template_id: templateId || undefined,
           message_type: type,
         })

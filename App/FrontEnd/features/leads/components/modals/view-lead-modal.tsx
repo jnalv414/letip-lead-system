@@ -146,10 +146,10 @@ export function ViewLeadModal({
                     className="p-3 bg-muted/50 rounded-lg text-sm"
                   >
                     <p className="font-medium">
-                      {contact.first_name} {contact.last_name}
+                      {contact.name ?? 'Unknown'}
                     </p>
-                    {contact.position && (
-                      <p className="text-muted-foreground">{contact.position}</p>
+                    {contact.title && (
+                      <p className="text-muted-foreground">{contact.title}</p>
                     )}
                     <p className="text-primary">{contact.email}</p>
                   </div>

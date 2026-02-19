@@ -20,11 +20,13 @@ export interface Business {
 export interface Contact {
   id: string
   business_id: string
-  first_name: string | null
-  last_name: string | null
-  email: string
-  position: string | null
-  confidence: number | null
+  name: string | null
+  title: string | null
+  email: string | null
+  email_verified: boolean | null
+  phone: string | null
+  linkedin_url: string | null
+  is_primary: boolean
   created_at: string
 }
 
