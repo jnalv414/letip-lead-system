@@ -12,16 +12,16 @@ export class ScrapeRequestDto {
 
   @ApiPropertyOptional({
     description: 'Search radius in miles',
-    default: 1,
-    minimum: 0.5,
-    maximum: 5
+    default: 10,
+    minimum: 1,
+    maximum: 50
   })
   @IsOptional()
   @IsNumber()
-  @Min(0.5)
-  @Max(5)
+  @Min(1)
+  @Max(50)
   @Type(() => Number)
-  radius?: number = 1;
+  radius?: number = 10;
 
   @ApiPropertyOptional({
     description: 'Business type/category to filter',

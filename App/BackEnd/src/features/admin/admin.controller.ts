@@ -51,9 +51,7 @@ export class AdminController {
     description: 'Forbidden - Admin only',
   })
   async getApiStatus(): Promise<ApiStatusResponse> {
-    const apifyKey =
-      this.configService.get('APIFY_API_KEY') ||
-      process.env.APIFY_API_KEY;
+    const apifyKey = this.configService.getApifyApiKey();
 
     const hunterKey = this.configService.getHunterApiKey();
     const abstractKey = this.configService.getAbstractApiKey();

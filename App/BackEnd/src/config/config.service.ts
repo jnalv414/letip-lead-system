@@ -72,15 +72,25 @@ export class ConfigService {
 
   // Specific getters for easy access
   getHunterApiKey(): string | null {
+    const envKey = this.nestConfigService.get<string>('HUNTER_API_KEY');
+    if (envKey) {
+      return envKey;
+    }
     return this.getSecret('hunter.io', 'api_key');
   }
 
   getAbstractApiKey(): string | null {
+    const envKey = this.nestConfigService.get<string>('ABSTRACTAPI_KEY');
+    if (envKey) {
+      return envKey;
+    }
     return this.getSecret('abstractapi', 'api_key');
   }
 
   getApifyApiKey(): string | null {
-    const envKey = this.nestConfigService.get<string>('APIFY_API_KEY');
+    const envKey =
+      this.nestConfigService.get<string>('APIFY_API_TOKEN') ||
+      this.nestConfigService.get<string>('APIFY_API_KEY');
     if (envKey) {
       return envKey;
     }
