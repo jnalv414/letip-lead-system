@@ -1,5 +1,10 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import * as sgMail from '@sendgrid/mail';
+import type { MailDataRequired } from '@sendgrid/mail';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const sgMail = require('@sendgrid/mail') as {
+  setApiKey(key: string): void;
+  send(data: MailDataRequired): Promise<[{ headers: Record<string, string> }, unknown]>;
+};
 import { ConfigService } from '../../config/config.service';
 import {
   SendEmailDto,
@@ -106,7 +111,7 @@ export class EmailService implements OnModuleInit {
     }
 
     try {
-      const msg: sgMail.MailDataRequired = {
+      const msg: MailDataRequired = {
         to: {
           email: dto.to.email,
           name: dto.to.name,

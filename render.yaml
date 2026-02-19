@@ -17,8 +17,8 @@ services:
     region: oregon
     branch: master
     rootDir: App/BackEnd
-    buildCommand: yarn install --frozen-lockfile && npx prisma generate && yarn build
-    startCommand: npx prisma migrate deploy && node dist/main
+    buildCommand: npm install --include=dev && npx prisma generate && npm run build
+    startCommand: npx prisma migrate resolve --rolled-back 20260218_add_must_change_password 2>/dev/null; npx prisma migrate deploy && node dist/src/main.js
     healthCheckPath: /api-docs
     envVars:
       - key: NODE_ENV
