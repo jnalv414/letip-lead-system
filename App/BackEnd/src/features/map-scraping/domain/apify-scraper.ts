@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '../../../config/config.service';
 import axios, { AxiosInstance } from 'axios';
 
 export interface ApifyActorInput {
@@ -66,10 +66,8 @@ export class ApifyScraper {
   private readonly apiKey: string;
 
   constructor(private configService: ConfigService) {
-    // Load API key from secrets file via ConfigService
-    this.apiKey = this.configService.get('APIFY_API_KEY') ||
-                  process.env.APIFY_API_KEY ||
-                  '';
+    // Load API key from secrets file via custom ConfigService
+    this.apiKey = this.configService.getApifyApiKey() || '';
 
     if (!this.apiKey) {
       this.logger.warn('Apify API key not configured - scraping will fail');

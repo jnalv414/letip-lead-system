@@ -11,7 +11,7 @@ export class EnrichmentController {
   constructor(private readonly enrichmentService: EnrichmentService) {}
 
   @Post(':id')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Enrich a specific business' })
   @ApiResponse({ status: 200, description: 'Business enriched successfully' })
@@ -23,7 +23,7 @@ export class EnrichmentController {
   }
 
   @Post('batch/process')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Batch enrich multiple pending businesses' })
   @ApiResponse({ status: 200, description: 'Batch enrichment completed' })

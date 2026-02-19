@@ -21,7 +21,7 @@ interface BusinessListProps {
 
 export function BusinessList({ pageSize = 12 }: BusinessListProps) {
   const { user } = useAuth()
-  const isViewer = user?.role === 'VIEWER'
+  const isAdmin = user?.role === 'ADMIN'
 
   // Modal state
   const [createModalOpen, setCreateModalOpen] = useState(false)
@@ -130,7 +130,7 @@ export function BusinessList({ pageSize = 12 }: BusinessListProps) {
             {data?.total ?? 0} businesses in your database
           </p>
         </div>
-        {!isViewer && (
+        {isAdmin && (
           <div className="flex items-center gap-2">
             {data?.data && data.data.length > 0 && (
               <Button variant="outline" size="sm" onClick={handleSelectAll}>
@@ -172,10 +172,10 @@ export function BusinessList({ pageSize = 12 }: BusinessListProps) {
                     key={business.id}
                     business={business}
                     isSelected={selectedIds.has(business.id)}
-                    onSelect={isViewer ? undefined : handleSelect}
+                    onSelect={isAdmin ? handleSelect : undefined}
                     onView={handleView}
-                    onEnrich={isViewer ? undefined : handleEnrich}
-                    onDelete={isViewer ? undefined : handleDelete}
+                    onEnrich={isAdmin ? handleEnrich : undefined}
+                    onDelete={isAdmin ? handleDelete : undefined}
                   />
                 ))}
               </motion.div>
@@ -217,7 +217,7 @@ export function BusinessList({ pageSize = 12 }: BusinessListProps) {
                 ? 'Try adjusting your search or filters to find what you\'re looking for.'
                 : 'Get started by adding your first lead or running a map scrape.'}
             </p>
-            {!isViewer && (
+            {isAdmin && (
               <Button onClick={() => setCreateModalOpen(true)}>
                 <Plus className="h-4 w-4 mr-1.5" />
                 Add Your First Lead
@@ -235,7 +235,7 @@ export function BusinessList({ pageSize = 12 }: BusinessListProps) {
       </div>
 
       {/* Bulk Actions */}
-      {!isViewer && (
+      {isAdmin && (
         <BulkActionsBar
           selectedCount={selectedIds.size}
           onClearSelection={handleClearSelection}
@@ -247,7 +247,7 @@ export function BusinessList({ pageSize = 12 }: BusinessListProps) {
       )}
 
       {/* Modals - hidden for VIEWER users */}
-      {!isViewer && (
+      {isAdmin && (
         <CreateLeadModal
           open={createModalOpen}
           onOpenChange={setCreateModalOpen}
@@ -257,9 +257,9 @@ export function BusinessList({ pageSize = 12 }: BusinessListProps) {
         open={viewModalOpen}
         onOpenChange={setViewModalOpen}
         businessId={selectedBusinessId}
-        onEnrich={isViewer ? undefined : handleEnrich}
+        onEnrich={isAdmin ? handleEnrich : undefined}
       />
-      {!isViewer && (
+      {isAdmin && (
         <DeleteLeadModal
           open={deleteModalOpen}
           onOpenChange={setDeleteModalOpen}

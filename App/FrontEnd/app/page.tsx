@@ -25,12 +25,13 @@ import {
   useCostAnalysis,
 } from '@/features/dashboard'
 import type { AnalyticsFilter } from '@/features/dashboard'
+import { ApiStatusWidget } from '@/features/admin'
 
 type DashboardTab = 'overview' | 'analytics' | 'import'
 
 export default function DashboardPage() {
   const { user } = useAuth()
-  const isViewer = user?.role === 'VIEWER'
+  const isAdmin = user?.role === 'ADMIN'
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview')
   const [analyticsFilter] = useState<AnalyticsFilter>({})
   const [topPerformersDimension, setTopPerformersDimension] = useState<'city' | 'industry' | 'source'>('city')
@@ -60,7 +61,7 @@ export default function DashboardPage() {
         {/* Tab Navigation */}
         <div className="flex gap-2 border-b border-border pb-2">
           {(['overview', 'analytics', 'import'] as const)
-            .filter((tab) => !(isViewer && tab === 'import'))
+            .filter((tab) => !(!isAdmin && tab === 'import'))
             .map((tab) => (
               <button
                 key={tab}
@@ -101,6 +102,9 @@ export default function DashboardPage() {
 
             {/* Recent Businesses */}
             <RecentBusinesses businesses={businesses} isLoading={businessesLoading} />
+
+            {/* Admin-only API Status */}
+            {isAdmin && <ApiStatusWidget />}
           </div>
         )}
 
@@ -135,7 +139,7 @@ export default function DashboardPage() {
         )}
 
         {/* Import Tab */}
-        {activeTab === 'import' && !isViewer && (
+        {activeTab === 'import' && isAdmin && (
           <div className="max-w-2xl mx-auto">
             <CsvImport
               onComplete={() => {

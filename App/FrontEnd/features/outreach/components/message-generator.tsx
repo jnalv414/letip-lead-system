@@ -19,6 +19,7 @@ interface MessageGeneratorProps {
   onSend: (contactId: string, message: GeneratedMessage, type: 'email' | 'linkedin' | 'sms') => void
   isGenerating?: boolean
   isSending?: boolean
+  isAdmin?: boolean
 }
 
 export function MessageGenerator({
@@ -30,6 +31,7 @@ export function MessageGenerator({
   onSend,
   isGenerating,
   isSending,
+  isAdmin = false,
 }: MessageGeneratorProps) {
   const [selectedContactId, setSelectedContactId] = useState('')
   const [selectedTemplateId, setSelectedTemplateId] = useState('')
@@ -147,7 +149,7 @@ export function MessageGenerator({
           className="w-full"
           onClick={handleGenerate}
           isLoading={isGenerating}
-          disabled={!business || !selectedContactId || isGenerating}
+          disabled={!isAdmin || !business || !selectedContactId || isGenerating}
         >
           <Sparkles className="h-4 w-4 mr-2" />
           Generate Message
@@ -183,7 +185,7 @@ export function MessageGenerator({
                   </>
                 )}
               </Button>
-              <Button size="sm" onClick={handleSend} isLoading={isSending} className="flex-1">
+              <Button size="sm" onClick={handleSend} isLoading={isSending} disabled={!isAdmin || isSending} className="flex-1">
                 <Send className="h-4 w-4 mr-1.5" />
                 Send
               </Button>

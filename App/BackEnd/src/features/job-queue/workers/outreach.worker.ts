@@ -66,8 +66,15 @@ export class OutreachWorker extends BaseWorker {
       // Update progress: Starting
       await this.updateProgress(job, 10, 'Fetching business and contact data');
 
-      // Fetch business data (simulate for now if service not available)
-      const businessData = await this.fetchBusinessData(businessId);
+      // Fetch business data from database
+      const businessData = await this.prisma.business.findUnique({
+        where: { id: businessId },
+        include: { contacts: { where: { is_primary: true }, take: 1 } },
+      });
+
+      if (!businessData) {
+        throw new Error(`Business with ID ${businessId} not found`);
+      }
 
       // Update progress: Template loading
       await this.updateProgress(job, 25, `Loading template: ${templateName}`);
@@ -85,24 +92,9 @@ export class OutreachWorker extends BaseWorker {
       let messageId: number;
       let personalizationScore = 0;
 
-      try {
-        // Use the OutreachService from Agent 1
-        message = await this.outreachService.generateOutreachMessage(
-          businessId,
-          false, // regenerate flag
-        );
-
-        messageId = message.id;
-
-        // Calculate personalization score based on message content
-        if (personalizeMessage) {
-          personalizationScore = this.calculatePersonalizationScore(message.message_text);
-        }
-
-        this.logger.debug(`Generated message ID ${messageId} with length ${message.message_text.length}`);
-      } catch (error) {
-        // Fallback to mock if service not available
-        this.logger.warn(`OutreachService failed, using mock: ${error.message}`);
+      if (process.env.NODE_ENV === 'development') {
+        // In development, use mock message generation for testing
+        this.logger.warn('Using mock message generation (NODE_ENV=development)');
 
         const mockMessage = this.generateMockMessage(businessData, template, personalizeMessage);
         messageId = Math.floor(Math.random() * 10000);
@@ -116,6 +108,21 @@ export class OutreachWorker extends BaseWorker {
         if (personalizeMessage) {
           personalizationScore = 75; // Mock score
         }
+      } else {
+        // Use the OutreachService for real message generation
+        message = await this.outreachService.generateOutreachMessage(
+          businessId,
+          false, // regenerate flag
+        );
+
+        messageId = message.id;
+
+        // Calculate personalization score based on message content
+        if (personalizeMessage) {
+          personalizationScore = this.calculatePersonalizationScore(message.message_text);
+        }
+
+        this.logger.debug(`Generated message ID ${messageId} with length ${message.message_text.length}`);
       }
 
       // Update progress: Validation
@@ -218,23 +225,6 @@ export class OutreachWorker extends BaseWorker {
   }
 
   /**
-   * Fetch business data for personalization
-   */
-  private async fetchBusinessData(businessId: number): Promise<any> {
-    // Simulate fetching business data
-    await this.delay(500);
-
-    return {
-      id: businessId,
-      name: 'Example Business',
-      industry: 'Technology',
-      location: 'San Francisco, CA',
-      website: 'https://example.com',
-      description: 'Leading technology company',
-    };
-  }
-
-  /**
    * Load message template
    */
   private async loadTemplate(templateName: string): Promise<string> {
@@ -290,8 +280,8 @@ Looking forward to connecting!
       // Replace placeholders with actual data
       message = message
         .replace(/{{company_name}}/g, businessData.name)
-        .replace(/{{industry}}/g, businessData.industry)
-        .replace(/{{contact_name}}/g, 'John')
+        .replace(/{{industry}}/g, businessData.industry || 'your industry')
+        .replace(/{{contact_name}}/g, businessData.contacts?.[0]?.name || 'Business Owner')
         .replace(/{{sender_name}}/g, 'Sarah from LeTip')
         .replace(/{{recent_achievement}}/g, 'expanding to new markets')
         .replace(/{{goal}}/g, 'scale your operations efficiently')

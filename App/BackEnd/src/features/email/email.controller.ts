@@ -103,7 +103,7 @@ export class EmailController {
    * Check if email service is configured
    */
   @Get('status')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Check email service status',

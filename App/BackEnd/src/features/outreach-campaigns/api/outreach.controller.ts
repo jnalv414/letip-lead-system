@@ -28,7 +28,7 @@ export class OutreachController {
   constructor(private readonly outreachService: OutreachService) {}
 
   @Post(':id')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Generate outreach message for a business',

@@ -4,6 +4,7 @@ import { BaseWorker } from './base-worker';
 import { JobHistoryRepository } from '../data/repositories/job-history.repository';
 import { EventsGateway as WebsocketGateway } from '../../../websocket/websocket.gateway';
 import { ApifyScraper as ApifyService } from '../../map-scraping/domain/apify-scraper';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { JobType } from '../config/queue.config';
 
 interface ScrapingJobData {
@@ -35,6 +36,7 @@ export class ScrapingWorker extends BaseWorker {
     jobHistoryRepository: JobHistoryRepository,
     websocketGateway: WebsocketGateway,
     private readonly apifyService: ApifyService,
+    private readonly prisma: PrismaService,
   ) {
     super('scraping-jobs', jobHistoryRepository, websocketGateway);
   }
@@ -75,17 +77,58 @@ export class ScrapingWorker extends BaseWorker {
           // Transform Apify result to our business format
           const businessData = this.apifyService.transformResult(place);
 
+          // Check for duplicates (match on name + address)
+          const existing = await this.prisma.business.findFirst({
+            where: {
+              name: businessData.name,
+              address: businessData.address || '',
+            },
+          });
+
+          if (existing) {
+            // Update existing record
+            await this.prisma.business.update({
+              where: { id: existing.id },
+              data: {
+                phone: businessData.phone,
+                website: businessData.website,
+                business_type: businessData.business_type,
+                google_maps_url: businessData.google_maps_url,
+                latitude: businessData.latitude,
+                longitude: businessData.longitude,
+                city: businessData.city,
+                state: businessData.state,
+              },
+            });
+          } else {
+            // Create new record
+            await this.prisma.business.create({
+              data: {
+                name: businessData.name,
+                address: businessData.address,
+                city: businessData.city,
+                state: businessData.state,
+                phone: businessData.phone,
+                website: businessData.website,
+                business_type: businessData.business_type,
+                google_maps_url: businessData.google_maps_url,
+                latitude: businessData.latitude,
+                longitude: businessData.longitude,
+                source: 'google_maps',
+                enrichment_status: 'pending',
+              },
+            });
+          }
+
           // Add to results array
           businesses.push({
             name: businessData.name,
             address: businessData.address,
-            phone: businessData.phoneNumber,
+            phone: businessData.phone,
             website: businessData.website,
             rating: businessData.rating,
           });
 
-          // Note: Actual saving would be done by BusinessService from Agent 2
-          // For now, we'll just count as saved
           saved++;
 
           // Update progress periodically

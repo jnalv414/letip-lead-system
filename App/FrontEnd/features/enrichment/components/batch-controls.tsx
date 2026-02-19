@@ -13,6 +13,7 @@ interface BatchControlsProps {
   isBatchEnriching?: boolean
   isPausing?: boolean
   isResuming?: boolean
+  isAdmin?: boolean
 }
 
 export function BatchControls({
@@ -24,6 +25,7 @@ export function BatchControls({
   isBatchEnriching,
   isPausing,
   isResuming,
+  isAdmin = false,
 }: BatchControlsProps) {
   return (
     <Card variant="glass" className="p-6">
@@ -51,7 +53,7 @@ export function BatchControls({
           <Button
             onClick={onBatchEnrich}
             isLoading={isBatchEnriching}
-            disabled={pendingCount === 0 || isBatchEnriching}
+            disabled={!isAdmin || pendingCount === 0 || isBatchEnriching}
           >
             <Sparkles className="h-4 w-4 mr-2" />
             Start Batch
@@ -71,6 +73,7 @@ export function BatchControls({
               variant="outline"
               onClick={onResumeQueue}
               isLoading={isResuming}
+              disabled={!isAdmin}
             >
               <Play className="h-4 w-4 mr-2" />
               Resume
@@ -80,6 +83,7 @@ export function BatchControls({
               variant="outline"
               onClick={onPauseQueue}
               isLoading={isPausing}
+              disabled={!isAdmin}
             >
               <Pause className="h-4 w-4 mr-2" />
               Pause

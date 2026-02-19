@@ -17,6 +17,7 @@ import { JobQueueModule } from './features/job-queue';
 import { AnalyticsModule } from './features/analytics';
 import { EmailModule } from './features/email';
 import { WebsocketModule } from './websocket/websocket.module';
+import { AdminModule } from './features/admin/admin.module';
 
 // Determine the correct path for FrontEnd files
 function getDashboardPath(): string {
@@ -61,6 +62,7 @@ function getDashboardPath(): string {
     AnalyticsModule,
     EmailModule, // SendGrid email integration
     WebsocketModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [

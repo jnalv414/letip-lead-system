@@ -32,7 +32,12 @@ export async function startScrape(request: ScrapeRequest): Promise<ScrapeJob> {
     message: string
   }>('/api/scrape', {
     method: 'POST',
-    body: request,
+    body: {
+      business_type: request.query,
+      location: request.location,
+      radius: request.radius,
+      max_results: request.limit,
+    },
   })
 
   return {

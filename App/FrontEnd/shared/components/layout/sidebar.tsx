@@ -17,12 +17,12 @@ import {
 import { cn } from '@/shared/lib/utils'
 import { useAuth } from '@/features/auth'
 
-const allNavItems: Array<{ href: string; label: string; icon: React.ElementType; viewerHidden?: boolean }> = [
+const allNavItems: Array<{ href: string; label: string; icon: React.ElementType }> = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/leads', label: 'Leads', icon: Users },
-  { href: '/search', label: 'Search', icon: Search, viewerHidden: true },
-  { href: '/enrichment', label: 'Enrichment', icon: Sparkles, viewerHidden: true },
-  { href: '/outreach', label: 'Outreach', icon: MessageSquare, viewerHidden: true },
+  { href: '/search', label: 'Search', icon: Search },
+  { href: '/enrichment', label: 'Enrichment', icon: Sparkles },
+  { href: '/outreach', label: 'Outreach', icon: MessageSquare },
 ]
 
 interface SidebarProps {
@@ -33,8 +33,8 @@ interface SidebarProps {
 export function Sidebar({ open, onOpenChange }: SidebarProps) {
   const pathname = usePathname()
   const { user } = useAuth()
-  const isViewer = user?.role === 'VIEWER'
-  const navItems = allNavItems.filter((item) => !(isViewer && item.viewerHidden))
+  const isAdmin = user?.role === 'ADMIN'
+  const navItems = allNavItems
 
   // Close on route change
   React.useEffect(() => {
@@ -141,7 +141,7 @@ export function Sidebar({ open, onOpenChange }: SidebarProps) {
 
             {/* Footer */}
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
-              {!isViewer && (
+              {user?.role === 'ADMIN' && (
                 <Link
                   href={'/settings' as string}
                   className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"

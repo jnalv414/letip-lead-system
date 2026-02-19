@@ -79,6 +79,14 @@ export class ConfigService {
     return this.getSecret('abstractapi', 'api_key');
   }
 
+  getApifyApiKey(): string | null {
+    const envKey = this.nestConfigService.get<string>('APIFY_API_KEY');
+    if (envKey) {
+      return envKey;
+    }
+    return this.getSecret('apify', 'api_key');
+  }
+
   getSendGridApiKey(): string | null {
     // First check environment variable, then secrets file
     const envKey = this.nestConfigService.get<string>('SENDGRID_API_KEY');

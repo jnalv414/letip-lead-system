@@ -55,7 +55,7 @@ export class JobQueueController {
    * Create a Google Maps scraping job.
    */
   @Post('scraping')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
@@ -89,7 +89,7 @@ export class JobQueueController {
    * Create a business enrichment job.
    */
   @Post('enrichment')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
@@ -123,7 +123,7 @@ export class JobQueueController {
    * Create an outreach message generation job.
    */
   @Post('outreach')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
@@ -243,7 +243,7 @@ export class JobQueueController {
    * Get queue metrics.
    */
   @Get('metrics/:queueName')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get queue metrics',
@@ -277,7 +277,7 @@ export class JobQueueController {
    * Get all queues metrics.
    */
   @Get('metrics')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get metrics for all queues',
@@ -342,7 +342,7 @@ export class JobQueueController {
    * Cancel a job.
    */
   @Delete(':jobId')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -380,7 +380,7 @@ export class JobQueueController {
    * Upload and validate a CSV file for import.
    */
   @Post('csv/validate')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(
@@ -443,7 +443,7 @@ export class JobQueueController {
    * Create a CSV import job.
    */
   @Post('csv/import')
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(

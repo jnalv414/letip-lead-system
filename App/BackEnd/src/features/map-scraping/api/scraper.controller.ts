@@ -12,7 +12,7 @@ export class ScraperController {
   constructor(private readonly scraperService: ScraperService) {}
 
   @Post()
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Start scraping businesses from Google Maps',

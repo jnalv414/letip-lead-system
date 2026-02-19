@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { Info } from 'lucide-react'
 import { AppShell } from '@/shared/components/layout'
+import { useAuth } from '@/features/auth'
 import {
   CampaignStatsCard,
   BusinessSelector,
@@ -19,6 +21,8 @@ import type { Business } from '@/shared/types'
 import type { GeneratedMessage } from '@/features/outreach'
 
 export default function OutreachPage() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'ADMIN'
   const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null)
   const [generatedMessage, setGeneratedMessage] = useState<GeneratedMessage | null>(null)
   const [historyPage, setHistoryPage] = useState(1)
@@ -82,6 +86,13 @@ export default function OutreachPage() {
   return (
     <AppShell title="Outreach">
       <div className="space-y-6">
+        {!isAdmin && (
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400">
+            <Info className="h-5 w-5 mt-0.5 flex-shrink-0" />
+            <p className="text-sm">Only administrators can generate and send outreach messages.</p>
+          </div>
+        )}
+
         {/* Stats */}
         <CampaignStatsCard stats={stats} isLoading={statsLoading} />
 
@@ -105,6 +116,7 @@ export default function OutreachPage() {
             onSend={handleSend}
             isGenerating={generateMessage.isPending}
             isSending={sendMessage.isPending}
+            isAdmin={isAdmin}
           />
 
           {/* Message History */}

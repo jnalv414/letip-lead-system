@@ -2,7 +2,9 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { Info } from 'lucide-react'
 import { AppShell } from '@/shared/components/layout'
+import { useAuth } from '@/features/auth'
 import {
   EnrichmentStatsCard,
   EnrichmentQueueCard,
@@ -20,6 +22,8 @@ import type { Business } from '@/shared/types'
 
 export default function EnrichmentPage() {
   const router = useRouter()
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'ADMIN'
   const [historyPage, setHistoryPage] = useState(1)
   const [isQueuePaused, setIsQueuePaused] = useState(false)
 
@@ -78,6 +82,13 @@ export default function EnrichmentPage() {
   return (
     <AppShell title="Enrichment">
       <div className="space-y-6">
+        {!isAdmin && (
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400">
+            <Info className="h-5 w-5 mt-0.5 flex-shrink-0" />
+            <p className="text-sm">Only administrators can initiate enrichment jobs.</p>
+          </div>
+        )}
+
         {/* Stats */}
         <EnrichmentStatsCard stats={stats} isLoading={statsLoading} />
 
@@ -88,7 +99,7 @@ export default function EnrichmentPage() {
             <EnrichmentQueueCard
               queue={queue}
               isLoading={queueLoading}
-              onEnrich={handleEnrichBusiness}
+              onEnrich={isAdmin ? handleEnrichBusiness : undefined}
               isEnriching={enrichBusiness.isPending}
             />
             <BatchControls
@@ -100,6 +111,7 @@ export default function EnrichmentPage() {
               isBatchEnriching={batchEnrich.isPending}
               isPausing={false}
               isResuming={false}
+              isAdmin={isAdmin}
             />
           </div>
 
