@@ -130,7 +130,7 @@ export class BusinessRepository {
       this.prisma.business.count({ where: { enrichment_status: 'pending' } }),
       this.prisma.contact.count(),
       this.prisma.outreach_message.count({ where: { status: 'sent' } }),
-      this.prisma.outreach_message.count({ where: { status: 'draft' } }),
+      this.prisma.outreach_message.count({ where: { status: 'generated' } }),
     ]);
 
     return {

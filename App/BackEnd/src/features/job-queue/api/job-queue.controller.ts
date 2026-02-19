@@ -143,12 +143,14 @@ export class JobQueueController {
   })
   @ApiResponse({ status: 400, description: 'Invalid request data' })
   async createOutreachJob(
-    @Body() body: { businessId: number; contactId?: number; userId?: string },
+    @Body() body: { businessId: number; contactId?: number; messageId?: number; channel?: 'email' | 'linkedin' | 'sms'; userId?: string },
   ) {
     const job = await this.jobQueueService.createOutreachJob(
       body.businessId,
       body.contactId,
       body.userId,
+      undefined, // priority
+      body.channel,
     );
     return {
       jobId: job.id,

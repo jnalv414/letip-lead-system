@@ -14,7 +14,12 @@ import { WsAuthGuard } from '../features/auth/guards/ws-auth.guard';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3031',
+    origin: [
+      'http://localhost:3030',
+      'https://jjailabs-letip.com',
+      'https://www.jjailabs-letip.com',
+      ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
+    ],
     credentials: true,
   },
 })

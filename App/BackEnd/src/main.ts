@@ -11,8 +11,17 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // Enable CORS with credentials for cookie-based auth
+  // Allow the production frontend domain and localhost dev frontend
+  const allowedOrigins = [
+    'http://localhost:3030',
+    'https://jjailabs-letip.com',
+    'https://www.jjailabs-letip.com',
+  ];
+  if (process.env.FRONTEND_URL) {
+    allowedOrigins.push(process.env.FRONTEND_URL);
+  }
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3031',
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
@@ -158,7 +167,7 @@ async function bootstrap() {
     },
   });
 
-  const port = process.env.PORT || 3030;
+  const port = process.env.PORT || 3031;
   // IMPORTANT: Must bind to 0.0.0.0 on Render (and other PaaS platforms).
   // Render assigns PORT=10000 and its health checker connects from outside
   // the container — binding to 127.0.0.1 (the Node default) makes the service

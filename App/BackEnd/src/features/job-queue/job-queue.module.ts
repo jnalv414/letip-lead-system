@@ -28,6 +28,7 @@ import { WebsocketModule } from '../../websocket/websocket.module';
 
 // Feature modules for worker dependencies
 import { MapScrapingModule } from '../map-scraping/map-scraping.module';
+import { LeadEnrichmentModule } from '../lead-enrichment/enrichment.module';
 import { OutreachCampaignsModule } from '../outreach-campaigns/outreach-campaigns.module';
 import { EmailModule } from '../email/email.module';
 
@@ -87,6 +88,7 @@ import { EmailModule } from '../email/email.module';
 
     // Feature modules for workers
     MapScrapingModule,       // For ApifyScraper
+    LeadEnrichmentModule,    // For EnrichmentService
     OutreachCampaignsModule, // For OutreachService
     EmailModule,             // For EmailService (SendGrid integration)
   ],

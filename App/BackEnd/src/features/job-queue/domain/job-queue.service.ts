@@ -122,6 +122,7 @@ export class JobQueueService {
     contactId?: number,
     userId?: string,
     priority?: JobPriority,
+    channel?: 'email' | 'linkedin' | 'sms',
   ): Promise<any> {
     try {
       this.logger.log(`Creating outreach job for business ${businessId}`);
@@ -133,6 +134,7 @@ export class JobQueueService {
           businessId,
           contactId,
           userId,
+          channel: channel || 'email',
         },
         {
           priority: priority || JobPriority.NORMAL,

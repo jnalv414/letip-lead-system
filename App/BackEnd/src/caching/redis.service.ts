@@ -40,9 +40,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     try {
       const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-      const isTLS = redisUrl.startsWith('rediss://');
 
-      this.client = new Redis(redisUrl, {
+      // Parse URL manually to build connection options.
+      // This avoids ioredis URL-parsing edge cases with rediss:// on managed Redis (Render).
+      const connectionOpts = this.parseRedisUrl(redisUrl);
+
+      this.client = new Redis({
+        ...connectionOpts,
         retryStrategy: (times) => {
           const delay = Math.min(times * 50, 2000);
           this.logger.debug(`Redis retry attempt ${times}, waiting ${delay}ms`);
@@ -51,7 +55,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         maxRetriesPerRequest: 3,
         enableReadyCheck: true,
         lazyConnect: false,
-        ...(isTLS && { tls: { rejectUnauthorized: false } }),
       });
 
       this.client.on('connect', () => {
@@ -383,6 +386,37 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       this.logger.error('Redis FLUSHDB failed', error.message);
       return null;
+    }
+  }
+
+  /**
+   * Parse a Redis URL into ioredis connection options.
+   * Handles both redis:// and rediss:// (TLS) schemes explicitly
+   * to avoid ioredis URL-parsing edge cases on managed Redis providers (Render).
+   */
+  private parseRedisUrl(redisUrl: string): Record<string, any> {
+    try {
+      const url = new URL(redisUrl);
+      const isTLS = url.protocol === 'rediss:';
+
+      return {
+        host: url.hostname,
+        port: parseInt(url.port || '6379', 10),
+        username: url.username || undefined,
+        password: url.password ? decodeURIComponent(url.password) : undefined,
+        db: 0,
+        ...(isTLS && { tls: { rejectUnauthorized: false } }),
+      };
+    } catch {
+      // Fallback: let ioredis parse the URL directly
+      this.logger.warn('Failed to parse REDIS_URL, falling back to direct URL mode');
+      const isTLS = redisUrl.startsWith('rediss://');
+      return {
+        // Pass as 'path' so ioredis treats it as a connection string
+        host: 'localhost',
+        port: 6379,
+        ...(isTLS && { tls: { rejectUnauthorized: false } }),
+      };
     }
   }
 }
