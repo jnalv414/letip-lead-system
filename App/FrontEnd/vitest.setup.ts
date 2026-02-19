@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { vi, beforeAll, afterAll, afterEach } from 'vitest'
+import { vi, beforeAll, afterAll, afterEach, beforeEach } from 'vitest'
 import { server } from './__tests__/setup/mock-server'
 import { resetIdCounter } from './__tests__/setup/mock-data'
 import { resetMockSocket } from './__tests__/setup/websocket-mock'
