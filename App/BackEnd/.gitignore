@@ -1,0 +1,17 @@
+# Environment variables - never commit these
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+
+# Node modules
+node_modules/
+
+# Coverage
+coverage/
+
+# Logs
+*.log
+logs/
