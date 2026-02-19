@@ -62,7 +62,7 @@ export interface ApifyRunResponse {
 export class ApifyScraper {
   private readonly logger = new Logger(ApifyScraper.name);
   private readonly client: AxiosInstance;
-  private readonly actorId = 'compass/google-maps-extractor';
+  private readonly actorId = 'compass~google-maps-extractor';
   private readonly apiKey: string;
 
   constructor(private configService: ConfigService) {
