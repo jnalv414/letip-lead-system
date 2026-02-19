@@ -159,14 +159,18 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT || 3030;
-  await app.listen(port);
-  
+  // IMPORTANT: Must bind to 0.0.0.0 on Render (and other PaaS platforms).
+  // Render assigns PORT=10000 and its health checker connects from outside
+  // the container — binding to 127.0.0.1 (the Node default) makes the service
+  // unreachable and causes update_failed status.
+  await app.listen(port, '0.0.0.0');
+
   console.log(`
 ╔══════════════════════════════════════════════════════════════╗
 ║  Le Tip Lead System API                                      ║
 ╠══════════════════════════════════════════════════════════════╣
-║  Server running on: http://localhost:${port}                    ║
-║  API Documentation: http://localhost:${port}/api-docs           ║
+║  Server running on: http://0.0.0.0:${port}                     ║
+║  API Documentation: http://0.0.0.0:${port}/api-docs            ║
 ╚══════════════════════════════════════════════════════════════╝
   `);
 }
