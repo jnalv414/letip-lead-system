@@ -15,6 +15,9 @@ const prisma = new PrismaClient();
 const SALT_ROUNDS = 12;
 const DEFAULT_PASSWORD = 'letip2026';
 
+// Admin account
+const admin = { email: 'Justin@jjailabs.io', name: 'Justin Nalven' };
+
 const members = [
   { email: 'Pseha@oceanfirst.com', name: 'P. Seha' },
   { email: 'Rstillwell@elegant-exteriors-llc.com', name: 'R. Stillwell' },
@@ -28,10 +31,31 @@ const members = [
 ];
 
 async function main() {
-  console.log('Seeding VIEWER accounts...\n');
+  console.log('Seeding accounts...\n');
 
   const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, SALT_ROUNDS);
 
+  // Create admin account
+  const adminEmail = admin.email.toLowerCase();
+  const adminUser = await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: {
+      name: admin.name,
+      role: Role.ADMIN,
+      is_active: true,
+    },
+    create: {
+      email: adminEmail,
+      name: admin.name,
+      password_hash: passwordHash,
+      role: Role.ADMIN,
+      must_change_password: true,
+      is_active: true,
+    },
+  });
+  console.log(`  ${adminUser.email} -> ${adminUser.name} (${adminUser.role}) [ADMIN]`);
+
+  // Create viewer accounts
   for (const member of members) {
     const email = member.email.toLowerCase();
 
@@ -56,7 +80,7 @@ async function main() {
     console.log(`  ${user.email} -> ${user.name} (${user.role})`);
   }
 
-  console.log(`\nSeeded ${members.length} VIEWER accounts.`);
+  console.log(`\nSeeded 1 ADMIN + ${members.length} VIEWER accounts.`);
   console.log('Default password: letip2026 (must change on first login)');
 }
 
