@@ -15,8 +15,10 @@ export class BusinessRepository {
       where: { id: businessId },
       include: {
         contacts: {
-          where: { is_primary: true },
-          take: 1,
+          orderBy: [
+            { is_primary: 'desc' },
+            { created_at: 'asc' },
+          ],
         },
       },
     });

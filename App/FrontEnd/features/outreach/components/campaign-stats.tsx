@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Send, Eye, MessageCircle, XCircle, TrendingUp } from 'lucide-react'
+import { Send, Eye, MessageCircle, XCircle, TrendingUp, FileText } from 'lucide-react'
 import { Card } from '@/shared/components/ui/card'
 import { Skeleton } from '@/shared/components/ui/skeleton'
 import type { CampaignStats as CampaignStatsType } from '../types'
@@ -15,7 +15,7 @@ export function CampaignStats({ stats, isLoading }: CampaignStatsProps) {
   if (isLoading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {[1, 2, 3, 4, 5].map((i) => (
+        {[1, 2, 3, 4, 5].map((i: number) => (
           <Card key={i} variant="glass" className="p-4">
             <Skeleton className="h-4 w-20 mb-2" />
             <Skeleton className="h-8 w-16" />
@@ -26,6 +26,13 @@ export function CampaignStats({ stats, isLoading }: CampaignStatsProps) {
   }
 
   const statItems = [
+    {
+      label: 'Drafts',
+      value: stats?.total_generated ?? 0,
+      icon: FileText,
+      color: 'text-cyan-400',
+      bgColor: 'bg-cyan-500/20',
+    },
     {
       label: 'Sent',
       value: stats?.total_sent ?? 0,
@@ -47,14 +54,6 @@ export function CampaignStats({ stats, isLoading }: CampaignStatsProps) {
       icon: Eye,
       color: 'text-amber-400',
       bgColor: 'bg-amber-500/20',
-    },
-    {
-      label: 'Replied',
-      value: stats?.total_replied ?? 0,
-      subValue: `${Math.round(stats?.reply_rate ?? 0)}%`,
-      icon: MessageCircle,
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-500/20',
     },
     {
       label: 'Failed',

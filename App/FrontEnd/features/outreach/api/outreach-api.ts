@@ -83,6 +83,7 @@ export async function getBusinessMessages(
  */
 interface EmailStatsResponse {
   total: number
+  generated: number
   sent: number
   delivered: number
   opened: number
@@ -104,17 +105,18 @@ export async function fetchCampaignStats(): Promise<CampaignStats> {
     const replyRate = stats.delivered > 0 ? (stats.clicked / stats.delivered) * 100 : 0
 
     return {
+      total_generated: stats.generated,
       total_sent: stats.sent,
       total_delivered: stats.delivered,
       total_opened: stats.opened,
-      total_replied: stats.clicked, // Using clicked as reply proxy
+      total_replied: stats.clicked,
       total_failed: stats.failed + stats.bounced,
       open_rate: openRate,
       reply_rate: replyRate,
     }
   } catch {
-    // Return zeros if stats endpoint fails
     return {
+      total_generated: 0,
       total_sent: 0,
       total_delivered: 0,
       total_opened: 0,

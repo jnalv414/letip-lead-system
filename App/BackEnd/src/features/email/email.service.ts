@@ -311,6 +311,7 @@ export class EmailService implements OnModuleInit {
    */
   async getStats(): Promise<{
     total: number;
+    generated: number;
     sent: number;
     delivered: number;
     opened: number;
@@ -325,6 +326,7 @@ export class EmailService implements OnModuleInit {
 
     const result = {
       total: 0,
+      generated: 0,
       sent: 0,
       delivered: 0,
       opened: 0,

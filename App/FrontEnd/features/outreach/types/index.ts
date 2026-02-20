@@ -55,6 +55,7 @@ export interface BusinessOutreachResponse {
  * Campaign statistics
  */
 export interface CampaignStats {
+  total_generated: number
   total_sent: number
   total_delivered: number
   total_opened: number

@@ -1,7 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
-import { Mail, Linkedin, MessageSquare, CheckCircle, XCircle, Clock, Send, Eye, MousePointer, AlertTriangle, Inbox } from 'lucide-react'
+import { Mail, Linkedin, MessageSquare, XCircle, Clock, Send, Eye, MousePointer, AlertTriangle, Inbox, ChevronDown, ChevronUp } from 'lucide-react'
 import { Card } from '@/shared/components/ui/card'
 import { Button } from '@/shared/components/ui/button'
 import { Badge } from '@/shared/components/ui/badge'
@@ -22,6 +23,8 @@ export function MessageHistory({
   page,
   onPageChange,
 }: MessageHistoryProps) {
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+
   if (isLoading) {
     return (
       <Card variant="glass" className="p-6">
@@ -76,12 +79,16 @@ export function MessageHistory({
         return { icon: XCircle, color: 'text-gray-400', bg: 'bg-gray-500/20', label: 'Unsubscribed' }
       case 'generated':
       case 'draft':
-        return { icon: Clock, color: 'text-gray-400', bg: 'bg-gray-500/20', label: 'Draft' }
+        return { icon: Clock, color: 'text-cyan-400', bg: 'bg-cyan-500/20', label: 'Draft' }
       case 'pending':
         return { icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/20', label: 'Pending' }
       default:
         return { icon: Send, color: 'text-blue-400', bg: 'bg-blue-500/20', label: status }
     }
+  }
+
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id)
   }
 
   return (
@@ -93,7 +100,7 @@ export function MessageHistory({
         <div>
           <h2 className="text-lg font-semibold text-foreground">Message History</h2>
           <p className="text-sm text-muted-foreground">
-            {history?.total ?? 0} messages sent
+            {history?.total ?? 0} message{(history?.total ?? 0) !== 1 ? 's' : ''} generated
           </p>
         </div>
       </div>
@@ -105,44 +112,62 @@ export function MessageHistory({
               const TypeIcon = getTypeIcon(item.message_type)
               const statusConfig = getStatusConfig(item.status)
               const StatusIcon = statusConfig.icon
+              const isExpanded = expandedId === item.id
 
               return (
                 <div
                   key={item.id}
-                  className="p-4 bg-muted/50 rounded-lg space-y-2"
+                  className="bg-muted/50 rounded-lg overflow-hidden cursor-pointer hover:bg-muted/70 transition-colors"
+                  onClick={() => toggleExpand(item.id)}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className={`h-8 w-8 rounded-lg ${statusConfig.bg} flex items-center justify-center`}>
-                        <TypeIcon className={`h-4 w-4 ${statusConfig.color}`} />
+                  <div className="p-4 space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={`h-8 w-8 rounded-lg ${statusConfig.bg} flex items-center justify-center`}>
+                          <TypeIcon className={`h-4 w-4 ${statusConfig.color}`} />
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">
+                            {item.business?.name ?? 'Unknown Business'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.contact?.email ?? 'No contact'}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-foreground">
-                          {item.business?.name ?? 'Unknown Business'}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.contact?.email ?? 'No contact'}
-                        </p>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={
+                          ['delivered', 'opened', 'clicked'].includes(item.status) ? 'enriched' :
+                          ['failed', 'bounced', 'spam'].includes(item.status) ? 'failed' :
+                          item.status === 'sent' ? 'default' :
+                          'pending'
+                        }>
+                          {statusConfig.label}
+                        </Badge>
+                        {isExpanded ? (
+                          <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <StatusIcon className={`h-4 w-4 ${statusConfig.color}`} />
-                      <Badge variant={
-                        ['delivered', 'opened', 'clicked'].includes(item.status) ? 'enriched' :
-                        ['failed', 'bounced', 'spam'].includes(item.status) ? 'failed' :
-                        item.status === 'sent' ? 'default' :
-                        'pending'
-                      }>
-                        {statusConfig.label}
-                      </Badge>
-                    </div>
+                    {!isExpanded && (
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {item.content}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {item.content}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}
-                  </p>
+
+                  {isExpanded && (
+                    <div className="px-4 pb-4 border-t border-border/50 pt-3">
+                      <p className="text-sm text-foreground whitespace-pre-wrap">
+                        {item.content}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )
             })}
@@ -176,7 +201,7 @@ export function MessageHistory({
       ) : (
         <div className="text-center py-8 text-muted-foreground">
           <Send className="h-8 w-8 mx-auto mb-2 opacity-50" />
-          <p className="text-sm">No messages sent yet</p>
+          <p className="text-sm">No messages generated yet</p>
         </div>
       )}
     </Card>
