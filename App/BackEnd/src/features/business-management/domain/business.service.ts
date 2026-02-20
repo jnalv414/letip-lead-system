@@ -1,4 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import { BusinessRepository } from '../data/business.repository';
 import { BusinessCacheService } from './business-cache.service';
 import { EventsGateway } from '../../../websocket/websocket.gateway';
@@ -34,6 +35,27 @@ export class BusinessService {
     private cache: BusinessCacheService,
     private eventsGateway: EventsGateway,
   ) {}
+
+  /**
+   * Handle enrichment completion by invalidating stale cache entries.
+   * The enrichment service updates business status directly via Prisma,
+   * bypassing the BusinessService, so the cache becomes stale.
+   */
+  @OnEvent('business:enriched')
+  async handleBusinessEnriched(event: { data: { id: number } }) {
+    const businessId = event?.data?.id;
+    this.logger.log(`Cache invalidation triggered for enriched business ${businessId}`);
+    await this.cache.invalidateAll(businessId);
+  }
+
+  /**
+   * Handle analytics updated events to invalidate stats cache.
+   */
+  @OnEvent('analytics:updated')
+  async handleAnalyticsUpdated() {
+    this.logger.debug('Invalidating stats cache due to analytics update');
+    await this.cache.invalidateAll();
+  }
 
   /**
    * Create a new business.

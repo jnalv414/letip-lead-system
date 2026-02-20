@@ -144,7 +144,7 @@ export async function fetchEnrichedBusinesses(
   pageSize = 20
 ): Promise<PaginatedResponse<Business>> {
   return api<PaginatedResponse<Business>>(
-    `/api/businesses?enrichment_status=enriched&page=${page}&pageSize=${pageSize}`
+    `/api/businesses?enrichment_status=enriched&page=${page}&limit=${pageSize}`
   )
 }
 

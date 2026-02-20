@@ -44,15 +44,21 @@ export class MessageGeneratorService {
   }
 
   /**
-   * Extract the primary contact name or use default
+   * Extract the best available contact name.
+   * Priority: primary contact name > any contact name > personalized business fallback
    */
   private extractContactName(business: Business): string {
     if (business.contacts && business.contacts.length > 0) {
-      const primaryContact = business.contacts[0];
-      if (primaryContact.name) {
-        return primaryContact.name;
-      }
+      // Try primary contact first, then any contact with a name
+      const primary = business.contacts.find(c => c.is_primary && c.name);
+      if (primary?.name) return primary.name;
+
+      const anyNamed = business.contacts.find(c => c.name);
+      if (anyNamed?.name) return anyNamed.name;
     }
-    return 'Business Owner';
+
+    // Use the business name for a more personalized fallback
+    // e.g. "Team at Antonio & Sons Plumbing" instead of generic "Business Owner"
+    return `Team at ${business.name}`;
   }
 }

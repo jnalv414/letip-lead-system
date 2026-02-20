@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { BusinessController } from './api/business.controller';
 import { BusinessService } from './domain/business.service';
 import { BusinessCacheService } from './domain/business-cache.service';
@@ -28,7 +29,7 @@ import { CachingModule } from '../../caching/caching.module';
  * updating App/BackEnd/src/enrichment/enrichment.module.ts
  */
 @Module({
-  imports: [PrismaModule, WebsocketModule, CachingModule],
+  imports: [PrismaModule, WebsocketModule, CachingModule, EventEmitterModule],
   controllers: [BusinessController],
   providers: [BusinessService, BusinessCacheService, BusinessRepository],
   exports: [BusinessService],

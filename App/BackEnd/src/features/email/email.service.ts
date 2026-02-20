@@ -34,9 +34,9 @@ export interface EmailConfig {
  * Default email configuration for Le Tip outreach
  */
 const DEFAULT_CONFIG: EmailConfig = {
-  fromEmail: 'outreach@letip-westernmonmouth.com',
+  fromEmail: 'justin@jjailabs.io',
   fromName: 'Le Tip of Western Monmouth',
-  replyTo: 'info@letip-westernmonmouth.com',
+  replyTo: 'justin@jjailabs.io',
   trackClicks: true,
   trackOpens: true,
 };
