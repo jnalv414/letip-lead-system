@@ -87,6 +87,32 @@ export class OutreachMessageRepository {
   }
 
   /**
+   * Find all outreach messages with pagination, including business and contact
+   */
+  async findAllPaginated(page: number, pageSize: number) {
+    const skip = (page - 1) * pageSize;
+
+    const [data, total] = await Promise.all([
+      this.prisma.outreach_message.findMany({
+        skip,
+        take: pageSize,
+        include: {
+          business: {
+            select: { id: true, name: true, city: true },
+          },
+          contact: {
+            select: { id: true, name: true, email: true, title: true },
+          },
+        },
+        orderBy: { generated_at: 'desc' },
+      }),
+      this.prisma.outreach_message.count(),
+    ]);
+
+    return { data, total, page, pageSize };
+  }
+
+  /**
    * Get count of outreach messages by status
    */
   async getCountByStatus() {

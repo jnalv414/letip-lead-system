@@ -147,18 +147,92 @@ export async function fetchEnrichedBusinesses(
 }
 
 /**
+ * Raw outreach message from backend GET /api/outreach
+ */
+interface RawOutreachMessage {
+  id: number
+  business_id: number
+  contact_id: number | null
+  message_text: string
+  status: string
+  generated_at: string
+  sent_at: string | null
+  business?: {
+    id: number
+    name: string
+    city: string | null
+  }
+  contact?: {
+    id: number
+    name: string | null
+    email: string | null
+    title: string | null
+  } | null
+}
+
+interface RawPaginatedResponse {
+  data: RawOutreachMessage[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+/**
  * Fetch outreach message history
+ * GET /api/outreach
  */
 export async function fetchOutreachHistory(
   page = 1,
   pageSize = 20
 ): Promise<PaginatedResponse<OutreachHistoryItem>> {
-  // Return empty for now - could be replaced with dedicated endpoint
+  const raw = await api<RawPaginatedResponse>(
+    `/api/outreach?page=${page}&pageSize=${pageSize}`
+  )
+
   return {
-    data: [],
-    total: 0,
-    page,
-    pageSize,
+    data: raw.data.map((msg) => ({
+      id: String(msg.id),
+      business_id: String(msg.business_id),
+      message_type: 'email',
+      content: msg.message_text,
+      status: msg.status === 'generated' ? 'draft' : (msg.status as 'draft' | 'sent' | 'failed'),
+      created_at: msg.generated_at,
+      business: msg.business
+        ? {
+            id: String(msg.business.id),
+            name: msg.business.name,
+            address: null,
+            phone: null,
+            website: null,
+            email: null,
+            latitude: null,
+            longitude: null,
+            enrichment_status: 'enriched' as const,
+            industry: null,
+            employee_count: null,
+            year_founded: null,
+            created_at: '',
+            updated_at: '',
+          }
+        : undefined,
+      contact: msg.contact
+        ? {
+            id: String(msg.contact.id),
+            business_id: String(msg.business_id),
+            name: msg.contact.name,
+            title: msg.contact.title,
+            email: msg.contact.email,
+            email_verified: null,
+            phone: null,
+            linkedin_url: null,
+            is_primary: false,
+            created_at: '',
+          }
+        : undefined,
+    })),
+    total: raw.total,
+    page: raw.page,
+    pageSize: raw.pageSize,
   }
 }
 

@@ -69,6 +69,13 @@ export class OutreachService {
   }
 
   /**
+   * Get all outreach messages across all businesses (paginated)
+   */
+  async getAllMessages(page: number = 1, pageSize: number = 20) {
+    return this.outreachMessageRepository.findAllPaginated(page, pageSize);
+  }
+
+  /**
    * Get all outreach messages for a business
    *
    * @param businessId - Database ID of business

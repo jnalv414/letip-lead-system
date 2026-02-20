@@ -27,6 +27,40 @@ import {
 export class OutreachController {
   constructor(private readonly outreachService: OutreachService) {}
 
+  @Get()
+  @Roles(Role.ADMIN, Role.MEMBER, Role.VIEWER)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all outreach messages (paginated)',
+    description:
+      'Returns all outreach messages across all businesses, ordered by most recent first.',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    type: Number,
+    example: 20,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of outreach messages',
+  })
+  getAllMessages(
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+  ) {
+    return this.outreachService.getAllMessages(
+      parseInt(page || '1', 10),
+      parseInt(pageSize || '20', 10),
+    );
+  }
+
   @Post(':id')
   @Roles(Role.ADMIN)
   @ApiBearerAuth()

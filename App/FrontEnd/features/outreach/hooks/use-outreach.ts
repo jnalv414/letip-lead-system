@@ -52,8 +52,13 @@ export function useOutreachHistory(page = 1, pageSize = 20) {
 }
 
 export function useGenerateMessage() {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: (request: GenerateMessageRequest) => generateMessage(request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: outreachKeys.history(1, 20) })
+    },
   })
 }
 
