@@ -1,0 +1,38 @@
+name: Claude Auto Fix CI
+
+on:
+  workflow_run:
+    workflows: ["CI", "Build", "Test", "Tests", "Lint", "Check", "Pipeline"]
+    types: [completed]
+
+jobs:
+  auto-fix:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+
+      - name: Run Claude Code to fix CI
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            A CI workflow named "${{ github.event.workflow_run.name }}" has failed on branch "${{ github.event.workflow_run.head_branch }}".
+            
+            1. Check the recent commits on this branch to understand what changed
+            2. Run the failing tests/lints/builds locally to reproduce the error
+            3. Analyze the root cause
+            4. Implement the minimal fix
+            5. Verify all checks pass
+            6. Push the fix directly to the branch
+          claude_args: "--max-turns 30"
