@@ -2,7 +2,20 @@ name: Claude Auto Fix CI
 
 on:
   workflow_run:
-    workflows: ["CI", "Build", "Test", "Tests", "Lint", "Check", "Pipeline"]
+    workflows:
+      - "CI"
+      - "CI/CD Pipeline"
+      - "Build"
+      - "Test"
+      - "Tests"
+      - "Lint"
+      - "Check"
+      - "Pipeline"
+      - "PR Quality Checks"
+      - "CodeQL Security Scan"
+      - "Lighthouse CI"
+      - "Dependency Review"
+      - "Validate Tasks and Code Quality"
     types: [completed]
 
 jobs:
