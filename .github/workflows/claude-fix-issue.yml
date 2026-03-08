@@ -1,0 +1,38 @@
+name: Claude Fix Issue
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  fix-issue:
+    if: github.event.label.name == 'claude-fix'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude Code to fix issue
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Fix issue #${{ github.event.issue.number }}: "${{ github.event.issue.title }}"
+            
+            Issue body:
+            ${{ github.event.issue.body }}
+            
+            1. Analyze the issue thoroughly
+            2. Find the relevant code
+            3. Implement a fix (write tests if appropriate)
+            4. Verify the fix works
+            5. Create a pull request with a clear description linking to the issue
+          claude_args: "--max-turns 30"
